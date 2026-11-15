@@ -1,0 +1,69 @@
+index.html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZUNO | Learn smarter</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      color: #17233c;
+      text-align: center;
+    }
+
+    header {
+      background: #173b82;
+      color: white;
+      padding: 25px;
+    }
+
+    h1 {
+      font-size: 42px;
+      margin: 10px;
+    }
+
+    main {
+      padding: 45px 20px;
+    }
+
+    .card {
+      background: white;
+      max-width: 400px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 5px 20px #00000010;
+    }
+
+    button {
+      background: #ed4248;
+      color: white;
+      border: none;
+      padding: 15px 35px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ZUNO</h1>
+    <p>Learn smarter. Every day.</p>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>Ready to learn?</h2>
+      <p>Your English vocabulary journey starts here.</p>
+      <button onclick="alert('Welcome to ZUNO!')">
+        Let's go!
+      </button>
+    </div>
+  </main>
+</body>
+</html>
