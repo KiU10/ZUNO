@@ -4,8 +4,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F0F1F4">
 <title>ZUNO | Learn your way</title>
-
 <style>
 :root {
   --purple: #8276E8;
@@ -16,318 +16,603 @@
   --orange: #FF875E;
   --white: #FFFFFF;
   --muted: #777987;
+  --line: #E5E5EC;
+  --shadow: 0 12px 32px rgba(32, 33, 42, .07);
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 body {
   margin: 0;
+  min-height: 100vh;
   background: var(--background);
   color: var(--ink);
-  font-family: Inter, Arial, sans-serif;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button, input { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, input:focus-visible {
+  outline: 3px solid rgba(130, 118, 232, .45);
+  outline-offset: 3px;
 }
 
 header {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: 22px 28px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 22px 7%;
+  justify-content: space-between;
+  gap: 16px;
 }
-
 .logo {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--ink);
   font-size: 30px;
-  font-weight: 900;
+  font-weight: 950;
   letter-spacing: -2px;
+  cursor: pointer;
 }
-
-.logo span {
-  color: var(--purple);
-}
-
-.stats {
-  display: flex;
-  gap: 10px;
-}
-
+.logo span { color: var(--purple); }
+.stats { display: flex; gap: 9px; }
 .stat {
-  background: white;
-  padding: 11px 15px;
+  background: var(--white);
   border-radius: 13px;
-  font-weight: bold;
+  padding: 10px 14px;
   font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 main {
-  max-width: 1050px;
-  margin: 35px auto;
-  padding: 0 22px;
+  width: min(1000px, 100%);
+  margin: 26px auto 0;
+  padding: 0 28px 48px;
 }
-
-.greeting {
-  margin-bottom: 28px;
+.eyebrow, .tag {
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 1.8px;
 }
-
-.greeting p {
-  color: var(--muted);
-  margin: 5px 0;
+.eyebrow { color: var(--muted); }
+.greeting { margin: 0 0 27px; }
+.greeting h1 {
+  margin: 7px 0 5px;
+  font-size: clamp(34px, 6vw, 49px);
+  line-height: 1.05;
+  letter-spacing: -2.5px;
 }
-
-.greeting .eyebrow {
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 2px;
-}
-
-h1 {
-  font-size: clamp(32px, 6vw, 48px);
-  letter-spacing: -2px;
-  margin: 8px 0;
-}
+.greeting p:last-child { margin: 0; color: var(--muted); }
 
 .hero {
+  min-height: 235px;
+  padding: 32px 38px;
+  border-radius: 26px;
   background: var(--purple);
-  color: white;
-  border-radius: 25px;
-  padding: 34px;
+  color: var(--white);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  box-shadow: 0 12px 30px #8276E830;
+  justify-content: space-between;
+  gap: 24px;
+  overflow: hidden;
+  box-shadow: 0 13px 32px rgba(130, 118, 232, .22);
 }
-
-.hero h2 {
-  font-size: 30px;
-  margin: 12px 0 8px;
-  letter-spacing: -1px;
+.hero-copy { max-width: 520px; }
+.hero .tag { color: #EAE7FF; }
+.hero h2 { margin: 12px 0 7px; font-size: 32px; letter-spacing: -1.3px; }
+.hero p { margin: 0; color: #F0EDFF; }
+.mascot {
+  display: block;
+  width: 150px;
+  max-height: 170px;
+  object-fit: contain;
+  flex: 0 0 auto;
 }
-
-.hero p {
-  color: #F0EDFF;
-}
-
-.tag {
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 2px;
-  color: #E5E1FF;
-}
-
-button {
-  border: none;
+.primary, .secondary, .back-button, .answer-button, .mode-card, .unit-card {
+  border: 0;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 15px;
+  font-weight: 800;
+  transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
 }
-
 .primary {
+  margin-top: 20px;
+  padding: 14px 21px;
+  border-radius: 13px;
   background: var(--lime);
   color: var(--ink);
-  padding: 15px 23px;
-  border-radius: 13px;
-  margin-top: 12px;
-  transition: transform .2s;
 }
+.primary:hover, .secondary:hover, .answer-button:hover, .mode-card:hover, .unit-card:hover { transform: translateY(-2px); }
 
-.primary:hover {
-  transform: translateY(-2px);
-}
-
-.symbol {
-  font-size: 90px;
-  color: var(--lime);
-}
-
-.section-title {
-  margin: 38px 0 17px;
-  font-size: 23px;
-  letter-spacing: -1px;
-}
-
-.progress-card,
-.unit {
+.section-title { margin: 36px 0 15px; font-size: 22px; letter-spacing: -.7px; }
+.progress-card, .unit-card, .mode-card, .small-card {
   background: var(--white);
   border-radius: 20px;
-  padding: 23px;
+  padding: 22px;
 }
+.progress-top { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 800; }
+.progress-top span:last-child { color: var(--muted); }
+.bar { height: 11px; margin-top: 14px; background: #E9E8F0; border-radius: 99px; overflow: hidden; }
+.fill { width: 0%; height: 100%; background: var(--purple); border-radius: inherit; transition: width .25s ease; }
+.units, .mode-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+.unit-card { color: var(--ink); text-align: left; box-shadow: none; }
+.unit-card:hover, .mode-card:hover { box-shadow: var(--shadow); }
+.unit-icon { margin-bottom: 12px; font-size: 28px; }
+.unit-number { color: var(--muted); font-size: 11px; font-weight: 850; letter-spacing: 1.4px; }
+.unit-card h3, .mode-card h3 { margin: 8px 0 5px; font-size: 19px; }
+.unit-card p, .mode-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
 
-.progress-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  font-weight: bold;
-}
-
-.bar {
-  height: 11px;
-  background: #E9E8F0;
-  border-radius: 20px;
-  margin-top: 15px;
-  overflow: hidden;
-}
-
-.fill {
-  width: 15%;
-  height: 100%;
-  background: var(--purple);
-  border-radius: 20px;
-}
-
-.units {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-}
-
-.unit {
-  transition: transform .2s, box-shadow .2s;
-}
-
-.unit:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px #20212A10;
-}
-
-.unit-number {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.unit h3 {
-  margin: 10px 0 5px;
-  font-size: 20px;
-}
-
-.unit p {
+.page-heading { margin: 12px 0 25px; }
+.page-heading h1 { margin: 7px 0; font-size: clamp(30px, 5vw, 42px); letter-spacing: -1.8px; }
+.page-heading p { margin: 0; color: var(--muted); }
+.back-button {
+  margin: 0 0 18px;
+  padding: 9px 0;
+  background: transparent;
   color: var(--muted);
   font-size: 14px;
 }
+.mode-card { min-height: 170px; text-align: left; color: var(--ink); }
+.mode-card .mode-icon { font-size: 30px; }
+.mode-card h3 { font-size: 21px; }
+.mode-card .card-arrow { display: block; margin-top: 17px; color: var(--purple); font-size: 14px; }
+.note { margin-top: 18px; color: var(--muted); font-size: 12px; line-height: 1.55; }
 
-.unit-icon {
-  font-size: 29px;
-  margin-bottom: 10px;
+.unit-list { display: grid; gap: 12px; }
+.unit-choice {
+  width: 100%;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--white);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
 }
+.unit-choice:disabled { cursor: not-allowed; opacity: .55; }
+.unit-choice strong { display: block; margin-bottom: 4px; }
+.unit-choice small { color: var(--muted); }
+.unit-choice .arrow { color: var(--purple); font-size: 20px; }
 
-footer {
-  text-align: center;
-  padding: 40px 15px;
-  color: var(--muted);
-  font-size: 13px;
+/* The exercise card is intentionally lavender with white text. */
+.exercise-card {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(23px, 5vw, 38px);
+  border-radius: 25px;
+  background: var(--purple);
+  color: var(--white);
+  box-shadow: 0 14px 34px rgba(130, 118, 232, .2);
 }
+.exercise-top { display: flex; justify-content: space-between; gap: 12px; color: #F0EDFF; font-size: 12px; font-weight: 800; }
+.exercise-label { margin: 28px 0 8px; color: #EAE7FF; font-size: 12px; font-weight: 850; letter-spacing: 1.5px; }
+.question { margin: 0 0 19px; color: var(--white); font-size: clamp(23px, 4vw, 29px); letter-spacing: -.7px; }
+.sentence { margin: 0 0 25px; color: var(--white); font-size: clamp(21px, 4vw, 27px); line-height: 1.65; font-weight: 650; }
+.highlight-word {
+  display: inline-block;
+  padding: 0 9px 2px;
+  border-radius: 9px;
+  background: var(--lime);
+  color: var(--ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.answer-input {
+  display: block;
+  width: 100%;
+  min-height: 54px;
+  padding: 14px 16px;
+  border: 2px solid transparent;
+  border-radius: 13px;
+  background: var(--white);
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
+  caret-color: var(--ink);
+  opacity: 1;
+  font-size: 16px;
+  font-weight: 650;
+}
+.answer-input::placeholder { color: #92939D; -webkit-text-fill-color: #92939D; opacity: 1; }
+.answer-input:focus { border-color: var(--lime); outline: none; }
+.answer-button { width: 100%; margin-top: 13px; padding: 15px 18px; border-radius: 13px; background: var(--lime); color: var(--ink); }
+.feedback { min-height: 0; margin-top: 13px; padding: 0; border-radius: 12px; font-size: 14px; font-weight: 750; line-height: 1.45; }
+.feedback:not(:empty) { padding: 12px 14px; }
+.feedback.correct { background: #DDF7C9; color: #24451D; }
+.feedback.incorrect { background: #FFE0D7; color: #743522; }
+.exercise-footer { max-width: 720px; margin: 14px auto 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-size: 12px; }
+.text-button { padding: 8px 0; border: 0; background: transparent; color: var(--muted); font-weight: 750; cursor: pointer; }
 
-@media(max-width: 600px) {
-  header {
-    padding: 18px;
-  }
+.result-card { max-width: 600px; margin: 0 auto; padding: 34px; border-radius: 24px; background: var(--white); text-align: center; box-shadow: var(--shadow); }
+.result-icon { font-size: 45px; }
+.result-card h2 { margin: 10px 0 7px; font-size: 29px; letter-spacing: -1px; }
+.result-card p { color: var(--muted); }
+.result-xp { margin: 20px 0; color: var(--purple-dark); font-size: 25px; font-weight: 900; }
+.result-card .primary { margin-top: 5px; }
+footer { padding: 25px 15px 35px; color: var(--muted); text-align: center; font-size: 12px; }
 
-  main {
-    margin-top: 20px;
-  }
-
-  .hero {
-    padding: 25px;
-  }
-
-  .symbol {
-    font-size: 58px;
-  }
-
-  .units {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 620px) {
+  header { padding: 17px 18px; }
+  main { margin-top: 18px; padding: 0 18px 35px; }
+  .logo { font-size: 27px; }
+  .stat { padding: 9px 10px; font-size: 12px; }
+  .hero { min-height: 205px; padding: 24px; border-radius: 21px; }
+  .hero h2 { font-size: 27px; }
+  .mascot { width: 105px; max-height: 135px; }
+  .units, .mode-grid { grid-template-columns: 1fr; }
+  .mode-card { min-height: 145px; }
+  .exercise-card { border-radius: 21px; }
+}
+@media (max-width: 390px) {
+  .hero { padding: 20px; gap: 8px; }
+  .mascot { width: 82px; }
+  .hero h2 { font-size: 24px; }
+  .stat { padding: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
 </style>
 </head>
-
 <body>
-
 <header>
-  <div class="logo">ZU<span>NO.</span></div>
-
-  <div class="stats">
-    <div class="stat">⚡ 0 XP</div>
-    <div class="stat">🔥 0</div>
+  <button class="logo" type="button" onclick="showScreen('dashboard')" aria-label="Zur Startseite">ZU<span>NO.</span></button>
+  <div class="stats" aria-label="Dein Lernstand">
+    <div class="stat">⚡ <span id="xp-value">0</span> XP</div>
+    <div class="stat">🔥 <span id="streak-value">0</span></div>
   </div>
 </header>
 
 <main>
+  <section id="dashboard-screen">
+    <div class="greeting">
+      <p class="eyebrow">YOUR LEARNING SPACE</p>
+      <h1>Ready to grow?</h1>
+      <p>Small steps. Big progress.</p>
+    </div>
 
-  <div class="greeting">
-    <p class="eyebrow">YOUR LEARNING SPACE</p>
-    <h1>Ready to grow?</h1>
-    <p>Small steps. Big progress.</p>
-  </div>
+    <section class="hero" aria-label="Deine nächste Lernsession">
+      <div class="hero-copy">
+        <div class="tag">YOUR NEXT CHALLENGE</div>
+        <h2>Time to learn.</h2>
+        <p>Your English journey starts here.</p>
+        <button class="primary" type="button" onclick="showScreen('modes')">Start learning →</button>
+      </div>
+      <img class="mascot" src="IMG_2557.png" alt="ZUNO Axolotl" onerror="this.hidden=true">
+    </section>
 
-  <section class="hero">
-    <div>
-      <div class="tag">YOUR NEXT CHALLENGE</div>
-      <h2>Time to learn.</h2>
-      <p>Your English journey starts here.</p>
+    <h2 class="section-title">Your progress</h2>
+    <section class="progress-card" aria-label="Dein Lernfortschritt">
+      <div class="progress-top"><span>Vocabulary journey</span><span id="progress-label">0%</span></div>
+      <div class="bar"><div class="fill" id="progress-fill"></div></div>
+    </section>
 
-      <button class="primary"
-        onclick="alert('Welcome to ZUNO! Your first lesson is coming soon.')">
-        Start learning →
+    <h2 class="section-title">Explore your units</h2>
+    <section class="units">
+      <button class="unit-card" type="button" onclick="openUnit(1)">
+        <div class="unit-icon">🌍</div><div class="unit-number">UNIT 01</div><h3>Our world</h3><p>Vocabulary · <span id="unit-1-count">1 word</span></p>
+      </button>
+      <button class="unit-card" type="button" onclick="openUnit(2)">
+        <div class="unit-icon">🎭</div><div class="unit-number">UNIT 02</div><h3>Identity</h3><p>Vocabulary · Coming soon</p>
+      </button>
+      <button class="unit-card" type="button" onclick="openUnit(3)">
+        <div class="unit-icon">🚀</div><div class="unit-number">UNIT 03</div><h3>Future</h3><p>Vocabulary · Coming soon</p>
+      </button>
+      <button class="unit-card" type="button" onclick="openUnit(4)">
+        <div class="unit-icon">✨</div><div class="unit-number">UNIT 04</div><h3>More to explore</h3><p>Vocabulary · Coming soon</p>
+      </button>
+    </section>
+  </section>
+
+  <section id="modes-screen" hidden>
+    <button class="back-button" type="button" onclick="showScreen('dashboard')">← Back to dashboard</button>
+    <div class="page-heading"><p class="eyebrow">CHOOSE YOUR SESSION</p><h1>How do you want to practise?</h1><p>Pick a path. ZUNO takes care of the rest.</p></div>
+    <div class="mode-grid">
+      <button class="mode-card" type="button" onclick="startGeneralPractice()">
+        <div class="mode-icon">🔀</div><h3>General practice</h3><p>Words from all available units, mixed together. Great for revision.</p><span class="card-arrow">Start mixed practice →</span>
+      </button>
+      <button class="mode-card" type="button" onclick="showScreen('unit-select')">
+        <div class="mode-icon">📚</div><h3>Practise by unit</h3><p>Choose a unit and focus only on its vocabulary.</p><span class="card-arrow">Choose a unit →</span>
       </button>
     </div>
-
-    <img src="IMG_2557.png" alt="ZUNO Axolotl" style="width:150px; height:auto;">
+    <p class="note">Your vocabulary progress is saved on this device. More Green Line words can be added as you provide them.</p>
   </section>
 
-  <h2 class="section-title">Your progress</h2>
+  <section id="unit-select-screen" hidden>
+    <button class="back-button" type="button" onclick="showScreen('modes')">← Back to practice modes</button>
+    <div class="page-heading"><p class="eyebrow">YOUR VOCABULARY</p><h1>Choose a unit.</h1><p>Only words from the selected unit will appear.</p></div>
+    <div class="unit-list" id="unit-list"></div>
+  </section>
 
-  <section class="progress-card">
-    <div class="progress-top">
-      <span>Vocabulary journey</span>
-      <span>0%</span>
-    </div>
-
-    <div class="bar">
-      <div class="fill"></div>
+  <section id="empty-unit-screen" hidden>
+    <button class="back-button" type="button" onclick="showScreen('unit-select')">← Back to units</button>
+    <div class="result-card">
+      <div class="result-icon">📖</div><h2>Coming soon!</h2>
+      <p>There are no vocabulary words in this unit yet. Once we add your Green Line vocabulary, you can practise it here.</p>
+      <button class="primary" type="button" onclick="showScreen('unit-select')">Choose another unit</button>
     </div>
   </section>
 
-  <h2 class="section-title">Explore your units</h2>
-
-  <section class="units">
-
-    <div class="unit">
-      <div class="unit-icon">🌍</div>
-      <div class="unit-number">UNIT 01</div>
-      <h3>Our world</h3>
-      <p>Vocabulary · Coming soon</p>
+  <section id="exercise-screen" hidden>
+    <button class="back-button" type="button" onclick="leaveExercise()">← Leave session</button>
+    <div class="exercise-card">
+      <div class="exercise-top"><span id="session-mode">GENERAL PRACTICE</span><span id="question-count">1 / 1</span></div>
+      <p class="exercise-label">TRANSLATE THE HIGHLIGHTED WORD</p>
+      <h1 class="question">What does this word mean in German?</h1>
+      <p class="sentence" id="sentence-text">She managed to <span class="highlight-word">achieve</span> her goal.</p>
+      <form id="answer-form" autocomplete="off">
+        <label for="answer-input" class="exercise-label" style="display:block; margin:0 0 9px; color:#F0EDFF; letter-spacing:.3px;">Your answer</label>
+        <input class="answer-input" id="answer-input" name="answer" type="text" placeholder="Type your answer..." autocomplete="off" autocapitalize="none" spellcheck="false">
+        <button class="answer-button" id="check-button" type="submit">Check answer</button>
+      </form>
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
     </div>
-
-    <div class="unit">
-      <div class="unit-icon">🎭</div>
-      <div class="unit-number">UNIT 02</div>
-      <h3>Identity</h3>
-      <p>Vocabulary · Coming soon</p>
-    </div>
-
-    <div class="unit">
-      <div class="unit-icon">🚀</div>
-      <div class="unit-number">UNIT 03</div>
-      <h3>Future</h3>
-      <p>Vocabulary · Coming soon</p>
-    </div>
-
-    <div class="unit">
-      <div class="unit-icon">✨</div>
-      <div class="unit-number">UNIT 04</div>
-      <h3>More to explore</h3>
-      <p>Vocabulary · Coming soon</p>
-    </div>
-
+    <div class="exercise-footer"><span>⚡ +10 XP for a correct answer</span><button class="text-button" type="button" onclick="leaveExercise()">Exit practice</button></div>
   </section>
 
+  <section id="result-screen" hidden>
+    <div class="page-heading"><p class="eyebrow">SESSION COMPLETE</p><h1>Look at you go.</h1><p>You made progress. That's what counts.</p></div>
+    <div class="result-card">
+      <div class="result-icon">🎉</div><h2>Nice work!</h2><p id="result-summary">You finished your practice session.</p>
+      <div class="result-xp" id="result-xp">+10 XP</div>
+      <button class="primary" type="button" onclick="showScreen('dashboard')">Back to dashboard</button>
+      <button class="text-button" type="button" onclick="showScreen('modes')" style="display:block; margin:12px auto 0;">Practise again</button>
+    </div>
+  </section>
 </main>
 
-<footer>
-  ZUNO © 2026 · Learn your way.
-</footer>
+<footer>ZUNO © 2026 · Learn your way.</footer>
 
+<script>
+'use strict';
+
+// Add the Green Line vocabulary here. Each word belongs to exactly one unit.
+const vocabulary = [
+  {
+    id: 'achieve-01',
+    word: 'achieve',
+    answers: ['erreichen', 'erzielen'],
+    sentenceStart: 'She managed to ',
+    sentenceEnd: ' her goal.',
+    unit: 1
+  }
+];
+
+const unitInfo = [
+  { id: 1, title: 'Our world', icon: '🌍' },
+  { id: 2, title: 'Identity', icon: '🎭' },
+  { id: 3, title: 'Future', icon: '🚀' },
+  { id: 4, title: 'More to explore', icon: '✨' }
+];
+
+const screens = ['dashboard', 'modes', 'unit-select', 'empty-unit', 'exercise', 'result'];
+let xp = loadNumber('zuno-xp', 0);
+let streak = loadNumber('zuno-streak', 0);
+let lastPracticeDate = loadString('zuno-last-practice-date', '');
+let streakUpdatedThisSession = false;
+let learnedIds = loadArray('zuno-learned', []);
+let sessionWords = [];
+let sessionIndex = 0;
+let sessionCorrect = 0;
+let sessionEarnedXP = 0;
+let hasAnsweredCurrent = false;
+let exerciseReturnScreen = 'modes';
+let currentMode = 'general';
+
+function loadNumber(key, fallback) {
+  try {
+    const value = Number(localStorage.getItem(key));
+    return Number.isFinite(value) && value >= 0 ? value : fallback;
+  } catch (error) { return fallback; }
+}
+function loadString(key, fallback) {
+  try { return localStorage.getItem(key) || fallback; }
+  catch (error) { return fallback; }
+}
+function loadArray(key, fallback) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || 'null');
+    return Array.isArray(value) ? value : fallback;
+  } catch (error) { return fallback; }
+}
+function saveProgress() {
+  try {
+    localStorage.setItem('zuno-xp', String(xp));
+    localStorage.setItem('zuno-streak', String(streak));
+    localStorage.setItem('zuno-last-practice-date', lastPracticeDate);
+    localStorage.setItem('zuno-learned', JSON.stringify(learnedIds));
+  } catch (error) {
+    // The app still works if browser storage is unavailable.
+  }
+}
+function updateDashboard() {
+  document.getElementById('xp-value').textContent = String(xp);
+  document.getElementById('streak-value').textContent = String(streak);
+  const total = vocabulary.length;
+  const learned = vocabulary.filter(item => learnedIds.includes(item.id)).length;
+  const percent = total ? Math.round((learned / total) * 100) : 0;
+  document.getElementById('progress-label').textContent = percent + '%';
+  document.getElementById('progress-fill').style.width = percent + '%';
+  const unitOneCount = vocabulary.filter(item => item.unit === 1).length;
+  document.getElementById('unit-1-count').textContent = unitOneCount + (unitOneCount === 1 ? ' word' : ' words');
+}
+function showScreen(name) {
+  if (!screens.includes(name)) return;
+  screens.forEach(screen => {
+    const element = document.getElementById(screen + '-screen');
+    if (element) element.hidden = screen !== name;
+  });
+  if (name === 'dashboard') updateDashboard();
+  if (name === 'unit-select') renderUnitList();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function shuffle(items) {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+function renderUnitList() {
+  const list = document.getElementById('unit-list');
+  list.replaceChildren();
+  unitInfo.forEach(unit => {
+    const count = vocabulary.filter(item => item.unit === unit.id).length;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'unit-choice';
+    button.disabled = count === 0;
+    const copy = document.createElement('span');
+    const strong = document.createElement('strong');
+    strong.textContent = unit.icon + '  UNIT ' + String(unit.id).padStart(2, '0') + ' · ' + unit.title;
+    const small = document.createElement('small');
+    small.textContent = count ? count + (count === 1 ? ' vocabulary word' : ' vocabulary words') : 'Coming soon';
+    copy.append(strong, small);
+    const arrow = document.createElement('span');
+    arrow.className = 'arrow';
+    arrow.textContent = count ? '→' : '·';
+    button.append(copy, arrow);
+    button.addEventListener('click', () => startUnitPractice(unit.id));
+    list.append(button);
+  });
+}
+function openUnit(unitId) {
+  const words = vocabulary.filter(item => item.unit === unitId);
+  if (words.length) startUnitPractice(unitId);
+  else showScreen('empty-unit');
+}
+function beginSession(words, mode, returnScreen) {
+  if (!words.length) {
+    showScreen('empty-unit');
+    return;
+  }
+  sessionWords = shuffle(words);
+  sessionIndex = 0;
+  sessionCorrect = 0;
+  sessionEarnedXP = 0;
+  hasAnsweredCurrent = false;
+  streakUpdatedThisSession = false;
+  currentMode = mode;
+  exerciseReturnScreen = returnScreen;
+  document.getElementById('session-mode').textContent = mode === 'general' ? 'GENERAL PRACTICE' : 'UNIT PRACTICE';
+  renderQuestion();
+  showScreen('exercise');
+}
+function startGeneralPractice() {
+  beginSession(vocabulary, 'general', 'modes');
+}
+function startUnitPractice(unitId) {
+  const words = vocabulary.filter(item => item.unit === unitId);
+  if (!words.length) {
+    showScreen('empty-unit');
+    return;
+  }
+  beginSession(words, 'unit', 'unit-select');
+}
+function renderQuestion() {
+  const item = sessionWords[sessionIndex];
+  if (!item) return finishSession();
+  hasAnsweredCurrent = false;
+  document.getElementById('question-count').textContent = (sessionIndex + 1) + ' / ' + sessionWords.length;
+  const sentence = document.getElementById('sentence-text');
+  sentence.replaceChildren();
+  sentence.append(document.createTextNode(item.sentenceStart));
+  const highlight = document.createElement('span');
+  highlight.className = 'highlight-word';
+  highlight.textContent = item.word;
+  sentence.append(highlight, document.createTextNode(item.sentenceEnd));
+  const input = document.getElementById('answer-input');
+  input.value = '';
+  input.disabled = false;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  const checkButton = document.getElementById('check-button');
+  checkButton.textContent = 'Check answer';
+  checkButton.disabled = false;
+  input.focus({ preventScroll: true });
+}
+function normalizeAnswer(value) {
+  return value.trim().toLocaleLowerCase('de-DE').normalize('NFC').replace(/\s+/g, ' ');
+}
+function updateDailyStreak() {
+  if (streakUpdatedThisSession) return;
+  const now = new Date();
+  const dateKey = date => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
+  const today = dateKey(now);
+  if (lastPracticeDate !== today) {
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayKey = dateKey(yesterday);
+    streak = lastPracticeDate === yesterdayKey ? streak + 1 : 1;
+    lastPracticeDate = today;
+    saveProgress();
+    updateDashboard();
+  }
+  streakUpdatedThisSession = true;
+}
+function checkAnswer(event) {
+  event.preventDefault();
+  if (hasAnsweredCurrent) {
+    nextQuestion();
+    return;
+  }
+  const input = document.getElementById('answer-input');
+  const userAnswer = normalizeAnswer(input.value);
+  const feedback = document.getElementById('feedback');
+  if (!userAnswer) {
+    feedback.textContent = 'Type an answer first.';
+    feedback.className = 'feedback incorrect';
+    input.focus();
+    return;
+  }
+  const item = sessionWords[sessionIndex];
+  const accepted = item.answers.map(normalizeAnswer);
+  if (accepted.includes(userAnswer)) {
+    feedback.textContent = 'Correct! Great job. ✨';
+    feedback.className = 'feedback correct';
+    sessionCorrect++;
+    updateDailyStreak();
+    sessionEarnedXP += 10;
+    xp += 10;
+    if (!learnedIds.includes(item.id)) learnedIds.push(item.id);
+    saveProgress();
+    updateDashboard();
+  } else {
+    feedback.textContent = 'Not quite. The answer is: ' + item.answers.join(' / ');
+    feedback.className = 'feedback incorrect';
+  }
+  hasAnsweredCurrent = true;
+  input.disabled = true;
+  document.getElementById('check-button').textContent = sessionIndex === sessionWords.length - 1 ? 'Finish session' : 'Next word →';
+}
+function nextQuestion() {
+  if (!hasAnsweredCurrent) return;
+  sessionIndex++;
+  if (sessionIndex >= sessionWords.length) {
+    finishSession();
+    return;
+  }
+  renderQuestion();
+}
+function finishSession() {
+  document.getElementById('result-summary').textContent = 'You got ' + sessionCorrect + ' out of ' + sessionWords.length + ' correct.';
+  document.getElementById('result-xp').textContent = '+' + sessionEarnedXP + ' XP';
+  showScreen('result');
+}
+function leaveExercise() {
+  showScreen(exerciseReturnScreen);
+}
+
+document.getElementById('answer-form').addEventListener('submit', checkAnswer);
+updateDashboard();
+showScreen('dashboard');
+</script>
 </body>
 </html>
