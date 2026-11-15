@@ -2,68 +2,284 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZUNO | Learn smarter</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6fb;
-      color: #17233c;
-      text-align: center;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZUNO - Learn your way</title>
 
-    header {
-      background: #173b82;
-      color: white;
-      padding: 25px;
-    }
+<style>
+:root {
+  --lime: #B9F18C;
+  --ink: #17251C;
+  --cream: #F3F0E7;
+  --orange: #FF875E;
+  --purple: #8276E8;
+}
 
-    h1 {
-      font-size: 42px;
-      margin: 10px;
-    }
+* { box-sizing: border-box; }
 
-    main {
-      padding: 45px 20px;
-    }
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+}
 
-    .card {
-      background: white;
-      max-width: 400px;
-      margin: auto;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 5px 20px #00000010;
-    }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 7%;
+}
 
-    button {
-      background: #ed4248;
-      color: white;
-      border: none;
-      padding: 15px 35px;
-      border-radius: 12px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
+.logo {
+  font-size: 29px;
+  font-weight: 900;
+  letter-spacing: -2px;
+}
+
+.logo span { color: #719D4D; }
+
+.stats {
+  display: flex;
+  gap: 12px;
+}
+
+.stat {
+  background: white;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-weight: bold;
+}
+
+main {
+  max-width: 1050px;
+  margin: 35px auto;
+  padding: 0 22px;
+}
+
+.greeting {
+  margin-bottom: 28px;
+}
+
+.greeting p {
+  color: #718075;
+  margin-bottom: 5px;
+}
+
+h1 {
+  font-size: clamp(30px, 6vw, 46px);
+  letter-spacing: -2px;
+  margin: 5px 0;
+}
+
+.hero {
+  background: var(--ink);
+  color: white;
+  border-radius: 25px;
+  padding: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.hero h2 {
+  font-size: 28px;
+  margin: 8px 0;
+}
+
+.hero p {
+  color: #C2CEC4;
+}
+
+.tag {
+  color: var(--lime);
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.primary {
+  background: var(--lime);
+  color: var(--ink);
+  padding: 15px 23px;
+  border-radius: 13px;
+  margin-top: 12px;
+}
+
+.symbol {
+  font-size: 85px;
+}
+
+.section-title {
+  margin: 38px 0 17px;
+  font-size: 23px;
+  letter-spacing: -1px;
+}
+
+.progress-card {
+  background: white;
+  padding: 23px;
+  border-radius: 20px;
+}
+
+.progress-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-weight: bold;
+}
+
+.bar {
+  height: 11px;
+  background: #E8EDE6;
+  border-radius: 20px;
+  margin-top: 15px;
+  overflow: hidden;
+}
+
+.fill {
+  width: 15%;
+  height: 100%;
+  background: #9AD66E;
+  border-radius: 20px;
+}
+
+.units {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.unit {
+  background: white;
+  border-radius: 20px;
+  padding: 22px;
+}
+
+.unit-number {
+  color: #849087;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.unit h3 {
+  margin: 10px 0 5px;
+  font-size: 20px;
+}
+
+.unit p {
+  color: #849087;
+  font-size: 14px;
+}
+
+.unit-icon {
+  font-size: 28px;
+}
+
+footer {
+  text-align: center;
+  padding: 40px 15px;
+  color: #849087;
+  font-size: 13px;
+}
+
+@media(max-width: 600px) {
+  header { padding: 18px; }
+  main { margin-top: 20px; }
+  .hero { padding: 24px; }
+  .symbol { font-size: 55px; }
+  .units { grid-template-columns: 1fr; }
+}
+</style>
 </head>
-<body>
-  <header>
-    <h1>ZUNO</h1>
-    <p>Learn smarter. Every day.</p>
-  </header>
 
-  <main>
-    <div class="card">
-      <h2>Ready to learn?</h2>
-      <p>Your English vocabulary journey starts here.</p>
-      <button onclick="alert('Welcome to ZUNO!')">
-        Let's go!
+<body>
+
+<header>
+  <div class="logo">ZU<span>NO.</span></div>
+  <div class="stats">
+    <div class="stat">⚡ 0 XP</div>
+    <div class="stat">🔥 0</div>
+  </div>
+</header>
+
+<main>
+
+  <div class="greeting">
+    <p>YOUR LEARNING SPACE</p>
+    <h1>Ready to grow?</h1>
+    <p>Small steps. Big progress.</p>
+  </div>
+
+  <section class="hero">
+    <div>
+      <div class="tag">YOUR NEXT CHALLENGE</div>
+      <h2>Time to learn.</h2>
+      <p>Your English journey starts here.</p>
+      <button class="primary" onclick="alert('Your first lesson is coming soon!')">
+        Start learning →
       </button>
     </div>
-  </main>
+    <div class="symbol">✳</div>
+  </section>
+
+  <h2 class="section-title">Your progress</h2>
+
+  <section class="progress-card">
+    <div class="progress-top">
+      <span>Vocabulary journey</span>
+      <span>0%</span>
+    </div>
+    <div class="bar">
+      <div class="fill"></div>
+    </div>
+  </section>
+
+  <h2 class="section-title">Explore your units</h2>
+
+  <section class="units">
+    <div class="unit">
+      <div class="unit-icon">🌍</div>
+      <div class="unit-number">UNIT 01</div>
+      <h3>Our world</h3>
+      <p>Vocabulary · Coming soon</p>
+    </div>
+
+    <div class="unit">
+      <div class="unit-icon">🎭</div>
+      <div class="unit-number">UNIT 02</div>
+      <h3>Identity</h3>
+      <p>Vocabulary · Coming soon</p>
+    </div>
+
+    <div class="unit">
+      <div class="unit-icon">🚀</div>
+      <div class="unit-number">UNIT 03</div>
+      <h3>Future</h3>
+      <p>Vocabulary · Coming soon</p>
+    </div>
+
+    <div class="unit">
+      <div class="unit-icon">✨</div>
+      <div class="unit-number">UNIT 04</div>
+      <h3>More to explore</h3>
+      <p>Vocabulary · Coming soon</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  ZUNO © 2026 · Learn your way.
+</footer>
+
 </body>
 </html>
