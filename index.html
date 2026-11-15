@@ -4,1219 +4,1163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#F0F1F4">
-<title>ZUNO | Learn your way</title>
+<title>ZUNO</title>
 <style>
 :root {
-  --purple: #8276E8;
-  --purple-dark: #6558CC;
-  --background: #F0F1F4;
-  --ink: #20212A;
+  --iris: #8276E8;
+  --purple: #6558CC;
+  --grey: #F0F1F4;
+  --charcoal: #20212A;
   --lime: #B9F18C;
   --orange: #FF875E;
   --white: #FFFFFF;
   --muted: #777987;
-  --line: #E5E5EC;
-  --shadow: 0 12px 32px rgba(32, 33, 42, .07);
+  --radius: 22px;
 }
 * { box-sizing: border-box; }
-[hidden] { display: none !important; }
 body {
   margin: 0;
-  min-height: 100vh;
-  background: var(--background);
-  color: var(--ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #F7F7FA;
+  color: var(--charcoal);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
-button, input { font: inherit; }
-button { -webkit-tap-highlight-color: transparent; }
-button:focus-visible, input:focus-visible {
-  outline: 3px solid rgba(130, 118, 232, .45);
-  outline-offset: 3px;
-}
+button, input, select { font: inherit; }
+button { cursor: pointer; border: 0; }
 header {
-  width: min(1120px, 100%);
-  margin: 0 auto;
-  padding: 22px 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  padding: 18px 5%;
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  box-shadow: 0 2px 12px #20212a0b;
 }
-.logo {
-  border: 0;
-  padding: 0;
-  background: transparent;
-  color: var(--ink);
-  font-size: 30px;
-  font-weight: 950;
-  letter-spacing: -2px;
-  cursor: pointer;
-}
-.logo span { color: var(--purple); }
-.header-actions { display: flex; align-items: center; gap: 9px; }
-.stats { display: flex; gap: 9px; }
-.stats-button {
-  border: 0;
-  border-radius: 13px;
-  padding: 10px 14px;
-  background: var(--white);
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
-}
-.stats-button:hover { background: #EAE7FF; }
-.stat {
-  background: var(--white);
-  border-radius: 13px;
-  padding: 10px 14px;
-  font-size: 14px;
-  font-weight: 800;
-  white-space: nowrap;
-}
-main {
-  width: min(1000px, 100%);
-  margin: 26px auto 0;
-  padding: 0 28px 48px;
-}
-.eyebrow, .tag {
-  font-size: 11px;
-  font-weight: 850;
-  letter-spacing: 1.8px;
-}
-.eyebrow { color: var(--muted); }
-.greeting { margin: 0 0 27px; }
-.greeting h1 {
-  margin: 7px 0 5px;
-  font-size: clamp(34px, 6vw, 49px);
-  line-height: 1.05;
-  letter-spacing: -2.5px;
-}
-.greeting p:last-child { margin: 0; color: var(--muted); }
+.logo { font-size: 27px; font-weight: 900; letter-spacing: -1.5px; color: var(--purple); }
+.header-stats { display:flex; gap:12px; align-items:center; font-weight:700; }
+.pill { background:var(--grey); border-radius:30px; padding:9px 13px; }
+main { max-width:1000px; margin:28px auto; padding:0 18px 60px; }
+h1 { font-size:clamp(26px,5vw,38px); margin:8px 0; }
+h2 { font-size:23px; margin:0 0 15px; }
+p { line-height:1.5; }
+.muted { color:var(--muted); }
 .hero {
-  min-height: 235px;
-  padding: 32px 38px;
-  border-radius: 26px;
-  background: var(--purple);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  overflow: hidden;
-  box-shadow: 0 13px 32px rgba(130, 118, 232, .22);
+  background:var(--iris);
+  color:white;
+  padding:28px;
+  border-radius:var(--radius);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  overflow:hidden;
 }
-.hero-copy { max-width: 520px; }
-.hero .tag { color: #EAE7FF; }
-.hero h2 { margin: 12px 0 7px; font-size: 32px; letter-spacing: -1.3px; }
-.hero p { margin: 0; color: #F0EDFF; }
-.mascot {
-  display: block;
-  width: 150px;
-  max-height: 170px;
-  object-fit: contain;
-  flex: 0 0 auto;
-}
-.primary, .secondary, .back-button, .answer-button, .mode-card, .unit-card {
-  border: 0;
-  cursor: pointer;
-  font-weight: 800;
-  transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
-}
+.hero img { width:125px; height:125px; object-fit:contain; }
+.hero button { background:var(--lime); color:var(--charcoal); }
 .primary {
-  margin-top: 20px;
-  padding: 14px 21px;
-  border-radius: 13px;
-  background: var(--lime);
-  color: var(--ink);
+  background:var(--purple);
+  color:white;
+  padding:13px 19px;
+  border-radius:14px;
+  font-weight:750;
 }
-.primary:hover, .secondary:hover, .answer-button:hover, .mode-card:hover, .unit-card:hover {
-  transform: translateY(-2px);
+.secondary {
+  background:var(--grey);
+  color:var(--charcoal);
+  padding:12px 17px;
+  border-radius:14px;
+  font-weight:700;
 }
-.section-title { margin: 36px 0 15px; font-size: 22px; letter-spacing: -.7px; }
-.progress-card, .unit-card, .mode-card, .small-card {
-  background: var(--white);
-  border-radius: 20px;
-  padding: 22px;
+.cards {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:15px;
+  margin:22px 0;
 }
-.progress-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 14px;
-  font-weight: 800;
+.card {
+  background:white;
+  padding:20px;
+  border-radius:var(--radius);
+  box-shadow:0 5px 18px #20212a08;
 }
-.progress-top span:last-child { color: var(--muted); }
-.bar {
-  height: 11px;
-  margin-top: 14px;
-  background: #E9E8F0;
-  border-radius: 99px;
-  overflow: hidden;
+.card h3 { margin:0 0 8px; }
+.card button { width:100%; margin-top:12px; }
+.progress-track {
+  background:#e7e6ef;
+  height:10px;
+  border-radius:20px;
+  overflow:hidden;
+  margin:10px 0;
 }
-.fill {
-  width: 0%;
-  height: 100%;
-  background: var(--purple);
-  border-radius: inherit;
-  transition: width .25s ease;
+.progress-fill { background:var(--lime); height:100%; width:0%; transition:width .35s; }
+.hidden { display:none !important; }
+.panel {
+  background:white;
+  border-radius:var(--radius);
+  padding:24px;
+  box-shadow:0 5px 18px #20212a08;
+  margin:18px 0;
 }
-.units, .mode-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 15px;
+label { display:block; font-weight:700; margin:15px 0 7px; }
+select, input[type="text"] {
+  width:100%;
+  padding:13px;
+  border:1px solid #dedee6;
+  border-radius:12px;
+  background:white;
 }
-.unit-card { color: var(--ink); text-align: left; box-shadow: none; }
-.unit-card:hover, .mode-card:hover { box-shadow: var(--shadow); }
-.unit-icon { margin-bottom: 12px; font-size: 28px; }
-.unit-number {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 850;
-  letter-spacing: 1.4px;
+.word-card {
+  background:var(--iris);
+  color:white;
+  padding:28px 20px;
+  border-radius:20px;
+  text-align:center;
+  margin:18px 0;
 }
-.unit-card h3, .mode-card h3 { margin: 8px 0 5px; font-size: 19px; }
-.unit-card p, .mode-card p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.5;
+.word-card .target {
+  display:inline-block;
+  background:var(--lime);
+  color:var(--charcoal);
+  font-size:clamp(24px,5vw,36px);
+  font-weight:850;
+  padding:10px 18px;
+  border-radius:13px;
+  margin:10px 0;
 }
-.page-heading { margin: 12px 0 25px; }
-.page-heading h1 {
-  margin: 7px 0;
-  font-size: clamp(30px, 5vw, 42px);
-  letter-spacing: -1.8px;
+.example {
+  background:#ffffff25;
+  border-radius:12px;
+  padding:12px;
+  margin-top:14px;
+  font-style:italic;
 }
-.page-heading p { margin: 0; color: var(--muted); }
-.back-button {
-  margin: 0 0 18px;
-  padding: 9px 0;
-  background: transparent;
-  color: var(--muted);
-  font-size: 14px;
+.answer-options { display:grid; gap:10px; margin:16px 0; }
+.option {
+  background:var(--grey);
+  padding:15px;
+  border-radius:13px;
+  text-align:left;
+  font-weight:650;
+  border:2px solid transparent;
 }
-.mode-card { min-height: 170px; text-align: left; color: var(--ink); }
-.mode-card .mode-icon { font-size: 30px; }
-.mode-card h3 { font-size: 21px; }
-.mode-card .card-arrow {
-  display: block;
-  margin-top: 17px;
-  color: var(--purple);
-  font-size: 14px;
-}
-.note { margin-top: 18px; color: var(--muted); font-size: 12px; line-height: 1.55; }
-.practice-settings {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin: 0 0 18px;
-}
-.setting-group { padding: 17px 18px; background: var(--white); border-radius: 16px; }
-.setting-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 13px;
-  font-weight: 850;
-}
-.setting-group select, .language-toggle {
-  width: 100%;
-  padding: 11px 12px;
-  border: 1px solid var(--line);
-  border-radius: 11px;
-  background: #fff;
-  color: var(--ink);
-  font-size: 15px;
-  text-align: left;
-}
-.language-toggle { cursor: pointer; font-weight: 800; }
-.language-toggle:hover { background: #F0EDFF; border-color: var(--purple); }
-.unit-list { display: grid; gap: 12px; }
-.unit-choice {
-  width: 100%;
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  border: 1px solid var(--line);
-  border-radius: 17px;
-  background: var(--white);
-  color: var(--ink);
-  text-align: left;
-  cursor: pointer;
-}
-.unit-choice:disabled { cursor: not-allowed; opacity: .55; }
-.unit-choice strong { display: block; margin-bottom: 4px; }
-.unit-choice small { color: var(--muted); }
-.unit-choice .arrow { color: var(--purple); font-size: 20px; }
-.exercise-card {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: clamp(23px, 5vw, 38px);
-  border-radius: 25px;
-  background: var(--purple);
-  color: var(--white);
-  box-shadow: 0 14px 34px rgba(130, 118, 232, .2);
-}
-.exercise-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  color: #F0EDFF;
-  font-size: 12px;
-  font-weight: 800;
-}
-.exercise-label {
-  margin: 28px 0 8px;
-  color: #EAE7FF;
-  font-size: 12px;
-  font-weight: 850;
-  letter-spacing: 1.5px;
-}
-.question {
-  margin: 0 0 19px;
-  color: var(--white);
-  font-size: clamp(23px, 4vw, 29px);
-  letter-spacing: -.7px;
-}
-.sentence {
-  margin: 0 0 25px;
-  color: var(--white);
-  font-size: clamp(21px, 4vw, 27px);
-  line-height: 1.65;
-  font-weight: 650;
-}
-.word-audio {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 39px;
-  height: 39px;
-  margin-left: 9px;
-  vertical-align: middle;
-  border: 1px solid rgba(255,255,255,.55);
-  border-radius: 50%;
-  background: rgba(255,255,255,.16);
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
-}
-.word-audio:active { transform: scale(.95); }
-.highlight-word {
-  display: inline-block;
-  padding: 0 9px 2px;
-  border-radius: 9px;
-  background: var(--lime);
-  color: var(--ink);
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
-.answer-input {
-  display: block;
-  width: 100%;
-  min-height: 54px;
-  padding: 14px 16px;
-  border: 2px solid transparent;
-  border-radius: 13px;
-  background: var(--white);
-  color: var(--ink);
-  -webkit-text-fill-color: var(--ink);
-  caret-color: var(--ink);
-  opacity: 1;
-  font-size: 16px;
-  font-weight: 650;
-}
-.answer-input::placeholder {
-  color: #92939D;
-  -webkit-text-fill-color: #92939D;
-  opacity: 1;
-}
-.answer-input:focus { border-color: var(--lime); outline: none; }
-.answer-button {
-  width: 100%;
-  margin-top: 13px;
-  padding: 15px 18px;
-  border-radius: 13px;
-  background: var(--lime);
-  color: var(--ink);
-}
+.option:active { transform:scale(.99); }
+.option.correct { border-color:#5da84d; background:#e7f8df; }
+.option.wrong { border-color:#e56d60; background:#ffebe8; }
 .feedback {
-  min-height: 0;
-  margin-top: 13px;
-  padding: 0;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 750;
-  line-height: 1.45;
+  padding:14px;
+  border-radius:13px;
+  margin:14px 0;
+  font-weight:750;
+  animation:pop .25s ease-out;
 }
-.feedback:not(:empty) { padding: 12px 14px; }
-.feedback.correct { background: #DDF7C9; color: #24451D; }
-.feedback.incorrect { background: #FFE0D7; color: #743522; }
-.exercise-footer {
-  max-width: 720px;
-  margin: 14px auto 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  color: var(--muted);
-  font-size: 12px;
+.feedback.good { background:#e6f7df; color:#326c2b; }
+.feedback.bad { background:#ffebe8; color:#a33d32; }
+@keyframes pop {
+  from { opacity:0; transform:translateY(6px); }
+  to { opacity:1; transform:translateY(0); }
 }
-.text-button {
-  padding: 8px 0;
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  font-weight: 750;
-  cursor: pointer;
+.stat-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+  gap:12px;
 }
-.all-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+.stat {
+  background:var(--grey);
+  border-radius:15px;
+  padding:16px;
 }
-.all-stat-card {
-  min-height: 130px;
-  padding: 21px;
-  border-radius: 19px;
-  background: var(--white);
-}
-.all-stat-icon { font-size: 24px; }
-.all-stat-value {
-  margin-top: 12px;
-  font-size: clamp(25px, 4vw, 34px);
-  font-weight: 900;
-  letter-spacing: -1.2px;
-}
-.all-stat-label { margin-top: 3px; color: var(--muted); font-size: 13px; font-weight: 700; }
-.stats-note { margin-top: 17px; color: var(--muted); font-size: 12px; line-height: 1.5; }
-.result-card {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 34px;
-  border-radius: 24px;
-  background: var(--white);
-  text-align: center;
-  box-shadow: var(--shadow);
-}
-.result-icon { font-size: 45px; }
-.result-card h2 { margin: 10px 0 7px; font-size: 29px; letter-spacing: -1px; }
-.result-card p { color: var(--muted); }
-.result-xp { margin: 20px 0; color: var(--purple-dark); font-size: 25px; font-weight: 900; }
-.result-card .primary { margin-top: 5px; }
-footer { padding: 25px 15px 35px; color: var(--muted); text-align: center; font-size: 12px; }
-
-@media (max-width: 620px) {
-  header { padding: 17px 18px; }
-  main { margin-top: 18px; padding: 0 18px 35px; }
-  .logo { font-size: 27px; }
-  .stat { padding: 9px 10px; font-size: 12px; }
-  .hero { min-height: 205px; padding: 24px; border-radius: 21px; }
-  .hero h2 { font-size: 27px; }
-  .mascot { width: 105px; max-height: 135px; }
-  .units, .mode-grid, .practice-settings { grid-template-columns: 1fr; }
-  .all-stats-grid { grid-template-columns: 1fr 1fr; }
-  .stats-button { padding: 9px 10px; font-size: 12px; }
-  .mode-card { min-height: 145px; }
-  .exercise-card { border-radius: 21px; }
-}
-@media (max-width: 390px) {
-  .hero { padding: 20px; gap: 8px; }
-  .mascot { width: 82px; }
-  .hero h2 { font-size: 24px; }
-  .stat { padding: 8px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    scroll-behavior: auto !important;
-    transition-duration: .01ms !important;
-    animation-duration: .01ms !important;
-  }
+.stat strong { display:block; font-size:25px; margin-top:5px; }
+.stat-section { margin:24px 0; }
+.stat-section h3 { margin-bottom:12px; }
+.grade { font-size:34px; font-weight:900; color:var(--purple); }
+.small { font-size:13px; color:var(--muted); }
+.topline { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+button:disabled { opacity:.45; cursor:not-allowed; }
+hr { border:0; border-top:1px solid #eeeef2; margin:22px 0; }
+@media(max-width:600px) {
+  header { padding:13px 16px; }
+  .header-stats { gap:6px; font-size:13px; }
+  .pill { padding:7px 9px; }
+  .hero { padding:21px; }
+  .hero img { width:85px; height:85px; }
+  .panel { padding:18px; }
 }
 </style>
 </head>
 <body>
 <header>
-  <button class="logo" type="button" onclick="showScreen('dashboard')" aria-label="Zur Startseite">ZU<span>NO.</span></button>
-  <div class="header-actions">
-    <button class="stats-button" type="button" onclick="showScreen('all-stats')">📊 Statistik</button>
-    <div class="stats" aria-label="Dein Lernstand">
-      <div class="stat">⚡ <span id="xp-value">0</span> XP</div>
-      <div class="stat">🔥 <span id="streak-value">0</span></div>
-    </div>
+  <div class="logo">ZUNO.</div>
+  <div class="header-stats">
+    <span class="pill">⚡ <span id="headerXP">0</span> XP</span>
+    <span class="pill">🔥 <span id="headerStreak">0</span></span>
+    <button class="secondary" onclick="showStats()">📊</button>
   </div>
 </header>
 
 <main>
-  <section id="dashboard-screen">
-    <div class="greeting">
-      <p class="eyebrow">DEIN LERNBEREICH</p>
-      <h1>Bereit loszulegen?</h1>
-      <p>Kleine Schritte. Große Fortschritte.</p>
+<section id="dashboard">
+  <p class="muted" id="greeting">Schön, dass du da bist!</p>
+  <div class="hero">
+    <div>
+      <h1>Bereit für eine neue Runde?</h1>
+      <p>Ein paar Wörter. Ein bisschen Fortschritt. Jeden Tag.</p>
+      <button class="primary" onclick="showGeneralSettings()">Jetzt lernen</button>
     </div>
+    <img src="IMG_2557.png" alt="ZUNO Axolotl">
+  </div>
 
-    <section class="hero" aria-label="Deine nächste Lernsession">
-      <div class="hero-copy">
-        <div class="tag">DEINE NÄCHSTE HERAUSFORDERUNG</div>
-        <h2>Zeit zum Lernen.</h2>
-        <p>Deine Sprachreise beginnt hier.</p>
-        <button class="primary" type="button" onclick="showScreen('modes')">Jetzt lernen →</button>
+  <div class="panel">
+    <div class="topline">
+      <h2>Dein Fortschritt</h2>
+      <strong id="learnedCount">0 Wörter</strong>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="dashboardProgress"></div></div>
+    <p class="muted small">Gelernte Schulvokabeln insgesamt</p>
+  </div>
+
+  <h2>Was möchtest du üben?</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>🌍 Allgemein üben</h3>
+      <p class="muted">Wortschatz nach Sprache und Niveau.</p>
+      <button class="primary" onclick="showGeneralSettings()">Üben</button>
+    </div>
+    <div class="card">
+      <h3>📚 Nach Unit üben</h3>
+      <p class="muted">Deine Schulvokabeln aus dem Buch.</p>
+      <button class="primary" onclick="showUnitSettings()">Units öffnen</button>
+    </div>
+    <div class="card">
+      <h3>📈 All-Time Stats</h3>
+      <p class="muted">Deine langfristige Entwicklung.</p>
+      <button class="secondary" onclick="showStats()">Statistiken ansehen</button>
+    </div>
+  </div>
+</section>
+
+<section id="settings" class="hidden">
+  <button class="secondary" onclick="showDashboard()">← Zurück</button>
+  <div class="panel">
+    <h1>Allgemein üben</h1>
+    <p class="muted">Wähle deine Sprache und dein Niveau.</p>
+    <label for="generalLanguage">Sprache</label>
+    <select id="generalLanguage">
+      <option value="en">🇬🇧 Englisch</option>
+      <option value="fr">🇫🇷 Französisch</option>
+    </select>
+    <label for="generalLevel">Niveau</label>
+    <select id="generalLevel">
+      <option>A1</option><option>A2</option><option selected>B1</option>
+      <option>B2</option><option>C1</option><option>C2</option>
+    </select>
+    <button class="primary" onclick="startGeneral()">Lesson starten</button>
+  </div>
+</section>
+
+<section id="unitSettings" class="hidden">
+  <button class="secondary" onclick="showDashboard()">← Zurück</button>
+  <div class="panel">
+    <h1>Nach Unit üben</h1>
+    <p class="muted">Schulvokabeln. Aktuell ist Englisch verfügbar.</p>
+    <label for="unitSelect">Bereich auswählen</label>
+    <select id="unitSelect">
+      <option value="acrossCultures">Across cultures 1: The world speaks English</option>
+      <option value="unit1">Unit 1: G'day Australia!</option>
+    </select>
+    <label for="unitSection">Abschnitt</label>
+    <select id="unitSection">
+      <option value="all">Alle Abschnitte</option>
+    </select>
+    <button class="primary" onclick="startUnit()">Lesson starten</button>
+  </div>
+</section>
+
+<section id="exercise" class="hidden">
+  <div class="topline">
+    <button class="secondary" onclick="leaveExercise()">✕ Beenden</button>
+    <strong id="questionCounter">1 / 10</strong>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="lessonProgress"></div></div>
+  <div class="word-card">
+    <div id="modeLabel" class="small" style="color:white">Übersetze das Wort</div>
+    <div class="target" id="targetWord">word</div>
+    <button class="secondary" id="audioButton" onclick="speakCurrentWord()">🔊 Anhören</button>
+    <div class="example hidden" id="exampleSentence"></div>
+  </div>
+  <div id="answerArea"></div>
+  <div id="feedbackArea"></div>
+  <button class="primary hidden" id="nextButton" onclick="nextQuestion()">Weiter →</button>
+</section>
+
+<section id="result" class="hidden">
+  <div class="panel" style="text-align:center">
+    <h1 id="resultTitle">Lesson geschafft!</h1>
+    <p id="resultEmoji" style="font-size:48px">🎉</p>
+    <h2 id="resultScore">0 / 0 richtig</h2>
+    <p id="resultPercent" class="muted"></p>
+    <div class="stat-grid">
+      <div class="stat"><span>Richtig</span><strong id="resultCorrect">0</strong></div>
+      <div class="stat"><span>Falsch</span><strong id="resultWrong">0</strong></div>
+      <div class="stat"><span>XP verdient</span><strong id="resultXP">0</strong></div>
+    </div>
+    <button class="primary" onclick="showDashboard()" style="margin-top:22px">Zur Übersicht</button>
+  </div>
+</section>
+
+<section id="statsPage" class="hidden">
+  <button class="secondary" onclick="showDashboard()">← Zurück</button>
+  <h1>All-Time Stats</h1>
+  <p class="muted">Nur deine Schulvokabeln zählen in diese Statistiken.</p>
+  <div class="panel">
+    <div class="topline">
+      <div>
+        <div class="muted">Deine aktuelle Schulnote</div>
+        <div class="grade" id="overallGrade">–</div>
       </div>
-      <img class="mascot" src="IMG_2557.png" alt="ZUNO Axolotl" onerror="this.hidden=true">
-    </section>
-
-    <h2 class="section-title">Dein Fortschritt</h2>
-    <section class="progress-card" aria-label="Dein Lernfortschritt">
-      <div class="progress-top"><span>Wortschatz-Fortschritt</span><span id="progress-label">0%</span></div>
-      <div class="bar"><div class="fill" id="progress-fill"></div></div>
-    </section>
-
-    <h2 class="section-title">Entdecke deine Units</h2>
-    <section class="units">
-      <button class="unit-card" type="button" onclick="openUnit(1)">
-        <div class="unit-icon">🦘</div>
-        <div class="unit-number">UNIT 01</div>
-        <h3>G’day Australia!</h3>
-        <p>Wortschatz · <span id="unit-1-count">0 Wörter</span></p>
-      </button>
-      <button class="unit-card" type="button" onclick="openUnit(2)">
-        <div class="unit-icon">🎭</div>
-        <div class="unit-number">UNIT 02</div>
-        <h3>Identität</h3>
-        <p>Wortschatz · Demnächst</p>
-      </button>
-      <button class="unit-card" type="button" onclick="openUnit(3)">
-        <div class="unit-icon">🚀</div>
-        <div class="unit-number">UNIT 03</div>
-        <h3>Zukunft</h3>
-        <p>Wortschatz · Demnächst</p>
-      </button>
-      <button class="unit-card" type="button" onclick="openUnit(4)">
-        <div class="unit-icon">✨</div>
-        <div class="unit-number">UNIT 04</div>
-        <h3>Mehr zu entdecken</h3>
-        <p>Wortschatz · Demnächst</p>
-      </button>
-    </section>
-  </section>
-
-  <section id="all-stats-screen" hidden>
-    <button class="back-button" type="button" onclick="showScreen('dashboard')">← Zurück zur Startseite</button>
-    <div class="page-heading">
-      <p class="eyebrow">DEIN BISHERIGER WEG</p>
-      <h1>Deine Statistiken.</h1>
-      <p>Jeder Schritt zählt. Das ist deine ZUNO-Bilanz.</p>
-    </div>
-    <div class="all-stats-grid">
-      <article class="all-stat-card"><div class="all-stat-icon">⚡</div><div class="all-stat-value" id="all-xp">0</div><div class="all-stat-label">Gesamte XP</div></article>
-      <article class="all-stat-card"><div class="all-stat-icon">📚</div><div class="all-stat-value" id="all-words">0</div><div class="all-stat-label">Gelernte Wörter</div></article>
-      <article class="all-stat-card"><div class="all-stat-icon">🎯</div><div class="all-stat-value" id="all-correct">0</div><div class="all-stat-label">Richtige Antworten</div></article>
-      <article class="all-stat-card"><div class="all-stat-icon">🧠</div><div class="all-stat-value" id="all-sessions">0</div><div class="all-stat-label">Abgeschlossene Sessions</div></article>
-      <article class="all-stat-card"><div class="all-stat-icon">🔥</div><div class="all-stat-value" id="all-best-streak">0 Tage</div><div class="all-stat-label">Längste Serie</div></article>
-      <article class="all-stat-card"><div class="all-stat-icon">⏱️</div><div class="all-stat-value" id="all-time">0 min</div><div class="all-stat-label">Gesamte Lernzeit</div></article>
-    </div>
-    <p class="stats-note">Diese Werte werden auf diesem Gerät gespeichert. Die Lernzeit wird während einer Session gezählt. Ältere Versionen haben einige Werte noch nicht erfasst.</p>
-  </section>
-
-  <section id="modes-screen" hidden>
-    <button class="back-button" type="button" onclick="showScreen('dashboard')">← Zurück zur Startseite</button>
-    <div class="page-heading">
-      <p class="eyebrow">DEINE LERNEINHEIT</p>
-      <h1>Wie möchtest du üben?</h1>
-      <p>Wähle Sprache und Niveau für dein Training.</p>
-    </div>
-    <div class="practice-settings">
-      <div class="setting-group">
-        <label>Lernsprache</label>
-        <button class="language-toggle" id="language-toggle" type="button" onclick="togglePracticeLanguage()">🇬🇧 Englisch</button>
-      </div>
-      <div class="setting-group">
-        <label for="level-select">Sprachniveau</label>
-        <select id="level-select">
-          <option value="A1">A1 · Anfänger</option>
-          <option value="A2">A2 · Grundkenntnisse</option>
-          <option value="B1" selected>B1 · Mittelstufe</option>
-          <option value="B2">B2 · Gute Kenntnisse</option>
-          <option value="C1">C1 · Fortgeschritten</option>
-          <option value="C2">C2 · Nahezu muttersprachlich</option>
-        </select>
+      <div>
+        <div class="muted">Trefferquote gesamt</div>
+        <strong style="font-size:28px" id="overallAccuracy">–</strong>
       </div>
     </div>
-    <div class="mode-grid">
-      <button class="mode-card" type="button" onclick="startGeneralPractice()">
-        <div class="mode-icon">🔀</div>
-        <h3>Allgemeines Training</h3>
-        <p>Gemischte Wörter aus der ausgewählten Sprache und deinem Niveau. Perfekt zum Wiederholen.</p>
-        <span class="card-arrow">Training starten →</span>
-      </button>
-      <button class="mode-card" type="button" onclick="showScreen('unit-select')">
-        <div class="mode-icon">📚</div>
-        <h3>Nach Unit üben</h3>
-        <p>Wähle eine Unit und konzentriere dich auf ihren Wortschatz.</p>
-        <span class="card-arrow">Unit auswählen →</span>
-      </button>
-    </div>
-    <p class="note">Dein Lernfortschritt wird auf diesem Gerät gespeichert. Allgemeines Training nutzt deine Sprachlisten. Die Buch-Units sind aktuell nur auf Englisch verfügbar. Französische Units ergänzen wir später.</p>
-  </section>
-
-  <section id="unit-select-screen" hidden>
-    <button class="back-button" type="button" onclick="showScreen('modes')">← Zurück zur Übungsauswahl</button>
-    <div class="page-heading">
-      <p class="eyebrow">DEIN WORTSCHATZ</p>
-      <h1>Wähle eine Unit.</h1>
-      <p>Es erscheinen nur Wörter aus der ausgewählten Unit.</p>
-    </div>
-    <div class="unit-list" id="unit-list"></div>
-  </section>
-
-  <section id="empty-unit-screen" hidden>
-    <button class="back-button" type="button" onclick="showScreen('unit-select')">← Zurück zu den Units</button>
-    <div class="result-card">
-      <div class="result-icon">📖</div>
-      <h2>Demnächst!</h2>
-      <p>In dieser Unit sind noch keine Vokabeln. Sobald wir sie ergänzen, kannst du hier üben.</p>
-      <button class="primary" type="button" onclick="showScreen('unit-select')">Andere Unit auswählen</button>
-    </div>
-  </section>
-
-  <section id="exercise-screen" hidden>
-    <button class="back-button" type="button" onclick="leaveExercise()">← Session verlassen</button>
-    <div class="exercise-card">
-      <div class="exercise-top">
-        <span id="session-mode">ALLGEMEINES TRAINING</span>
-        <span id="question-count">1 / 1</span>
-      </div>
-      <p class="exercise-label">ÜBERSETZUNG</p>
-      <h1 class="question" id="question-heading">Übersetze das Wort ins Deutsche.</h1>
-      <p class="sentence" id="sentence-text"><span class="highlight-word">achieve</span></p>
-      <form id="answer-form" autocomplete="off">
-        <label for="answer-input" class="exercise-label" style="display:block; margin:0 0 9px; color:#F0EDFF; letter-spacing:.3px;">Deine Antwort</label>
-        <input class="answer-input" id="answer-input" name="answer" type="text" placeholder="Deine Übersetzung ..." autocomplete="off" autocapitalize="none" spellcheck="false">
-        <button class="answer-button" id="check-button" type="submit">Überprüfen</button>
-      </form>
-      <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
-    </div>
-    <div class="exercise-footer">
-      <span>⚡ +10 XP für eine richtige Antwort</span>
-      <button class="text-button" type="button" onclick="leaveExercise()">Training verlassen</button>
-    </div>
-  </section>
-
-  <section id="result-screen" hidden>
-    <div class="page-heading">
-      <p class="eyebrow">SESSION ABGESCHLOSSEN</p>
-      <h1>Das hast du geschafft!</h1>
-      <p>Du bist weitergekommen. Darauf kommt es an.</p>
-    </div>
-    <div class="result-card">
-      <div class="result-icon">🎉</div>
-      <h2>Gut gemacht!</h2>
-      <p id="result-summary">Du hast deine Session abgeschlossen.</p>
-      <div class="result-xp" id="result-xp">+10 XP</div>
-      <button class="primary" type="button" onclick="showScreen('dashboard')">Zurück zur Startseite</button>
-      <button class="text-button" type="button" onclick="showScreen('modes')" style="display:block; margin:12px auto 0;">Nochmal üben</button>
-    </div>
-  </section>
+    <div class="progress-track"><div class="progress-fill" id="overallAccuracyBar"></div></div>
+    <p class="small" id="overallTotals"></p>
+  </div>
+  <div class="stat-section">
+    <h3>📚 Alle Schulvokabeln</h3>
+    <div class="stat-grid" id="allSchoolStats"></div>
+  </div>
+  <div class="stat-section">
+    <h3>🇬🇧 Englische Schulvokabeln</h3>
+    <div class="stat-grid" id="englishSchoolStats"></div>
+  </div>
+  <div class="stat-section">
+    <h3>🇫🇷 Französische Schulvokabeln</h3>
+    <div class="stat-grid" id="frenchSchoolStats"></div>
+  </div>
+  <div class="stat-section">
+    <h3>🏆 Weitere Statistiken</h3>
+    <div class="stat-grid" id="extraStats"></div>
+  </div>
+  <p class="small">Die Trefferquote berechnet sich aus allen beantworteten Schulvokabel-Fragen. Allgemeine Übungen werden nicht mitgezählt. Die Note folgt deinem angegebenen Notenschlüssel.</p>
+</section>
 </main>
 
-<footer>ZUNO © 2026 · Lerne auf deine Art.</footer>
-
 <script>
-'use strict';
-
-// Eigene, kompakte Lernwortschatz-Datenbank: 100 englische + 100 französische Einträge.
-// CEFR-Stufen sind Lernorientierungen, keine offizielle Oxford-Einstufung.
 const languageDatabases = {
-  en: `about|über|A1;after|nach|A1;again|wieder|A1;all|alle|A1;always|immer|A1;animal|Tier|A1;answer|Antwort|A1;beautiful|schön|A1;because|weil|A1;begin|beginnen|A1;big|groß|A1;book|Buch|A1;brother|Bruder|A1;busy|beschäftigt|A1;buy|kaufen|A1;can|können|A1;city|Stadt|A1;accident|Unfall|A2;advice|Rat|A2;although|obwohl|A2;arrive|ankommen|A2;borrow|ausleihen|A2;careful|vorsichtig|A2;choose|auswählen|A2;comfortable|bequem|A2;decide|entscheiden|A2;different|anders|A2;enough|genug|A2;experience|Erfahrung|A2;explain|erklären|A2;future|Zukunft|A2;happen|passieren|A2;healthy|gesund|A2;improve|verbessern|A2;achieve|erreichen|B1;although|obwohl|B1;benefit|Vorteil|B1;challenge|Herausforderung|B1;communicate|kommunizieren|B1;consider|in Betracht ziehen|B1;environment|Umwelt|B1;evidence|Beweis|B1;goal|Ziel|B1;influence|Einfluss|B1;knowledge|Wissen|B1;opportunity|Gelegenheit|B1;participate|teilnehmen|B1;performance|Leistung|B1;prevent|verhindern|B1;purpose|Zweck|B1;relationship|Beziehung|B1;accurate|genau|B2;approach|Ansatz|B2;assess|bewerten|B2;assume|annehmen|B2;aware|bewusst|B2;complex|komplex|B2;consequence|Folge|B2;consistent|beständig|B2;controversial|umstritten|B2;derive|ableiten|B2;establish|gründen|B2;eventually|schließlich|B2;factor|Faktor|B2;identify|identifizieren|B2;indicate|andeuten|B2;interpret|interpretieren|B2;maintain|aufrechterhalten|B2;ambiguous|mehrdeutig|C1;coherent|schlüssig|C1;compelling|überzeugend|C1;contemporary|zeitgenössisch|C1;diminish|verringern|C1;elaborate|ausführlich|C1;foster|fördern|C1;inherent|innewohnend|C1;inevitable|unvermeidlich|C1;notion|Vorstellung|C1;preliminary|vorläufig|C1;profound|tiefgreifend|C1;reluctant|widerwillig|C1;substantial|beträchtlich|C1;undergo|durchmachen|C1;undermine|untergraben|C1;validity|Gültigkeit|C1;albeit|wenn auch|C2;anomaly|Anomalie|C2;arbitrary|willkürlich|C2;conjecture|Vermutung|C2;discrepancy|Unstimmigkeit|C2;exacerbate|verschärfen|C2;fastidious|pingelig|C2;idiosyncratic|eigenwillig|C2;juxtapose|gegenüberstellen|C2;meticulous|akribisch|C2;obsolete|überholt|C2;paradigm|Paradigma|C2;pragmatic|pragmatisch|C2;proliferate|sich stark vermehren|C2;quintessential|typisch|C2`.split(';').map(row => {
-    const [word, de, level] = row.split('|');
-    return { word, de, level };
-  }),
-  fr: `bonjour|Guten Tag|A1;merci|danke|A1;maison|Haus|A1;école|Schule|A1;livre|Buch|A1;ami|Freund|A1;famille|Familie|A1;eau|Wasser|A1;pain|Brot|A1;chat|Katze|A1;chien|Hund|A1;manger|essen|A1;boire|trinken|A1;parler|sprechen|A1;aimer|lieben / mögen|A1;petit|klein|A1;grand|groß|A1;acheter|kaufen|A2;attendre|warten|A2;besoin|Bedürfnis|A2;bientôt|bald|A2;choisir|auswählen|A2;comprendre|verstehen|A2;cuisine|Küche|A2;déjeuner|zu Mittag essen|A2;depuis|seit|A2;devoir|müssen|A2;ensemble|zusammen|A2;envoyer|schicken|A2;facile|einfach|A2;fenêtre|Fenster|A2;heureux|glücklich|A2;jamais|niemals|A2;loisir|Freizeitbeschäftigung|A2;accueillir|empfangen|B1;améliorer|verbessern|B1;appartenir|gehören|B1;avantage|Vorteil|B1;comportement|Verhalten|B1;confiance|Vertrauen|B1;conséquence|Folge|B1;défi|Herausforderung|B1;développer|entwickeln|B1;échapper|entkommen|B1;enjeu|Einsatz / Herausforderung|B1;environnement|Umwelt|B1;éprouver|empfinden|B1;éviter|vermeiden|B1;habitude|Gewohnheit|B1;inquiétude|Sorge|B1;partager|teilen|B1;aboutir|zu einem Ergebnis führen|B2;accroître|vergrößern|B2;admettre|zugeben|B2;apercevoir|erblicken|B2;approfondir|vertiefen|B2;assumer|übernehmen|B2;cependant|jedoch|B2;concerner|betreffen|B2;démarche|Vorgehensweise|B2;désormais|von nun an|B2;éventuellement|gegebenenfalls|B2;fiable|zuverlässig|B2;fournir|liefern|B2;garantir|garantieren|B2;mettre en œuvre|umsetzen|B2;néanmoins|nichtsdestotrotz|B2;prévoir|vorhersehen|B2;ambigu|mehrdeutig|C1;cohérent|schlüssig|C1;contester|bestreiten|C1;déceler|erkennen|C1;dénoncer|anprangern|C1;désigner|bezeichnen|C1;dispositif|Vorrichtung / Maßnahme|C1;émerger|auftauchen|C1;enjeu majeur|zentrale Herausforderung|C1;exhaustif|umfassend|C1;incontournable|unverzichtbar|C1;inédit|beispiellos|C1;nuancer|differenzieren|C1;pertinent|sachdienlich|C1;préconiser|empfehlen|C1;prépondérant|vorherrschend|C1;remédier|Abhilfe schaffen|C1;abroger|aufheben|C2;aléatoire|zufällig|C2;circonscrire|eingrenzen|C2;concomitant|gleichzeitig|C2;dérogation|Ausnahmegenehmigung|C2;diligence|Sorgfalt|C2;équivoque|zweideutig|C2;exacerber|verschärfen|C2;fallacieux|trügerisch|C2;inopiné|unerwartet|C2;lacunaire|lückenhaft|C2;obsolète|veraltet|C2;pérenniser|dauerhaft sichern|C2;prérogative|Vorrecht|C2;prolifique|fruchtbar / produktiv|C2`.split(';').map(row => {
-    const [word, de, level] = row.split('|');
-    return { word, de, level };
-  })
+en: `achieve|erreichen|B1
+actual|tatsächlich|B1
+admit|zugeben|B1
+afford|sich leisten|B1
+although|obwohl|B1
+ancient|uralt|B1
+annoy|ärgern|B1
+appear|erscheinen|B1
+approach|sich nähern|B1
+argue|argumentieren|B1
+avoid|vermeiden|B1
+behave|sich benehmen|B1
+belong|gehören|B1
+benefit|Vorteil|B1
+challenge|Herausforderung|B1
+claim|behaupten|B1
+consider|in Betracht ziehen|B1
+contain|enthalten|B1
+convince|überzeugen|B1
+create|erschaffen|B1
+damage|beschädigen|B1
+decide|entscheiden|B1
+demand|fordern|B1
+describe|beschreiben|B1
+develop|entwickeln|B1
+discover|entdecken|B1
+effect|Wirkung|B1
+encourage|ermutigen|B1
+environment|Umwelt|B1
+experience|Erfahrung|B1
+fail|scheitern|B1
+figure|Figur|B1
+foreign|ausländisch|B1
+freedom|Freiheit|B1
+imagine|sich vorstellen|B1
+improve|verbessern|B1
+include|einschließen|B1
+increase|erhöhen|B1
+instead|stattdessen|B1
+involve|beinhalten|B1
+issue|Thema|B1
+knowledge|Wissen|B1
+likely|wahrscheinlich|B1
+manage|schaffen|B1
+mention|erwähnen|B1
+notice|bemerken|B1
+offer|anbieten|B1
+opinion|Meinung|B1
+opportunity|Gelegenheit|B1
+perform|ausführen|B1
+perhaps|vielleicht|B1
+prevent|verhindern|B1
+purpose|Zweck|B1
+realize|erkennen|B1
+receive|erhalten|B1
+recent|kürzlich|B1
+reduce|verringern|B1
+refuse|ablehnen|B1
+relationship|Beziehung|B1
+remain|bleiben|B1
+remind|erinnern|B1
+require|erfordern|B1
+respond|antworten|B1
+result|Ergebnis|B1
+risk|Risiko|B1
+seem|scheinen|B1
+several|mehrere|B1
+share|teilen|B1
+similar|ähnlich|B1
+society|Gesellschaft|B1
+solution|Lösung|B1
+suggest|vorschlagen|B1
+support|unterstützen|B1
+suppose|annehmen|B1
+throughout|während|B1
+though|obwohl|B1
+various|verschieden|B1
+wonder|sich fragen|B1
+wonderful|wunderbar|B1
+`,
+fr: `abandonner|aufgeben|B1
+accepter|akzeptieren|B1
+accueillir|empfangen|B1
+acheter|kaufen|B1
+agir|handeln|B1
+aider|helfen|B1
+améliorer|verbessern|B1
+apercevoir|bemerken|B1
+apprendre|lernen|B1
+arriver|ankommen|B1
+attendre|warten|B1
+avoir besoin de|brauchen|B1
+battre|schlagen|B1
+bouger|bewegen|B1
+briller|scheinen|B1
+changer|ändern|B1
+choisir|auswählen|B1
+comprendre|verstehen|B1
+conduire|fahren|B1
+connaître|kennen|B1
+construire|bauen|B1
+continuer|weitermachen|B1
+craindre|fürchten|B1
+découvrir|entdecken|B1
+décrire|beschreiben|B1
+défendre|verteidigen|B1
+demander|fragen|B1
+devenir|werden|B1
+devoir|müssen|B1
+dire|sagen|B1
+disparaître|verschwinden|B1
+écrire|schreiben|B1
+entendre|hören|B1
+essayer|versuchen|B1
+être d'accord|einverstanden sein|B1
+éviter|vermeiden|B1
+expliquer|erklären|B1
+finir|beenden|B1
+gagner|gewinnen|B1
+grandir|wachsen|B1
+imaginer|sich vorstellen|B1
+inquiéter|beunruhigen|B1
+inviter|einladen|B1
+jouer|spielen|B1
+laisser|lassen|B1
+lire|lesen|B1
+manquer|fehlen|B1
+mentir|lügen|B1
+mettre|setzen|B1
+offrir|anbieten|B1
+oublier|vergessen|B1
+partager|teilen|B1
+permettre|erlauben|B1
+perdre|verlieren|B1
+plaire|gefallen|B1
+prendre|nehmen|B1
+protéger|schützen|B1
+raconter|erzählen|B1
+recevoir|erhalten|B1
+reconnaître|erkennen|B1
+réussir|schaffen|B1
+savoir|wissen|B1
+sembler|scheinen|B1
+sentir|fühlen|B1
+servir|dienen|B1
+sortir|hinausgehen|B1
+suivre|folgen|B1
+tenir|halten|B1
+tomber|fallen|B1
+travailler|arbeiten|B1
+trouver|finden|B1
+utiliser|benutzen|B1
+venir|kommen|B1
+vivre|leben|B1
+voir|sehen|B1
+vouloir|wollen|B1
+` 
 };
 
-// Green-Line-Wortschatz aus dem bereitgestellten Buchauszug.
-// Ausspracheangaben und Beispielsätze wurden bewusst weggelassen.
-const unitSections = {
-  across: 'Across cultures 1 · The world speaks English',
-  checkin: 'Check-in',
-  station1: 'Station 1 · Just me and my backpack',
-  station2: 'Station 2 · When did your folks get here?',
-  station3: 'Station 3 · The land owns us',
-  skills: 'Skills · Group presentation',
-  task: 'Unit task · Who are the Aussies?',
-  story: 'Story · Nona and me'
-};
-
-const vocabularyRows = `segregation|Segregation; Rassentrennung|across|Segregation~Rassentrennung;
-apartheid|Apartheid|across|Apartheid;
-racism|Rassismus|across|Rassismus;
-forward|vorwärts|across|vorwärts;
-icon|Ikone; Symbol|across|Ikone~Symbol;
-civil rights|Bürgerrechte|across|Bürgerrechte;
-election|Wahl|across|Wahl;
-back|damals|across|damals;
-ancient|alt; altertümlich; antik|across|alt~altertümlich~antik;
-Hindu|Hindu; hinduistisch|across|Hindu~hinduistisch;
-Buddhist|Buddhist/-in; buddhistisch|across|Buddhist/-in~buddhistisch;
-romantic|romantisch|across|romantisch;
-discrimination|Diskriminierung|across|Diskriminierung;
-widespread|weit verbreitet|across|weit verbreitet;
-sexual|sexuell|across|sexuell;
-harassment|Belästigung; Schikane|across|Belästigung~Schikane;
-democratic|demokratisch|across|demokratisch;
-cliché|Klischee|across|Klischee;
-intense|intensiv; heftig|across|intensiv~heftig;
-I can’t help (+ -ing)|Ich kann nicht anders, als ...|across|Ich kann nicht anders, als ...;
-bright|hell; leuchtend; strahlend|across|hell~leuchtend~strahlend;
-chaotic|chaotisch|across|chaotisch;
-Aussie|Australier/-in; australisch (ugs.)|across|Australier/-in~australisch (ugs.);
-surf instructor|Surflehrer/-in|across|Surflehrer/-in;
-to envy|beneiden|across|beneiden;
-to be stuck|festsitzen; feststecken; hängen bleiben|across|festsitzen~feststecken~hängen bleiben;
-to apply (to)|gelten für; zutreffen auf|across|gelten für~zutreffen auf;
-Aboriginal|Ureinwohner/-in Australiens; von australischen Ureinwohnern abstammend|across|Ureinwohner/-in Australiens~von australischen Ureinwohnern abstammend;
-resident|Bewohner/-in; Einwohner/-in|across|Bewohner/-in~Einwohner/-in;
-gay|schwul; homosexuell|across|schwul~homosexuell;
-mate|Kumpel (ugs.)|across|Kumpel (ugs.);
-to head (for/to)|zusteuern auf; sich auf den Weg machen nach/zu|across|zusteuern auf~sich auf den Weg machen nach/zu;
-the outback|Outback; australisches Hinterland|across|Outback~australisches Hinterland;
-seat|Sitz; Sitzplatz|across|Sitz~Sitzplatz;
-billion|Milliarde|across|Milliarde;
-Muslim|Muslim/-in; muslimisch|across|Muslim/-in~muslimisch;
-percentage|Prozentsatz|across|Prozentsatz;
-to be said to (+ infinitive)|gelten als|across|gelten als;
-as early as|schon|across|schon;
-to perform|durchführen; verrichten|across|durchführen~verrichten;
-plastic surgery|Schönheitschirurgie|across|Schönheitschirurgie;
-Latin|Latein; lateinisch|across|Latein~lateinisch;
-Chinese|Chinese/Chinesin; chinesisch; Chinesisch|across|Chinese/Chinesin~chinesisch~Chinesisch;
-crocodile|Krokodil|across|Krokodil;
-increasingly|zunehmend|across|zunehmend;
-lingua franca|Verkehrssprache|across|Verkehrssprache;
-shipping|Versand; Transport von Gütern|across|Versand~Transport von Gütern;
-computing|EDV|across|EDV;
-to suggest|andeuten; nahelegen|across|andeuten~nahelegen;
-to associate|assoziieren; verbinden|across|assoziieren~verbinden;
-progress|Fortschritt|across|Fortschritt;
-rise|Anstieg; Zunahme; Aufstieg|across|Anstieg~Zunahme~Aufstieg;
-to assist|helfen; unterstützen|across|helfen~unterstützen;
-neither|keine/-r/-s von beiden|across|keine/-r/-s von beiden;
-native speaker|Muttersprachler/-in|across|Muttersprachler/-in;
-to tend to|neigen zu; tendieren zu|across|neigen zu~tendieren zu;
-to assume|annehmen|across|annehmen;
-opportunity|Chance; Gelegenheit; Möglichkeit|across|Chance~Gelegenheit~Möglichkeit;
-lack of|Mangel an; Fehlen von|across|Mangel an~Fehlen von;
-to regard|betrachten|across|betrachten;
-G’day!|Guten Tag; Hallo; Hi|checkin|Guten Tag~Hallo~Hi;
-coral reef|Korallenriff|checkin|Korallenriff;
-purpose|Ziel; Absicht; Zweck|checkin|Ziel~Absicht~Zweck;
-basically|eigentlich; grundsätzlich; im Grunde genommen|checkin|eigentlich~grundsätzlich~im Grunde genommen;
-climatic|klimatisch|checkin|klimatisch;
-virtually|praktisch; so gut wie|checkin|praktisch~so gut wie;
-uninhabitable|unbewohnbar|checkin|unbewohnbar;
-enormous|enorm; gewaltig|checkin|enorm~gewaltig;
-debt|Schuld; Verschuldung; Verpflichtung|checkin|Schuld~Verschuldung~Verpflichtung;
-per capita|pro Kopf; pro Person|checkin|pro Kopf~pro Person;
-poverty|Armut|checkin|Armut;
-currently|momentan; aktuell|checkin|momentan~aktuell;
-unique|einzigartig|checkin|einzigartig;
-outstanding|außergewöhnlich; herausragend|checkin|außergewöhnlich~herausragend;
-exploitation|Ausbeutung; Abbau|checkin|Ausbeutung~Abbau;
-harmful|schädlich|checkin|schädlich;
-to account for|ausmachen; verantwortlich sein für|checkin|ausmachen~verantwortlich sein für;
-to gleam|glänzen; schimmern|station1|glänzen~schimmern;
-cluster|Bündel; Anhäufung|station1|Bündel~Anhäufung;
-seashell|Muschel|station1|Muschel;
-the day after tomorrow|übermorgen|station1|übermorgen;
-to overhear|belauschen; zufällig mithören|station1|belauschen~zufällig mithören;
-terrace|Terrasse|station1|Terrasse;
-bloke|Typ (ugs.)|station1|Typ (ugs.);
-air ambulance|Rettungshubschrauber|station1|Rettungshubschrauber;
-satellite|Satellit|station1|Satellit;
-to cancel|absagen; stornieren|station1|absagen~stornieren;
-hopefully|hoffentlich|station1|hoffentlich;
-to sting|stechen|station1|stechen;
-box jellyfish|Würfelqualle|station1|Würfelqualle;
-to beware|sich in Acht nehmen|station1|sich in Acht nehmen;
-shark|Hai|station1|Hai;
-rip current|Brandungsrückströmung|station1|Brandungsrückströmung;
-to sweep|fegen; wegspülen|station1|fegen~wegspülen;
-comforting|tröstlich; ermutigend|station1|tröstlich~ermutigend;
-opal|Opal|station1|Opal;
-to succeed (in)|Erfolg haben bei; gelingen|station1|Erfolg haben bei~gelingen;
-to prevent|verhindern; abhalten|station1|verhindern~abhalten;
-to trample (on)|zertrampeln; herumtrampeln|station1|zertrampeln~herumtrampeln;
-That’s fair enough.|Das ist nur recht und billig.|station1|Das ist nur recht und billig.;
-barbie|Grillparty (australisch, ugs.)|station1|Grillparty (australisch, ugs.);
-deadly|tödlich|station1|tödlich;
-spider|Spinne|station1|Spinne;
-heatwave|Hitzewelle|station1|Hitzewelle;
-folks|Leute (ugs.)|station2|Leute (ugs.);
-No worries.|Kein Problem; gern geschehen.|station2|Kein Problem~gern geschehen.;
-How are you doing?|Wie geht es dir/euch/Ihnen?|station2|Wie geht es dir/euch/Ihnen?;
-to trace back|zurückverfolgen|station2|zurückverfolgen;
-convict|Sträfling|station2|Sträfling;
-to bump into somebody|jemanden zufällig treffen; jemanden anrempeln|station2|jemanden zufällig treffen~jemanden anrempeln;
-sentence|Strafe; Strafmaß; Urteil|station2|Strafe~Strafmaß~Urteil;
-victim|Opfer|station2|Opfer;
-to oppress|unterdrücken|station2|unterdrücken;
-to manage (to do something)|schaffen, etwas zu tun|station2|schaffen, etwas zu tun;
-tiny|klein; winzig|station2|klein~winzig;
-to have something done|etwas machen lassen|station2|etwas machen lassen;
-to renovate|renovieren|station2|renovieren;
-to irritate|verärgern; reizen|station2|verärgern~reizen;
-to be in progress|ablaufen; im Gange sein|station2|ablaufen~im Gange sein;
-movement|Bewegung|station2|Bewegung;
-perception|Wahrnehmung|station2|Wahrnehmung;
-state|Zustand|station2|Zustand;
-knowledge|Wissen; Kenntnisse|station2|Wissen~Kenntnisse;
-the Dutch|das niederländische Volk|station2|das niederländische Volk;
-none|keine/-r/-s|station2|keine/-r/-s;
-penal colony|Strafkolonie|station2|Strafkolonie;
-Jewish|jüdisch|station2|jüdisch;
-refugee|Geflüchtete/-r|station2|Geflüchtete/-r;
-significant|signifikant; bedeutend; wesentlich|station2|signifikant~bedeutend~wesentlich;
-farewell|Abschied; Abschieds-|station2|Abschied~Abschieds-;
-to restrict|begrenzen; beschränken|station2|begrenzen~beschränken;
-overseas|in Übersee; im Ausland|station2|in Übersee~im Ausland;
-variety (of)|Vielzahl an; Vielfalt von|station2|Vielzahl an~Vielfalt von;
-to apply (for)|sich bewerben um; beantragen|station2|sich bewerben um~beantragen;
-visa|Visum; Einreisebewilligung|station2|Visum~Einreisebewilligung;
-occupation|Beruf; Beschäftigung|station2|Beruf~Beschäftigung;
-valid|gültig|station2|gültig;
-immigration detention centre|Auffanglager für Einwandernde|station2|Auffanglager für Einwandernde;
-to clear a case|einen Fall klären|station2|einen Fall klären;
-since|da; seit|station2|da~seit;
-policy|Politik; politische Linie|station2|Politik~politische Linie;
-restrictive|beschränkend; einengend|station2|beschränkend~einengend;
-to increase|steigen; erhöhen; zunehmen; wachsen|station2|steigen~erhöhen~zunehmen~wachsen;
-to decrease|abnehmen; reduzieren|station2|abnehmen~reduzieren;
-slight|leicht; gering|station2|leicht~gering;
-to own|besitzen|station3|besitzen;
-to illustrate|veranschaulichen; darstellen; illustrieren|station3|veranschaulichen~darstellen~illustrieren;
-on the contrary|im Gegenteil|station3|im Gegenteil;
-soil|Erde; Boden|station3|Erde~Boden;
-surface|Oberfläche|station3|Oberfläche;
-harsh|rau; hart|station3|rau~hart;
-universal|allgemein; universell|station3|allgemein~universell;
-seasonal|saisonal; jahreszeitlich bedingt|station3|saisonal~jahreszeitlich bedingt;
-to pass (on)|weitergeben|station3|weitergeben;
-gatherer|Sammler/-in|station3|Sammler/-in;
-common|gemeinsam; gewöhnlich|station3|gemeinsam~gewöhnlich;
-temporary|vorübergehend; temporär|station3|vorübergehend~temporär;
-boomerang|Bumerang|station3|Bumerang;
-responsibility|Aufgabe; Verantwortungsbereich|station3|Aufgabe~Verantwortungsbereich;
-to instruct|anweisen; beauftragen|station3|anweisen~beauftragen;
-to establish|einrichten; gründen; herstellen|station3|einrichten~gründen~herstellen;
-I’d rather|ich würde lieber|station3|ich würde lieber;
-descent|Abstammung|station3|Abstammung;
-to bring up|großziehen|station3|großziehen;
-foster|Pflege-|station3|Pflege-;
-orphanage|Waisenhaus|station3|Waisenhaus;
-to resent somebody/something|sich über jemanden/etwas ärgern; jemandem etwas übelnehmen|station3|sich über jemanden/etwas ärgern~jemandem etwas übelnehmen;
-connection|Verbindung|station3|Verbindung;
-to place|unterbringen|station3|unterbringen;
-permission|Erlaubnis; Genehmigung|station3|Erlaubnis~Genehmigung;
-disrespectful|respektlos|station3|respektlos;
-guardian|Hüter/-in; Wächter/-in|station3|Hüter/-in~Wächter/-in;
-plain|Ebene|station3|Ebene;
-way back|weit zurück; vor langer Zeit|station3|weit zurück~vor langer Zeit;
-to be short of something|knapp sein an|station3|knapp sein an;
-well|Brunnen; Quelle|station3|Brunnen~Quelle;
-greedy|habgierig; raffsüchtig|station3|habgierig~raffsüchtig;
-cliff|Klippe; Kliff|station3|Klippe~Kliff;
-to leak (out)|auslaufen; durchsickern|station3|auslaufen~durchsickern;
-shame|Scham; Schande; Schmach|station3|Scham~Schande~Schmach;
-to crawl|kriechen; krabbeln|station3|kriechen~krabbeln;
-shrub|Strauch; Busch|station3|Strauch~Busch;
-Californian|kalifornisch; Kalifornier/-in|skills|kalifornisch~Kalifornier/-in;
-smooth|glatt; weich; geschmeidig|skills|glatt~weich~geschmeidig;
-transition|Übergang|skills|Übergang;
-handout|Arbeitsblatt; Informationsblatt|skills|Arbeitsblatt~Informationsblatt;
-Hawaiian|Hawaiianer/-in; hawaiianisch|skills|Hawaiianer/-in~hawaiianisch;
-to distract|ablenken|skills|ablenken;
-chart|Tabelle; Diagramm|skills|Tabelle~Diagramm;
-graph|Diagramm; Schaubild|skills|Diagramm~Schaubild;
-responsible|verantwortlich; verantwortungsvoll|task|verantwortlich~verantwortungsvoll;
-recent|kürzlich; neueste/-r/-s; letzte/-r/-s|task|kürzlich~neueste/-r/-s~letzte/-r/-s;
-overview|Überblick|task|Überblick;
-to enable somebody to do something|jemandem ermöglichen, etwas zu tun|task|jemandem ermöglichen, etwas zu tun;
-determined|(fest) entschlossen; zielstrebig|story|(fest) entschlossen~zielstrebig;
-upright|aufrecht|story|aufrecht;
-walk|Gang|story|Gang;
-Miss|Fräulein (Anrede)|story|Fräulein (Anrede);
-desperate|verzweifelt; hoffnungslos; ausweglos|story|verzweifelt~hoffnungslos~ausweglos;
-to glow|leuchten; glühen|story|leuchten~glühen;
-to sigh|seufzen|story|seufzen`;
-
-const vocabulary = vocabularyRows.split(';\n').map((row, index) => {
-  const [word, de, section, answerText] = row.split('|');
-  const isAcross = section === 'across';
-  return {
-    id: 'greenline-' + section + '-' + index,
-    word, de, section, sectionTitle: unitSections[section],
-    answers: answerText.split('~').map(answer => answer.trim()),
-    sentenceStart: '', sentenceEnd: '',
-    unit: isAcross ? 0 : 1,
-    language: 'en'
-  };
-});
-
-const unitInfo = [
-  { id: 0, title: 'Across cultures 1', subtitle: 'The world speaks English', icon: '🌍' },
-  { id: 1, title: 'G’day Australia!', icon: '🦘' },
-  { id: 2, title: 'Unit 2', icon: '🎭' },
-  { id: 3, title: 'Unit 3', icon: '🚀' },
-  { id: 4, title: 'Unit 4', icon: '✨' }
-];
-
-const screens = ['dashboard', 'all-stats', 'modes', 'unit-select', 'empty-unit', 'exercise', 'result'];
-let xp = loadNumber('zuno-xp', 0);
-let streak = loadNumber('zuno-streak', 0);
-let lastPracticeDate = loadString('zuno-last-practice-date', '');
-let streakUpdatedThisSession = false;
-let learnedIds = loadArray('zuno-learned', []);
-let totalCorrect = loadNumber('zuno-total-correct', 0);
-let sessionsCompleted = loadNumber('zuno-sessions-completed', 0);
-let bestStreak = loadNumber('zuno-best-streak', streak);
-let totalPracticeSeconds = loadNumber('zuno-practice-seconds', 0);
-let sessionStartedAt = 0;
-let sessionTimeRecorded = true;
-let sessionWords = [];
-let sessionIndex = 0;
-let sessionCorrect = 0;
-let sessionEarnedXP = 0;
-let hasAnsweredCurrent = false;
-let exerciseReturnScreen = 'modes';
-let currentMode = 'general';
-let practiceLanguage = loadString('zuno-language', 'en');
-
-function loadNumber(key, fallback) {
-  try {
-    const value = Number(localStorage.getItem(key));
-    return Number.isFinite(value) && value >= 0 ? value : fallback;
-  } catch (error) { return fallback; }
-}
-function loadString(key, fallback) {
-  try { return localStorage.getItem(key) || fallback; }
-  catch (error) { return fallback; }
-}
-function loadArray(key, fallback) {
-  try {
-    const value = JSON.parse(localStorage.getItem(key) || 'null');
-    return Array.isArray(value) ? value : fallback;
-  } catch (error) { return fallback; }
-}
-function saveProgress() {
-  try {
-    localStorage.setItem('zuno-xp', String(xp));
-    localStorage.setItem('zuno-streak', String(streak));
-    localStorage.setItem('zuno-last-practice-date', lastPracticeDate);
-    localStorage.setItem('zuno-learned', JSON.stringify(learnedIds));
-    localStorage.setItem('zuno-total-correct', String(totalCorrect));
-    localStorage.setItem('zuno-sessions-completed', String(sessionsCompleted));
-    localStorage.setItem('zuno-best-streak', String(bestStreak));
-    localStorage.setItem('zuno-practice-seconds', String(totalPracticeSeconds));
-  } catch (error) {
-    // Die App funktioniert auch ohne verfügbaren Browserspeicher.
-  }
-}
-function updateDashboard() {
-  document.getElementById('xp-value').textContent = String(xp);
-  document.getElementById('streak-value').textContent = String(streak);
-  const allDatabaseIds = vocabulary.map(item => item.id).concat(
-    ...Object.entries(languageDatabases).map(([lang, entries]) =>
-      entries.map((item, index) => lang + '-' + item.level + '-' + index + '-' + item.word)
-    )
-  );
-  const total = allDatabaseIds.length;
-  const learned = allDatabaseIds.filter(id => learnedIds.includes(id)).length;
-  const percent = total ? Math.round((learned / total) * 100) : 0;
-  document.getElementById('progress-label').textContent = percent + '%';
-  document.getElementById('progress-fill').style.width = percent + '%';
-  const unitOneCount = vocabulary.filter(item => item.unit === 1).length;
-  document.getElementById('unit-1-count').textContent = unitOneCount + (unitOneCount === 1 ? ' Wort' : ' Wörter');
-}
-function formatPracticeTime(seconds) {
-  const totalMinutes = Math.floor(seconds / 60);
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return hours > 0 ? hours + ' Std. ' + minutes + ' Min.' : totalMinutes + ' Min.';
-}
-function updateAllStats() {
-  document.getElementById('all-xp').textContent = xp.toLocaleString('de-DE');
-  document.getElementById('all-words').textContent = learnedIds.length.toLocaleString('de-DE');
-  document.getElementById('all-correct').textContent = totalCorrect.toLocaleString('de-DE');
-  document.getElementById('all-sessions').textContent = sessionsCompleted.toLocaleString('de-DE');
-  document.getElementById('all-best-streak').textContent = bestStreak + (bestStreak === 1 ? ' Tag' : ' Tage');
-  document.getElementById('all-time').textContent = formatPracticeTime(totalPracticeSeconds);
-}
-function recordSessionTime() {
-  if (sessionTimeRecorded || !sessionStartedAt) return;
-  const elapsed = Math.max(0, Math.floor((Date.now() - sessionStartedAt) / 1000));
-  totalPracticeSeconds += elapsed;
-  sessionTimeRecorded = true;
-  sessionStartedAt = 0;
-  saveProgress();
-}
-function showScreen(name) {
-  if (!screens.includes(name)) return;
-  screens.forEach(screen => {
-    const element = document.getElementById(screen + '-screen');
-    if (element) element.hidden = screen !== name;
+function parseGeneralDatabase(lang) {
+  return languageDatabases[lang].trim().split("\n").filter(Boolean).map((line, index) => {
+    const [word, translation, level] = line.split("|");
+    return { id:`general-${lang}-${index}`, word, translation, level, language:lang, school:false };
   });
-  if (name === 'dashboard') updateDashboard();
-  if (name === 'all-stats') updateAllStats();
-  if (name === 'unit-select') renderUnitList();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-function shuffle(items) {
-  const copy = [...items];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
+
+/* Schulvokabeln. Die Datensätze enthalten ausschließlich die Vokabeln,
+   nicht die Beispiele oder Zusatzinformationen aus dem Buch. */
+const unitVocabulary = {
+  acrossCultures: {
+    title:"Across cultures 1: The world speaks English",
+    sections:[{title:"The world speaks English", words:[
+      ["the English-speaking world","die englischsprachige Welt"],
+      ["English-speaking","englischsprachig"],
+      ["to communicate","kommunizieren"],
+      ["communication","Kommunikation"],
+      ["language","Sprache"],
+      ["native speaker","Muttersprachler/-in"],
+      ["official language","Amtssprache"],
+      ["to speak","sprechen"],
+      ["to understand","verstehen"],
+      ["to translate","übersetzen"],
+      ["translation","Übersetzung"],
+      ["accent","Akzent"],
+      ["to pronounce","aussprechen"],
+      ["pronunciation","Aussprache"],
+      ["vocabulary","Wortschatz"],
+      ["to learn by heart","auswendig lernen"],
+      ["to make progress","Fortschritte machen"],
+      ["fluent","fließend"],
+      ["fluently","fließend"],
+      ["to improve","verbessern"],
+      ["to apply (to)","gelten (für); zutreffen (auf)"],
+      ["to assist","helfen; vorantreiben"],
+      ["back","damals"],
+      ["civil rights","Bürgerrechte"],
+      ["the Dutch","das niederländische Volk"],
+      ["segregation","Rassentrennung"],
+      ["to be stuck","feststecken"],
+      ["to be said to (+ infinitive)","es heißt, dass"],
+      ["I can't help (+ -ing)","ich kann nicht anders, als"],
+      ["to have sth done","etw. machen lassen"],
+      ["to be in progress","im Gange sein"],
+      ["to bump into sb","jmdm. zufällig begegnen"],
+      ["to manage (to do sth)","es schaffen (etw. zu tun)"],
+      ["to be short of sth","etw. nicht genug haben"],
+      ["to pass (on)","weitergeben"],
+      ["to head (for/to)","sich auf den Weg machen (nach/zu)"],
+      ["to succeed (in)","Erfolg haben (bei); es schaffen"],
+      ["to trample (on)","trampeln (auf)"],
+      ["to resent sb/sth","jmdm./etw. übel nehmen"],
+      ["to place","platzieren"],
+      ["to bring up","ansprechen; zur Sprache bringen"],
+      ["to clear a case","einen Fall aufklären"],
+      ["to trace back","zurückverfolgen"],
+      ["responsibility","Verantwortung; Aufgabe"],
+      ["to take responsibility","Verantwortung übernehmen"],
+      ["to be responsible for","verantwortlich sein für"],
+      ["to apply for","sich bewerben um; beantragen"],
+      ["since","da; seit"],
+      ["the outback","das australische Hinterland; Outback"]
+    ]}]
+  },
+  unit1: {
+    title:"Unit 1: G'day Australia!",
+    sections:[
+      {title:"Check-in",words:[
+        ["G'day!","Guten Tag; Hallo; Hi"],
+        ["Australia","Australien"],
+        ["Australian","Australier/-in; australisch"],
+        ["Australia Day","Australientag"],
+        ["mate","Kumpel; Freund/-in"],
+        ["barbecue","Grillfest; Grill"],
+        ["barbie","Grillfest; Grill"],
+        ["the outback","das australische Hinterland; Outback"],
+        ["Aboriginal","Aborigine; Ureinwohner/-in"],
+        ["Aboriginal people","die australischen Ureinwohner"]
+      ]},
+      {title:"Station 1: Just me and my backpack",words:[
+        ["seashell","Muschel"],
+        ["the day after tomorrow","übermorgen"],
+        ["to overhear","zufällig mithören"],
+        ["terrace","Terrasse"],
+        ["bloke","Typ; Kerl"],
+        ["air ambulance","Rettungshubschrauber"],
+        ["satellite","Satellit"],
+        ["to cancel","absagen"],
+        ["hopefully","hoffentlich"],
+        ["to sting","stechen"],
+        ["box jellyfish","Würfelqualle"],
+        ["to beware","aufpassen; sich in Acht nehmen"],
+        ["shark","Hai"],
+        ["rip current","Brandungsrückströmung"],
+        ["to sweep","fegen; mitreißen"],
+        ["comforting","tröstend; beruhigend"],
+        ["opal","Opal"],
+        ["to succeed (in)","Erfolg haben (bei); es schaffen"],
+        ["to prevent","verhindern"],
+        ["to trample (on)","trampeln (auf)"],
+        ["That's fair enough.","Das ist durchaus verständlich."],
+        ["deadly","tödlich"],
+        ["spider","Spinne"],
+        ["heatwave","Hitzewelle"],
+        ["way back","vor langer Zeit; damals"],
+        ["plain","Ebene"]
+      ]},
+      {title:"Station 2: When did your folks get here?",words:[
+        ["folks","Eltern; Leute"],
+        ["to apply (for)","sich bewerben (um); beantragen"],
+        ["application","Bewerbung; Antrag"],
+        ["to immigrate","einwandern"],
+        ["immigrant","Einwanderer/-in"],
+        ["immigration","Einwanderung"],
+        ["to emigrate","auswandern"],
+        ["emigrant","Auswanderer/-in"],
+        ["to settle","sich niederlassen"],
+        ["settlement","Siedlung; Niederlassung"],
+        ["to migrate","wandern; migrieren"],
+        ["migration","Migration"],
+        ["to move","umziehen"],
+        ["to arrive","ankommen"],
+        ["to leave","verlassen; weggehen"],
+        ["to be born","geboren werden"],
+        ["generation","Generation"],
+        ["background","Hintergrund; Herkunft"],
+        ["祖先","Vorfahren"]
+      ]},
+      {title:"Station 3: The land owns us",words:[
+        ["land","Land"],
+        ["ownership","Besitz; Eigentum"],
+        ["to own","besitzen"],
+        ["traditional","traditionell"],
+        ["tradition","Tradition"],
+        ["culture","Kultur"],
+        ["custom","Brauch"],
+        ["belief","Glaube; Überzeugung"],
+        ["spiritual","spirituell"],
+        ["sacred","heilig"],
+        ["ancestor","Vorfahr/-in"],
+        ["community","Gemeinschaft"],
+        ["connection","Verbindung"],
+        ["to belong to","zu etw. gehören"],
+        ["to respect","respektieren"],
+        ["respect","Respekt"],
+        ["to protect","schützen"],
+        ["environment","Umwelt"],
+        ["nature","Natur"],
+        ["history","Geschichte"]
+      ]},
+      {title:"Skills: How to give a group presentation",words:[
+        ["Californian","kalifornisch; Kalifornier/-in"],
+        ["smooth","glatt; weich; geschmeidig"],
+        ["transition","Übergang"],
+        ["handout","Arbeitsblatt; Informationsblatt"],
+        ["Hawaiian","Hawaiianer/-in; hawaiianisch"],
+        ["to distract","ablenken"],
+        ["chart","Tabelle; Diagramm"],
+        ["graph","Diagramm; Schaubild"],
+        ["presentation","Präsentation; Vortrag"],
+        ["to present","präsentieren; vorstellen"],
+        ["to introduce","einführen; vorstellen"],
+        ["to conclude","abschließen"],
+        ["conclusion","Schlussfolgerung"],
+        ["to organize","organisieren"],
+        ["to prepare","vorbereiten"],
+        ["to explain","erklären"],
+        ["to summarize","zusammenfassen"],
+        ["to make eye contact","Blickkontakt herstellen"]
+      ]},
+      {title:"Unit task: Who are the Aussies? A group presentation",words:[
+        ["responsible","verantwortlich; verantwortungsvoll"],
+        ["recent","kürzlich; neueste/-r/-s; letzte/-r/-s"],
+        ["overview","Überblick"],
+        ["to enable sb to do sth","jmdm. ermöglichen, etw. zu tun"]
+      ]},
+      {title:"Story: Nona and me",words:[
+        ["determined","(fest) entschlossen; entschieden; zielstrebig"],
+        ["upright","aufrecht"],
+        ["walk","Gang"],
+        ["Miss","Fräulein (Anrede)"],
+        ["desperate","verzweifelt; hoffnungslos; ausweglos"],
+        ["to glow","leuchten; glühen"],
+        ["to sigh","seufzen"]
+      ]}
+    ]
+  }
+};
+
+/* Mehrere Beispielsätze je Wort. Die Auswahl rotiert pro Anzeige. */
+const exampleSentences = {
+  achieve:[
+    "She worked hard to achieve her goal.",
+    "You can achieve a lot with practice.",
+    "Our team wants to achieve something special."
+  ],
+  actual:[
+    "The actual reason was quite different.",
+    "What is the actual cost of the trip?",
+    "His actual job is more interesting than it sounds."
+  ],
+  admit:[
+    "He had to admit that he was wrong.",
+    "I admit that the task was difficult.",
+    "She didn't want to admit her mistake."
+  ],
+  afford:[
+    "We can't afford a new computer right now.",
+    "Can you afford to buy those shoes?",
+    "They could not afford the expensive hotel."
+  ],
+  although:[
+    "Although it was raining, we went outside.",
+    "Although she was tired, she kept studying.",
+    "He smiled although he was nervous."
+  ],
+  "the day after tomorrow":[
+    "We are leaving the day after tomorrow.",
+    "The match is the day after tomorrow.",
+    "I'll finish the project the day after tomorrow."
+  ],
+  "to overhear":[
+    "I overheard them talking about the trip.",
+    "She didn't mean to overhear the conversation.",
+    "We overheard an interesting discussion."
+  ],
+  terrace:[
+    "We had breakfast on the terrace.",
+    "The terrace has a beautiful view.",
+    "They sat outside on the terrace."
+  ],
+  hopefully:[
+    "Hopefully, the weather will be better tomorrow.",
+    "Hopefully, we can visit Australia one day.",
+    "The bus will hopefully arrive soon."
+  ],
+  "to sting":[
+    "Be careful, because some jellyfish can sting.",
+    "A bee can sting if it feels threatened.",
+    "The nettles may sting your skin."
+  ],
+  shark:[
+    "A shark was swimming near the boat.",
+    "Some sharks live close to the coast.",
+    "The documentary was about a great white shark."
+  ],
+  "to prevent":[
+    "The fence helps to prevent accidents.",
+    "We should prevent plastic from entering the ocean.",
+    "Good preparation can prevent mistakes."
+  ],
+  responsible:[
+    "Everyone is responsible for their own work.",
+    "She is responsible for organizing the presentation.",
+    "Being responsible means keeping your promises."
+  ],
+  recent:[
+    "Have you read the recent news?",
+    "Recent changes have improved the app.",
+    "The most recent episode was exciting."
+  ],
+  overview:[
+    "The teacher gave us an overview of the topic.",
+    "This chart provides an overview of the results.",
+    "Let's start with a short overview."
+  ],
+  "to enable sb to do sth":[
+    "The new system enables us to work faster.",
+    "This app enables students to practise vocabulary.",
+    "The map enables visitors to find the museum."
+  ],
+  determined:[
+    "She was determined to finish the race.",
+    "He remained determined despite the difficulties.",
+    "They are determined to improve their English."
+  ],
+  upright:[
+    "Please keep the box upright.",
+    "The bottle must stay upright.",
+    "He stood upright and looked ahead."
+  ],
+  desperate:[
+    "They were desperate to find a solution.",
+    "She felt desperate after losing her passport.",
+    "It was a desperate attempt to save the project."
+  ],
+  "to glow":[
+    "The stars seemed to glow in the dark.",
+    "The screen began to glow.",
+    "The windows glowed warmly at night."
+  ],
+  "to sigh":[
+    "He sighed with relief.",
+    "She sighed and closed the book.",
+    "I heard him sigh quietly."
+  ],
+  "G'day!":[
+    "G'day, mate! How are you?",
+    "He smiled and said, 'G'day!'",
+    "They greeted us with a friendly 'G'day!'"
+  ],
+  "box jellyfish":[
+    "A box jellyfish can be dangerous.",
+    "The warning sign showed a box jellyfish.",
+    "They learned about the box jellyfish at the aquarium."
+  ],
+  "rip current":[
+    "A rip current can pull swimmers away from the shore.",
+    "The beach has warning signs about rip currents.",
+    "Always follow the lifeguard's advice near a rip current."
+  ],
+  "heatwave":[
+    "The heatwave lasted for several days.",
+    "People looked for shade during the heatwave.",
+    "The heatwave made travelling difficult."
+  ],
+  "plain":[
+    "The cattle were grazing on the wide plain.",
+    "A river crossed the grassy plain.",
+    "The plain stretched as far as we could see."
+  ]
+};
+
+const exampleRotations = {};
+function getExample(word, translation) {
+  const key = word.toLowerCase();
+  const examples = exampleSentences[key] || [
+    `I learned the word "${word}" today.`,
+    `Can you use "${word}" in a sentence?`,
+    `We practised "${word}" in our English lesson.`
+  ];
+  const index = exampleRotations[key] || 0;
+  exampleRotations[key] = (index + 1) % examples.length;
+  return examples[index];
+}
+
+const state = {
+  xp:Number(localStorage.getItem("zuno_xp") || 0),
+  streak:Number(localStorage.getItem("zuno_streak") || 0),
+  learned:JSON.parse(localStorage.getItem("zuno_learned") || "[]"),
+  stats:JSON.parse(localStorage.getItem("zuno_stats") || "{}"),
+  session:[],
+  index:0,
+  correct:0,
+  wrong:0,
+  isSchool:false,
+  sessionLanguage:"en",
+  currentMode:"input",
+  answered:false
+};
+
+function saveState() {
+  localStorage.setItem("zuno_xp",state.xp);
+  localStorage.setItem("zuno_streak",state.streak);
+  localStorage.setItem("zuno_learned",JSON.stringify(state.learned));
+  localStorage.setItem("zuno_stats",JSON.stringify(state.stats));
+}
+function showOnly(id) {
+  ["dashboard","settings","unitSettings","exercise","result","statsPage"].forEach(x=>{
+    document.getElementById(x).classList.toggle("hidden",x!==id);
+  });
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function showDashboard() { showOnly("dashboard"); updateDashboard(); }
+function showGeneralSettings() { showOnly("settings"); }
+function showUnitSettings() { showOnly("unitSettings"); }
+function showStats() { renderStats(); showOnly("statsPage"); }
+
+function updateDashboard() {
+  document.getElementById("headerXP").textContent=state.xp;
+  document.getElementById("headerStreak").textContent=state.streak;
+  const allSchool = getAllSchoolWords();
+  const learnedSchool = allSchool.filter(w=>state.learned.includes(w.id)).length;
+  document.getElementById("learnedCount").textContent=`${learnedSchool} / ${allSchool.length} Wörter`;
+  document.getElementById("dashboardProgress").style.width=(allSchool.length?learnedSchool/allSchool.length*100:0)+"%";
+}
+function getAllSchoolWords() {
+  const words=[];
+  Object.entries(unitVocabulary).forEach(([unitKey,unit])=>{
+    unit.sections.forEach((section,sectionIndex)=>{
+      section.words.forEach(([word,translation],wordIndex)=>{
+        words.push({
+          id:`school-en-${unitKey}-${sectionIndex}-${wordIndex}`,
+          word,translation,language:"en",school:true,unitKey,sectionIndex
+        });
+      });
+    });
+  });
+  return words;
+}
+function getUnitWords(unitKey,sectionChoice) {
+  const unit=unitVocabulary[unitKey];
+  let result=[];
+  unit.sections.forEach((section,sectionIndex)=>{
+    if(sectionChoice==="all" || Number(sectionChoice)===sectionIndex) {
+      section.words.forEach(([word,translation],wordIndex)=>{
+        result.push({
+          id:`school-en-${unitKey}-${sectionIndex}-${wordIndex}`,
+          word,translation,language:"en",school:true,section:section.title
+        });
+      });
+    }
+  });
+  return result;
+}
+function startGeneral() {
+  const lang=document.getElementById("generalLanguage").value;
+  const level=document.getElementById("generalLevel").value;
+  const words=parseGeneralDatabase(lang).filter(w=>w.level===level);
+  if(!words.length) { alert("Für dieses Niveau sind gerade keine Wörter vorhanden."); return; }
+  startSession(shuffle(words),false,lang);
+}
+function refreshUnitSections() {
+  const key=document.getElementById("unitSelect").value;
+  const select=document.getElementById("unitSection");
+  select.innerHTML='<option value="all">Alle Abschnitte</option>';
+  unitVocabulary[key].sections.forEach((section,index)=>{
+    const option=document.createElement("option");
+    option.value=String(index);
+    option.textContent=section.title;
+    select.appendChild(option);
+  });
+}
+document.getElementById("unitSelect").addEventListener("change",refreshUnitSections);
+refreshUnitSections();
+
+function startUnit() {
+  const key=document.getElementById("unitSelect").value;
+  const section=document.getElementById("unitSection").value;
+  const words=getUnitWords(key,section);
+  if(!words.length) { alert("In diesem Abschnitt gibt es noch keine Vokabeln."); return; }
+  startSession(shuffle(words),true,"en");
+}
+function shuffle(array) {
+  const copy=[...array];
+  for(let i=copy.length-1;i>0;i--) {
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
   }
   return copy;
 }
-function renderUnitList() {
-  const list = document.getElementById('unit-list');
-  list.replaceChildren();
-  unitInfo.forEach(unit => {
-    const words = vocabulary.filter(item => item.unit === unit.id);
-    const count = words.length;
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'unit-choice';
-    button.disabled = count === 0;
-    const copy = document.createElement('span');
-    const strong = document.createElement('strong');
-    strong.textContent = unit.icon + '  ' + (unit.id === 0 ? 'EXTRA' : 'UNIT ' + String(unit.id).padStart(2, '0')) + ' · ' + unit.title;
-    const small = document.createElement('small');
-    small.textContent = count ? count + (count === 1 ? ' Vokabel' : ' Vokabeln') + (unit.subtitle ? ' · ' + unit.subtitle : '') : 'Demnächst';
-    copy.append(strong, small);
-    const arrow = document.createElement('span');
-    arrow.className = 'arrow';
-    arrow.textContent = count ? '→' : '·';
-    button.append(copy, arrow);
-    button.addEventListener('click', () => startUnitPractice(unit.id));
-    list.append(button);
-  });
-}
-function openUnit(unitId) {
-  const words = vocabulary.filter(item => item.unit === unitId);
-  if (words.length) startUnitPractice(unitId);
-  else showScreen('empty-unit');
-}
-function beginSession(words, mode, returnScreen) {
-  if (!words.length) {
-    showScreen('empty-unit');
-    return;
-  }
-  sessionWords = shuffle(words);
-  sessionIndex = 0;
-  sessionCorrect = 0;
-  sessionEarnedXP = 0;
-  hasAnsweredCurrent = false;
-  streakUpdatedThisSession = false;
-  sessionStartedAt = Date.now();
-  sessionTimeRecorded = false;
-  currentMode = mode;
-  exerciseReturnScreen = returnScreen;
-  document.getElementById('session-mode').textContent = mode === 'general'
-    ? (practiceLanguage === 'fr' ? 'FRANZÖSISCH · ' : 'ENGLISCH · ') + document.getElementById('level-select').value
-    : (words[0].unit === 0 ? 'ACROSS CULTURES 1' : 'UNIT 01 · G’DAY AUSTRALIA!');
+function startSession(words,isSchool,lang) {
+  state.session=words;
+  state.index=0;
+  state.correct=0;
+  state.wrong=0;
+  state.isSchool=isSchool;
+  state.sessionLanguage=lang;
+  state.answered=false;
+  showOnly("exercise");
   renderQuestion();
-  showScreen('exercise');
 }
-function setPracticeLanguage(language) {
-  practiceLanguage = language === 'fr' ? 'fr' : 'en';
-  const toggle = document.getElementById('language-toggle');
-  if (toggle) toggle.textContent = practiceLanguage === 'fr' ? '🇫🇷 Französisch · wechseln' : '🇬🇧 Englisch · wechseln';
-  try { localStorage.setItem('zuno-language', practiceLanguage); } catch (error) {}
-}
-function togglePracticeLanguage() {
-  setPracticeLanguage(practiceLanguage === 'en' ? 'fr' : 'en');
-}
-function getGeneralWords() {
-  const level = document.getElementById('level-select').value;
-  return languageDatabases[practiceLanguage]
-    .map((item, index) => ({ item, index }))
-    .filter(entry => entry.item.level === level)
-    .map(({ item, index }) => ({
-      id: practiceLanguage + '-' + item.level + '-' + index + '-' + item.word,
-      word: item.word,
-      answers: [item.de],
-      sentenceStart: '',
-      sentenceEnd: '',
-      unit: 0,
-      level: item.level,
-      language: practiceLanguage
-    }));
-}
-function startGeneralPractice() {
-  const words = getGeneralWords();
-  beginSession(words, 'general', 'modes');
-}
-function startUnitPractice(unitId) {
-  const words = vocabulary.filter(item => item.unit === unitId);
-  if (!words.length) {
-    showScreen('empty-unit');
-    return;
-  }
-  beginSession(words, 'unit', 'unit-select');
-}
+function getModes() { return ["input","choice","reverse"]; }
 function renderQuestion() {
-  const item = sessionWords[sessionIndex];
-  if (!item) return finishSession();
-  hasAnsweredCurrent = false;
-  document.getElementById('question-count').textContent = (sessionIndex + 1) + ' / ' + sessionWords.length;
-  const sentence = document.getElementById('sentence-text');
-  sentence.replaceChildren();
-
-  if (currentMode === 'unit' && item.sectionTitle) {
-    const section = document.createElement('span');
-    section.style.cssText = 'display:block;margin-bottom:12px;font-size:12px;letter-spacing:.5px;color:#EAE7FF;font-weight:750;';
-    section.textContent = item.sectionTitle;
-    sentence.append(section);
-  }
-
-  sentence.append(document.createTextNode(item.sentenceStart || ''));
-  const highlight = document.createElement('span');
-  highlight.className = 'highlight-word';
-  highlight.textContent = item.word;
-  sentence.append(highlight);
-  if (item.sentenceEnd) sentence.append(document.createTextNode(item.sentenceEnd));
-
-  const audio = document.createElement('button');
-  audio.type = 'button';
-  audio.className = 'word-audio';
-  audio.setAttribute('aria-label', 'Wort vorlesen');
-  audio.title = 'Wort vorlesen';
-  audio.textContent = '🔊';
-  audio.addEventListener('click', () => speakWord(item.word, item.language || 'en'));
-  sentence.append(audio);
-
-  const input = document.getElementById('answer-input');
-  input.value = '';
-  input.disabled = false;
-  document.getElementById('feedback').textContent = '';
-  document.getElementById('feedback').className = 'feedback';
-  const checkButton = document.getElementById('check-button');
-  checkButton.textContent = 'Überprüfen';
-  checkButton.disabled = false;
-  input.focus({ preventScroll: true });
-}
-function speakWord(word, language = 'en') {
-  if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
-    document.getElementById('feedback').textContent = 'Audio wird von diesem Browser leider nicht unterstützt.';
-    document.getElementById('feedback').className = 'feedback incorrect';
-    return;
-  }
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(word);
-  utterance.lang = language === 'fr' ? 'fr-FR' : 'en-GB';
-  utterance.rate = 0.88;
-  window.speechSynthesis.speak(utterance);
-}
-function normalizeAnswer(value) {
-  return value.trim().toLocaleLowerCase('de-DE').normalize('NFC').replace(/\s+/g, ' ');
-}
-function updateDailyStreak() {
-  if (streakUpdatedThisSession) return;
-  const now = new Date();
-  const dateKey = date => [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, '0'),
-    String(date.getDate()).padStart(2, '0')
-  ].join('-');
-  const today = dateKey(now);
-  if (lastPracticeDate !== today) {
-    const yesterday = new Date(now);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayKey = dateKey(yesterday);
-    streak = lastPracticeDate === yesterdayKey ? streak + 1 : 1;
-    bestStreak = Math.max(bestStreak, streak);
-    lastPracticeDate = today;
-    saveProgress();
-    updateDashboard();
-  }
-  streakUpdatedThisSession = true;
-}
-function checkAnswer(event) {
-  event.preventDefault();
-  if (hasAnsweredCurrent) {
-    nextQuestion();
-    return;
-  }
-  const input = document.getElementById('answer-input');
-  const userAnswer = normalizeAnswer(input.value);
-  const feedback = document.getElementById('feedback');
-
-  if (!userAnswer) {
-    feedback.textContent = 'Gib zuerst eine Übersetzung ein.';
-    feedback.className = 'feedback incorrect';
-    input.focus();
-    return;
-  }
-
-  const item = sessionWords[sessionIndex];
-  const accepted = item.answers.map(normalizeAnswer);
-  if (accepted.includes(userAnswer)) {
-    feedback.textContent = 'Richtig! Sehr gut. ✨';
-    feedback.className = 'feedback correct';
-    sessionCorrect++;
-    totalCorrect++;
-    updateDailyStreak();
-    sessionEarnedXP += 10;
-    xp += 10;
-    if (!learnedIds.includes(item.id)) learnedIds.push(item.id);
-    saveProgress();
-    updateDashboard();
+  const word=state.session[state.index];
+  if(!word) return finishSession();
+  state.answered=false;
+  document.getElementById("questionCounter").textContent=`${state.index+1} / ${state.session.length}`;
+  document.getElementById("lessonProgress").style.width=(state.index/state.session.length*100)+"%";
+  document.getElementById("feedbackArea").innerHTML="";
+  document.getElementById("nextButton").classList.add("hidden");
+  const modes=getModes();
+  state.currentMode=modes[state.index % modes.length];
+  const target=document.getElementById("targetWord");
+  const example=document.getElementById("exampleSentence");
+  if(state.currentMode==="reverse") {
+    document.getElementById("modeLabel").textContent="Wie heißt das auf Englisch/Französisch?";
+    target.textContent=word.translation;
+    example.textContent=word.word;
   } else {
-    feedback.textContent = 'Noch nicht ganz. Die richtige Übersetzung lautet: ' + item.answers.join(' / ');
-    feedback.className = 'feedback incorrect';
+    document.getElementById("modeLabel").textContent=state.currentMode==="choice"?"Wähle die richtige Übersetzung":"Übersetze das Wort";
+    target.textContent=word.word;
+    example.textContent=getExample(word.word,word.translation);
   }
-
-  hasAnsweredCurrent = true;
-  input.disabled = true;
-  document.getElementById('check-button').textContent = sessionIndex === sessionWords.length - 1
-    ? 'Session beenden'
-    : 'Nächstes Wort →';
+  example.classList.remove("hidden");
+  renderAnswerArea(word);
+}
+function renderAnswerArea(word) {
+  const area=document.getElementById("answerArea");
+  area.innerHTML="";
+  if(state.currentMode==="choice") {
+    const options=makeOptions(word);
+    const wrapper=document.createElement("div");
+    wrapper.className="answer-options";
+    options.forEach(option=>{
+      const button=document.createElement("button");
+      button.className="option";
+      button.textContent=option;
+      button.onclick=()=>checkAnswer(option,word);
+      wrapper.appendChild(button);
+    });
+    area.appendChild(wrapper);
+  } else {
+    const input=document.createElement("input");
+    input.type="text";
+    input.id="answerInput";
+    input.placeholder=state.currentMode==="reverse"?"Englisches Wort eingeben …":"Deutsche Übersetzung eingeben …";
+    input.autocomplete="off";
+    input.addEventListener("keydown",e=>{if(e.key==="Enter") submitTypedAnswer();});
+    area.appendChild(input);
+    const button=document.createElement("button");
+    button.className="primary";
+    button.style.marginTop="12px";
+    button.textContent="Antwort prüfen";
+    button.onclick=submitTypedAnswer;
+    area.appendChild(button);
+    input.focus();
+  }
+}
+function makeOptions(correctWord) {
+  const pool=state.session.filter(w=>w.id!==correctWord.id).map(w=>w.translation);
+  const distractors=shuffle([...new Set(pool)]).slice(0,3);
+  return shuffle([...distractors,correctWord.translation]);
+}
+function submitTypedAnswer() {
+  const input=document.getElementById("answerInput");
+  if(!input) return;
+  const value=input.value.trim();
+  if(!value) return;
+  const word=state.session[state.index];
+  const expected=state.currentMode==="reverse"?word.word:word.translation;
+  checkAnswer(value,word,expected);
+}
+function normalize(text) {
+  return text.toLowerCase().trim().replace(/[.,!?;:]/g,"").replace(/\s+/g," ");
+}
+function checkAnswer(answer,word,expected) {
+  if(state.answered) return;
+  state.answered=true;
+  const correctAnswer=expected || (state.currentMode==="reverse"?word.word:word.translation);
+  const isCorrect=normalize(answer)===normalize(correctAnswer);
+  if(isCorrect) {
+    state.correct++;
+    state.xp+=10;
+    if(word.school) {
+      state.learned=[...new Set([...state.learned,word.id])];
+    }
+  } else {
+    state.wrong++;
+  }
+  if(word.school) recordSchoolAnswer(word,isCorrect);
+  saveState();
+  document.querySelectorAll(".option").forEach(button=>{
+    button.disabled=true;
+    if(normalize(button.textContent)===normalize(correctAnswer)) button.classList.add("correct");
+    else if(normalize(button.textContent)===normalize(answer)) button.classList.add("wrong");
+  });
+  document.querySelectorAll("#answerArea input,#answerArea button").forEach(el=>el.disabled=true);
+  const feedback=document.getElementById("feedbackArea");
+  feedback.innerHTML=`<div class="feedback ${isCorrect?"good":"bad"}">${isCorrect?"✓ Richtig! +10 XP":"✕ Nicht ganz. Richtig wäre: "+escapeHTML(correctAnswer)}</div>`;
+  document.getElementById("nextButton").classList.remove("hidden");
+  document.getElementById("nextButton").focus();
+  updateDashboard();
+}
+function recordSchoolAnswer(word,isCorrect) {
+  const key=word.language;
+  if(!state.stats[key]) state.stats[key]={correct:0,wrong:0};
+  if(isCorrect) state.stats[key].correct++;
+  else state.stats[key].wrong++;
 }
 function nextQuestion() {
-  if (!hasAnsweredCurrent) return;
-  sessionIndex++;
-  if (sessionIndex >= sessionWords.length) {
-    finishSession();
-    return;
-  }
+  state.index++;
   renderQuestion();
 }
 function finishSession() {
-  if (!sessionTimeRecorded) {
-    sessionsCompleted++;
-    recordSessionTime();
-    saveProgress();
-  }
-  document.getElementById('result-summary').textContent = 'Du hast ' + sessionCorrect + ' von ' + sessionWords.length + ' richtig beantwortet.';
-  document.getElementById('result-xp').textContent = '+' + sessionEarnedXP + ' XP';
-  showScreen('result');
+  const total=state.correct+state.wrong;
+  document.getElementById("resultTitle").textContent=state.correct===total?"Perfekt gemacht!":"Lesson geschafft!";
+  document.getElementById("resultEmoji").textContent=state.correct===total?"🏆":state.correct/Math.max(total,1)>=.7?"🎉":"💪";
+  document.getElementById("resultScore").textContent=`${state.correct} / ${total} richtig`;
+  document.getElementById("resultPercent").textContent=`${Math.round(state.correct/Math.max(total,1)*100)} % Trefferquote`;
+  document.getElementById("resultCorrect").textContent=state.correct;
+  document.getElementById("resultWrong").textContent=state.wrong;
+  document.getElementById("resultXP").textContent=state.correct*10;
+  showOnly("result");
+  saveState();
 }
 function leaveExercise() {
-  recordSessionTime();
-  saveProgress();
-  showScreen(exerciseReturnScreen);
+  if(confirm("Lesson wirklich beenden? Dein bisheriges Ergebnis wird gespeichert.")) finishSession();
 }
-
-document.getElementById('answer-form').addEventListener('submit', checkAnswer);
-setPracticeLanguage(practiceLanguage);
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+}
+function gradeFromPercent(percent) {
+  if(percent>=90) return 1;
+  if(percent>=75) return 2;
+  if(percent>=60) return 3;
+  if(percent>=50) return 4;
+  if(percent>=25) return 5;
+  return 6;
+}
+function gradeLabel(percent,total) {
+  return total===0?"–":String(gradeFromPercent(percent));
+}
+function statCard(label,value,sub="") {
+  return `<div class="stat"><span>${label}</span><strong>${value}</strong>${sub?`<div class="small">${sub}</div>`:""}</div>`;
+}
+function renderStats() {
+  const en=state.stats.en||{correct:0,wrong:0};
+  const fr=state.stats.fr||{correct:0,wrong:0};
+  const totalCorrect=en.correct+fr.correct;
+  const totalWrong=en.wrong+fr.wrong;
+  const total=totalCorrect+totalWrong;
+  const percent=total?Math.round(totalCorrect/total*100):0;
+  document.getElementById("overallGrade").textContent=gradeLabel(percent,total);
+  document.getElementById("overallAccuracy").textContent=total?percent+"%":"–";
+  document.getElementById("overallAccuracyBar").style.width=percent+"%";
+  document.getElementById("overallTotals").textContent=`${totalCorrect} richtige von ${total} beantworteten Schulvokabel-Fragen`;
+  document.getElementById("allSchoolStats").innerHTML=
+    statCard("Richtig",totalCorrect)+statCard("Falsch",totalWrong)+statCard("Beantwortet",total)+statCard("Trefferquote",total?percent+"%":"–");
+  renderLanguageStats("englishSchoolStats",en);
+  renderLanguageStats("frenchSchoolStats",fr);
+  const sessions=Number(localStorage.getItem("zuno_sessions")||0);
+  document.getElementById("extraStats").innerHTML=
+    statCard("Gesamt-XP",state.xp)+statCard("Gelernte Wörter",getAllSchoolWords().filter(w=>state.learned.includes(w.id)).length)+statCard("Abgeschlossene Lessons",sessions);
+}
+function renderLanguageStats(id,data) {
+  const total=data.correct+data.wrong;
+  const percent=total?Math.round(data.correct/total*100):0;
+  document.getElementById(id).innerHTML=
+    statCard("Richtig",data.correct)+
+    statCard("Falsch",data.wrong)+
+    statCard("Beantwortet",total)+
+    statCard("Trefferquote",total?percent+"%":"–")+
+    statCard("Schulnote",total?gradeFromPercent(percent):"–");
+}
+function speakCurrentWord() {
+  if(!("speechSynthesis" in window)) {
+    alert("Die Audiofunktion wird von diesem Browser leider nicht unterstützt.");
+    return;
+  }
+  const word=state.session[state.index];
+  const text=state.currentMode==="reverse"?word.translation:word.word;
+  window.speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance(text);
+  utterance.lang=word.language==="fr"?"fr-FR":"en-AU";
+  utterance.rate=0.88;
+  utterance.pitch=1.02;
+  const voices=window.speechSynthesis.getVoices();
+  const matching=voices.filter(v=>v.lang.toLowerCase().startsWith(word.language==="fr"?"fr":"en"));
+  const preferred=matching.find(v=>/siri|enhanced|premium|natural/i.test(v.name)) ||
+    matching.find(v=>word.language==="en" && /Australia|United Kingdom/i.test(v.name)) ||
+    matching[0];
+  if(preferred) utterance.voice=preferred;
+  window.speechSynthesis.speak(utterance);
+}
+function updateGreeting() {
+  const hour=new Date().getHours();
+  document.getElementById("greeting").textContent=hour<11?"Guten Morgen!":hour<18?"Schön, dass du da bist!":"Guten Abend!";
+}
+updateGreeting();
 updateDashboard();
-showScreen('dashboard');
+if("speechSynthesis" in window) {
+  window.speechSynthesis.onvoiceschanged=()=>{};
+}
 </script>
 </body>
 </html>
