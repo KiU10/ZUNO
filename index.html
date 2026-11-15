@@ -4,24 +4,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZUNO - Learn your way</title>
+<title>ZUNO | Learn your way</title>
 
 <style>
 :root {
-  --lime: #B9F18C;
-  --ink: #17251C;
-  --cream: #F3F0E7;
-  --orange: #FF875E;
   --purple: #8276E8;
+  --purple-dark: #6558CC;
+  --background: #F0F1F4;
+  --ink: #20212A;
+  --lime: #B9F18C;
+  --orange: #FF875E;
+  --white: #FFFFFF;
+  --muted: #777987;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
-  background: var(--cream);
+  background: var(--background);
   color: var(--ink);
-  font-family: Arial, sans-serif;
+  font-family: Inter, Arial, sans-serif;
 }
 
 header {
@@ -32,23 +37,26 @@ header {
 }
 
 .logo {
-  font-size: 29px;
+  font-size: 30px;
   font-weight: 900;
   letter-spacing: -2px;
 }
 
-.logo span { color: #719D4D; }
+.logo span {
+  color: var(--purple);
+}
 
 .stats {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 .stat {
   background: white;
-  padding: 10px 14px;
-  border-radius: 14px;
+  padding: 11px 15px;
+  border-radius: 13px;
   font-weight: bold;
+  font-size: 14px;
 }
 
 main {
@@ -62,41 +70,49 @@ main {
 }
 
 .greeting p {
-  color: #718075;
-  margin-bottom: 5px;
-}
-
-h1 {
-  font-size: clamp(30px, 6vw, 46px);
-  letter-spacing: -2px;
+  color: var(--muted);
   margin: 5px 0;
 }
 
+.greeting .eyebrow {
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+h1 {
+  font-size: clamp(32px, 6vw, 48px);
+  letter-spacing: -2px;
+  margin: 8px 0;
+}
+
 .hero {
-  background: var(--ink);
+  background: var(--purple);
   color: white;
   border-radius: 25px;
-  padding: 32px;
+  padding: 34px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
+  box-shadow: 0 12px 30px #8276E830;
 }
 
 .hero h2 {
-  font-size: 28px;
-  margin: 8px 0;
+  font-size: 30px;
+  margin: 12px 0 8px;
+  letter-spacing: -1px;
 }
 
 .hero p {
-  color: #C2CEC4;
+  color: #F0EDFF;
 }
 
 .tag {
-  color: var(--lime);
   font-size: 12px;
   font-weight: bold;
   letter-spacing: 2px;
+  color: #E5E1FF;
 }
 
 button {
@@ -112,10 +128,16 @@ button {
   padding: 15px 23px;
   border-radius: 13px;
   margin-top: 12px;
+  transition: transform .2s;
+}
+
+.primary:hover {
+  transform: translateY(-2px);
 }
 
 .symbol {
-  font-size: 85px;
+  font-size: 90px;
+  color: var(--lime);
 }
 
 .section-title {
@@ -124,10 +146,11 @@ button {
   letter-spacing: -1px;
 }
 
-.progress-card {
-  background: white;
-  padding: 23px;
+.progress-card,
+.unit {
+  background: var(--white);
   border-radius: 20px;
+  padding: 23px;
 }
 
 .progress-top {
@@ -139,7 +162,7 @@ button {
 
 .bar {
   height: 11px;
-  background: #E8EDE6;
+  background: #E9E8F0;
   border-radius: 20px;
   margin-top: 15px;
   overflow: hidden;
@@ -148,7 +171,7 @@ button {
 .fill {
   width: 15%;
   height: 100%;
-  background: #9AD66E;
+  background: var(--purple);
   border-radius: 20px;
 }
 
@@ -159,13 +182,16 @@ button {
 }
 
 .unit {
-  background: white;
-  border-radius: 20px;
-  padding: 22px;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.unit:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px #20212A10;
 }
 
 .unit-number {
-  color: #849087;
+  color: var(--muted);
   font-size: 12px;
   font-weight: bold;
 }
@@ -176,27 +202,42 @@ button {
 }
 
 .unit p {
-  color: #849087;
+  color: var(--muted);
   font-size: 14px;
 }
 
 .unit-icon {
-  font-size: 28px;
+  font-size: 29px;
+  margin-bottom: 10px;
 }
 
 footer {
   text-align: center;
   padding: 40px 15px;
-  color: #849087;
+  color: var(--muted);
   font-size: 13px;
 }
 
 @media(max-width: 600px) {
-  header { padding: 18px; }
-  main { margin-top: 20px; }
-  .hero { padding: 24px; }
-  .symbol { font-size: 55px; }
-  .units { grid-template-columns: 1fr; }
+  header {
+    padding: 18px;
+  }
+
+  main {
+    margin-top: 20px;
+  }
+
+  .hero {
+    padding: 25px;
+  }
+
+  .symbol {
+    font-size: 58px;
+  }
+
+  .units {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
 </head>
@@ -205,6 +246,7 @@ footer {
 
 <header>
   <div class="logo">ZU<span>NO.</span></div>
+
   <div class="stats">
     <div class="stat">⚡ 0 XP</div>
     <div class="stat">🔥 0</div>
@@ -214,7 +256,7 @@ footer {
 <main>
 
   <div class="greeting">
-    <p>YOUR LEARNING SPACE</p>
+    <p class="eyebrow">YOUR LEARNING SPACE</p>
     <h1>Ready to grow?</h1>
     <p>Small steps. Big progress.</p>
   </div>
@@ -224,10 +266,13 @@ footer {
       <div class="tag">YOUR NEXT CHALLENGE</div>
       <h2>Time to learn.</h2>
       <p>Your English journey starts here.</p>
-      <button class="primary" onclick="alert('Your first lesson is coming soon!')">
+
+      <button class="primary"
+        onclick="alert('Welcome to ZUNO! Your first lesson is coming soon.')">
         Start learning →
       </button>
     </div>
+
     <img src="IMG_2557.png" alt="ZUNO Axolotl" style="width:150px; height:auto;">
   </section>
 
@@ -238,6 +283,7 @@ footer {
       <span>Vocabulary journey</span>
       <span>0%</span>
     </div>
+
     <div class="bar">
       <div class="fill"></div>
     </div>
@@ -246,6 +292,7 @@ footer {
   <h2 class="section-title">Explore your units</h2>
 
   <section class="units">
+
     <div class="unit">
       <div class="unit-icon">🌍</div>
       <div class="unit-number">UNIT 01</div>
@@ -273,6 +320,7 @@ footer {
       <h3>More to explore</h3>
       <p>Vocabulary · Coming soon</p>
     </div>
+
   </section>
 
 </main>
