@@ -19,10 +19,8 @@
   --line: #E5E5EC;
   --shadow: 0 12px 32px rgba(32, 33, 42, .07);
 }
-
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-
 body {
   margin: 0;
   min-height: 100vh;
@@ -30,14 +28,12 @@ body {
   color: var(--ink);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
-
 button, input { font: inherit; }
 button { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, input:focus-visible {
   outline: 3px solid rgba(130, 118, 232, .45);
   outline-offset: 3px;
 }
-
 header {
   width: min(1120px, 100%);
   margin: 0 auto;
@@ -58,7 +54,19 @@ header {
   cursor: pointer;
 }
 .logo span { color: var(--purple); }
+.header-actions { display: flex; align-items: center; gap: 9px; }
 .stats { display: flex; gap: 9px; }
+.stats-button {
+  border: 0;
+  border-radius: 13px;
+  padding: 10px 14px;
+  background: var(--white);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.stats-button:hover { background: #EAE7FF; }
 .stat {
   background: var(--white);
   border-radius: 13px;
@@ -67,7 +75,6 @@ header {
   font-weight: 800;
   white-space: nowrap;
 }
-
 main {
   width: min(1000px, 100%);
   margin: 26px auto 0;
@@ -87,7 +94,6 @@ main {
   letter-spacing: -2.5px;
 }
 .greeting p:last-child { margin: 0; color: var(--muted); }
-
 .hero {
   min-height: 235px;
   padding: 32px 38px;
@@ -126,7 +132,6 @@ main {
   color: var(--ink);
 }
 .primary:hover, .secondary:hover, .answer-button:hover, .mode-card:hover, .unit-card:hover { transform: translateY(-2px); }
-
 .section-title { margin: 36px 0 15px; font-size: 22px; letter-spacing: -.7px; }
 .progress-card, .unit-card, .mode-card, .small-card {
   background: var(--white);
@@ -144,7 +149,6 @@ main {
 .unit-number { color: var(--muted); font-size: 11px; font-weight: 850; letter-spacing: 1.4px; }
 .unit-card h3, .mode-card h3 { margin: 8px 0 5px; font-size: 19px; }
 .unit-card p, .mode-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
-
 .page-heading { margin: 12px 0 25px; }
 .page-heading h1 { margin: 7px 0; font-size: clamp(30px, 5vw, 42px); letter-spacing: -1.8px; }
 .page-heading p { margin: 0; color: var(--muted); }
@@ -160,7 +164,26 @@ main {
 .mode-card h3 { font-size: 21px; }
 .mode-card .card-arrow { display: block; margin-top: 17px; color: var(--purple); font-size: 14px; }
 .note { margin-top: 18px; color: var(--muted); font-size: 12px; line-height: 1.55; }
-
+.practice-settings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 0 18px;
+}
+.setting-group { padding: 17px 18px; background: var(--white); border-radius: 16px; }
+.setting-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 850; }
+.setting-group select, .language-toggle {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 15px;
+  text-align: left;
+}
+.language-toggle { cursor: pointer; font-weight: 800; }
+.language-toggle:hover { background: #F0EDFF; border-color: var(--purple); }
 .unit-list { display: grid; gap: 12px; }
 .unit-choice {
   width: 100%;
@@ -180,8 +203,6 @@ main {
 .unit-choice strong { display: block; margin-bottom: 4px; }
 .unit-choice small { color: var(--muted); }
 .unit-choice .arrow { color: var(--purple); font-size: 20px; }
-
-/* The exercise card is intentionally lavender with white text. */
 .exercise-card {
   max-width: 720px;
   margin: 0 auto;
@@ -228,7 +249,12 @@ main {
 .feedback.incorrect { background: #FFE0D7; color: #743522; }
 .exercise-footer { max-width: 720px; margin: 14px auto 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-size: 12px; }
 .text-button { padding: 8px 0; border: 0; background: transparent; color: var(--muted); font-weight: 750; cursor: pointer; }
-
+.all-stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.all-stat-card { min-height: 130px; padding: 21px; border-radius: 19px; background: var(--white); }
+.all-stat-icon { font-size: 24px; }
+.all-stat-value { margin-top: 12px; font-size: clamp(25px, 4vw, 34px); font-weight: 900; letter-spacing: -1.2px; }
+.all-stat-label { margin-top: 3px; color: var(--muted); font-size: 13px; font-weight: 700; }
+.stats-note { margin-top: 17px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .result-card { max-width: 600px; margin: 0 auto; padding: 34px; border-radius: 24px; background: var(--white); text-align: center; box-shadow: var(--shadow); }
 .result-icon { font-size: 45px; }
 .result-card h2 { margin: 10px 0 7px; font-size: 29px; letter-spacing: -1px; }
@@ -236,7 +262,6 @@ main {
 .result-xp { margin: 20px 0; color: var(--purple-dark); font-size: 25px; font-weight: 900; }
 .result-card .primary { margin-top: 5px; }
 footer { padding: 25px 15px 35px; color: var(--muted); text-align: center; font-size: 12px; }
-
 @media (max-width: 620px) {
   header { padding: 17px 18px; }
   main { margin-top: 18px; padding: 0 18px 35px; }
@@ -245,7 +270,9 @@ footer { padding: 25px 15px 35px; color: var(--muted); text-align: center; font-
   .hero { min-height: 205px; padding: 24px; border-radius: 21px; }
   .hero h2 { font-size: 27px; }
   .mascot { width: 105px; max-height: 135px; }
-  .units, .mode-grid { grid-template-columns: 1fr; }
+  .units, .mode-grid, .practice-settings { grid-template-columns: 1fr; }
+  .all-stats-grid { grid-template-columns: 1fr 1fr; }
+  .stats-button { padding: 9px 10px; font-size: 12px; }
   .mode-card { min-height: 145px; }
   .exercise-card { border-radius: 21px; }
 }
@@ -263,140 +290,185 @@ footer { padding: 25px 15px 35px; color: var(--muted); text-align: center; font-
 <body>
 <header>
   <button class="logo" type="button" onclick="showScreen('dashboard')" aria-label="Zur Startseite">ZU<span>NO.</span></button>
-  <div class="stats" aria-label="Dein Lernstand">
-    <div class="stat">⚡ <span id="xp-value">0</span> XP</div>
-    <div class="stat">🔥 <span id="streak-value">0</span></div>
+  <div class="header-actions">
+    <button class="stats-button" type="button" onclick="showScreen('all-stats')">📊 Statistik</button>
+    <div class="stats" aria-label="Dein Lernstand">
+      <div class="stat">⚡ <span id="xp-value">0</span> XP</div>
+      <div class="stat">🔥 <span id="streak-value">0</span></div>
+    </div>
   </div>
 </header>
 
 <main>
   <section id="dashboard-screen">
     <div class="greeting">
-      <p class="eyebrow">YOUR LEARNING SPACE</p>
-      <h1>Ready to grow?</h1>
-      <p>Small steps. Big progress.</p>
+      <p class="eyebrow">DEIN LERNBEREICH</p>
+      <h1>Bereit loszulegen?</h1>
+      <p>Kleine Schritte. Große Fortschritte.</p>
     </div>
-
     <section class="hero" aria-label="Deine nächste Lernsession">
       <div class="hero-copy">
-        <div class="tag">YOUR NEXT CHALLENGE</div>
-        <h2>Time to learn.</h2>
-        <p>Your English journey starts here.</p>
-        <button class="primary" type="button" onclick="showScreen('modes')">Start learning →</button>
+        <div class="tag">DEINE NÄCHSTE HERAUSFORDERUNG</div>
+        <h2>Zeit zum Lernen.</h2>
+        <p>Deine Sprachreise beginnt hier.</p>
+        <button class="primary" type="button" onclick="showScreen('modes')">Jetzt lernen →</button>
       </div>
       <img class="mascot" src="IMG_2557.png" alt="ZUNO Axolotl" onerror="this.hidden=true">
     </section>
-
-    <h2 class="section-title">Your progress</h2>
+    <h2 class="section-title">Dein Fortschritt</h2>
     <section class="progress-card" aria-label="Dein Lernfortschritt">
-      <div class="progress-top"><span>Vocabulary journey</span><span id="progress-label">0%</span></div>
+      <div class="progress-top"><span>Wortschatz-Fortschritt</span><span id="progress-label">0%</span></div>
       <div class="bar"><div class="fill" id="progress-fill"></div></div>
     </section>
-
-    <h2 class="section-title">Explore your units</h2>
+    <h2 class="section-title">Entdecke deine Units</h2>
     <section class="units">
       <button class="unit-card" type="button" onclick="openUnit(1)">
-        <div class="unit-icon">🌍</div><div class="unit-number">UNIT 01</div><h3>Our world</h3><p>Vocabulary · <span id="unit-1-count">1 word</span></p>
+        <div class="unit-icon">🌍</div><div class="unit-number">UNIT 01</div><h3>Unsere Welt</h3><p>Wortschatz · <span id="unit-1-count">1 Wort</span></p>
       </button>
       <button class="unit-card" type="button" onclick="openUnit(2)">
-        <div class="unit-icon">🎭</div><div class="unit-number">UNIT 02</div><h3>Identity</h3><p>Vocabulary · Coming soon</p>
+        <div class="unit-icon">🎭</div><div class="unit-number">UNIT 02</div><h3>Identität</h3><p>Wortschatz · Demnächst</p>
       </button>
       <button class="unit-card" type="button" onclick="openUnit(3)">
-        <div class="unit-icon">🚀</div><div class="unit-number">UNIT 03</div><h3>Future</h3><p>Vocabulary · Coming soon</p>
+        <div class="unit-icon">🚀</div><div class="unit-number">UNIT 03</div><h3>Zukunft</h3><p>Wortschatz · Demnächst</p>
       </button>
       <button class="unit-card" type="button" onclick="openUnit(4)">
-        <div class="unit-icon">✨</div><div class="unit-number">UNIT 04</div><h3>More to explore</h3><p>Vocabulary · Coming soon</p>
+        <div class="unit-icon">✨</div><div class="unit-number">UNIT 04</div><h3>Mehr zu entdecken</h3><p>Wortschatz · Demnächst</p>
       </button>
     </section>
+  </section>
+
+  <section id="all-stats-screen" hidden>
+    <button class="back-button" type="button" onclick="showScreen('dashboard')">← Zurück zur Startseite</button>
+    <div class="page-heading"><p class="eyebrow">DEIN BISHERIGER WEG</p><h1>Deine Statistiken.</h1><p>Jeder Schritt zählt. Das ist deine ZUNO-Bilanz.</p></div>
+    <div class="all-stats-grid">
+      <article class="all-stat-card"><div class="all-stat-icon">⚡</div><div class="all-stat-value" id="all-xp">0</div><div class="all-stat-label">Gesamte XP</div></article>
+      <article class="all-stat-card"><div class="all-stat-icon">📚</div><div class="all-stat-value" id="all-words">0</div><div class="all-stat-label">Gelernte Wörter</div></article>
+      <article class="all-stat-card"><div class="all-stat-icon">🎯</div><div class="all-stat-value" id="all-correct">0</div><div class="all-stat-label">Richtige Antworten</div></article>
+      <article class="all-stat-card"><div class="all-stat-icon">🧠</div><div class="all-stat-value" id="all-sessions">0</div><div class="all-stat-label">Abgeschlossene Sessions</div></article>
+      <article class="all-stat-card"><div class="all-stat-icon">🔥</div><div class="all-stat-value" id="all-best-streak">0 Tage</div><div class="all-stat-label">Längste Serie</div></article>
+      <article class="all-stat-card"><div class="all-stat-icon">⏱️</div><div class="all-stat-value" id="all-time">0 Min.</div><div class="all-stat-label">Gesamte Lernzeit</div></article>
+    </div>
+    <p class="stats-note">Diese Werte werden auf diesem Gerät gespeichert. Die Lernzeit wird während einer Session gezählt. Ältere Versionen haben einige Werte noch nicht erfasst.</p>
   </section>
 
   <section id="modes-screen" hidden>
-    <button class="back-button" type="button" onclick="showScreen('dashboard')">← Back to dashboard</button>
-    <div class="page-heading"><p class="eyebrow">CHOOSE YOUR SESSION</p><h1>How do you want to practise?</h1><p>Pick a path. ZUNO takes care of the rest.</p></div>
+    <button class="back-button" type="button" onclick="showScreen('dashboard')">← Zurück zur Startseite</button>
+    <div class="page-heading"><p class="eyebrow">DEINE LERNEINHEIT</p><h1>Wie möchtest du üben?</h1><p>Wähle Sprache und Niveau für dein Training.</p></div>
+    <div class="practice-settings">
+      <div class="setting-group">
+        <label>Lernsprache</label>
+        <button class="language-toggle" id="language-toggle" type="button" onclick="togglePracticeLanguage()">🇬🇧 Englisch</button>
+      </div>
+      <div class="setting-group">
+        <label for="level-select">Sprachniveau</label>
+        <select id="level-select">
+          <option value="A1">A1 · Anfänger</option>
+          <option value="A2">A2 · Grundkenntnisse</option>
+          <option value="B1" selected>B1 · Mittelstufe</option>
+          <option value="B2">B2 · Gute Kenntnisse</option>
+          <option value="C1">C1 · Fortgeschritten</option>
+          <option value="C2">C2 · Nahezu muttersprachlich</option>
+        </select>
+      </div>
+    </div>
     <div class="mode-grid">
       <button class="mode-card" type="button" onclick="startGeneralPractice()">
-        <div class="mode-icon">🔀</div><h3>General practice</h3><p>Words from all available units, mixed together. Great for revision.</p><span class="card-arrow">Start mixed practice →</span>
+        <div class="mode-icon">🔀</div><h3>Allgemeines Training</h3>
+        <p>Gemischte Wörter aus der ausgewählten Sprache und deinem Niveau. Perfekt zum Wiederholen.</p>
+        <span class="card-arrow">Training starten →</span>
       </button>
       <button class="mode-card" type="button" onclick="showScreen('unit-select')">
-        <div class="mode-icon">📚</div><h3>Practise by unit</h3><p>Choose a unit and focus only on its vocabulary.</p><span class="card-arrow">Choose a unit →</span>
+        <div class="mode-icon">📚</div><h3>Nach Unit üben</h3>
+        <p>Wähle eine Unit und konzentriere dich auf ihren Wortschatz.</p>
+        <span class="card-arrow">Unit auswählen →</span>
       </button>
     </div>
-    <p class="note">Your vocabulary progress is saved on this device. More Green Line words can be added as you provide them.</p>
+    <p class="note">Dein Lernfortschritt wird auf diesem Gerät gespeichert. Die 200 Übungswörter sind eine eigene Auswahl nach ungefähren CEFR-Stufen, keine kopierte Oxford-Liste.</p>
   </section>
 
   <section id="unit-select-screen" hidden>
-    <button class="back-button" type="button" onclick="showScreen('modes')">← Back to practice modes</button>
-    <div class="page-heading"><p class="eyebrow">YOUR VOCABULARY</p><h1>Choose a unit.</h1><p>Only words from the selected unit will appear.</p></div>
+    <button class="back-button" type="button" onclick="showScreen('modes')">← Zurück zur Übungsauswahl</button>
+    <div class="page-heading"><p class="eyebrow">DEIN WORTSCHATZ</p><h1>Wähle eine Unit.</h1><p>Es erscheinen nur Wörter aus der ausgewählten Unit.</p></div>
     <div class="unit-list" id="unit-list"></div>
   </section>
 
   <section id="empty-unit-screen" hidden>
-    <button class="back-button" type="button" onclick="showScreen('unit-select')">← Back to units</button>
+    <button class="back-button" type="button" onclick="showScreen('unit-select')">← Zurück zu den Units</button>
     <div class="result-card">
-      <div class="result-icon">📖</div><h2>Coming soon!</h2>
-      <p>There are no vocabulary words in this unit yet. Once we add your Green Line vocabulary, you can practise it here.</p>
-      <button class="primary" type="button" onclick="showScreen('unit-select')">Choose another unit</button>
+      <div class="result-icon">📖</div><h2>Kommt bald!</h2>
+      <p>In dieser Unit sind noch keine Vokabeln. Sobald wir sie ergänzen, kannst du hier üben.</p>
+      <button class="primary" type="button" onclick="showScreen('unit-select')">Andere Unit auswählen</button>
     </div>
   </section>
 
   <section id="exercise-screen" hidden>
-    <button class="back-button" type="button" onclick="leaveExercise()">← Leave session</button>
+    <button class="back-button" type="button" onclick="leaveExercise()">← Session verlassen</button>
     <div class="exercise-card">
-      <div class="exercise-top"><span id="session-mode">GENERAL PRACTICE</span><span id="question-count">1 / 1</span></div>
-      <p class="exercise-label">TRANSLATE THE HIGHLIGHTED WORD</p>
-      <h1 class="question">What does this word mean in German?</h1>
-      <p class="sentence" id="sentence-text">She managed to <span class="highlight-word">achieve</span> her goal.</p>
+      <div class="exercise-top"><span id="session-mode">ALLGEMEINES TRAINING</span><span id="question-count">1 / 1</span></div>
+      <p class="exercise-label">ÜBERSETZUNG</p>
+      <h1 class="question" id="question-heading">Übersetze das Wort ins Deutsche.</h1>
+      <p class="sentence" id="sentence-text"><span class="highlight-word">achieve</span></p>
       <form id="answer-form" autocomplete="off">
-        <label for="answer-input" class="exercise-label" style="display:block; margin:0 0 9px; color:#F0EDFF; letter-spacing:.3px;">Your answer</label>
-        <input class="answer-input" id="answer-input" name="answer" type="text" placeholder="Type your answer..." autocomplete="off" autocapitalize="none" spellcheck="false">
-        <button class="answer-button" id="check-button" type="submit">Check answer</button>
+        <label for="answer-input" class="exercise-label" style="display:block; margin:0 0 9px; color:#F0EDFF; letter-spacing:.3px;">Deine Antwort</label>
+        <input class="answer-input" id="answer-input" name="answer" type="text" placeholder="Deine Übersetzung ..." autocomplete="off" autocapitalize="none" spellcheck="false">
+        <button class="answer-button" id="check-button" type="submit">Überprüfen</button>
       </form>
       <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
     </div>
-    <div class="exercise-footer"><span>⚡ +10 XP for a correct answer</span><button class="text-button" type="button" onclick="leaveExercise()">Exit practice</button></div>
+    <div class="exercise-footer">
+      <span>⚡ +10 XP für eine richtige Antwort</span>
+      <button class="text-button" type="button" onclick="leaveExercise()">Training verlassen</button>
+    </div>
   </section>
 
   <section id="result-screen" hidden>
-    <div class="page-heading"><p class="eyebrow">SESSION COMPLETE</p><h1>Look at you go.</h1><p>You made progress. That's what counts.</p></div>
+    <div class="page-heading"><p class="eyebrow">SESSION ABGESCHLOSSEN</p><h1>Das hast du geschafft!</h1><p>Du bist weitergekommen. Darauf kommt es an.</p></div>
     <div class="result-card">
-      <div class="result-icon">🎉</div><h2>Nice work!</h2><p id="result-summary">You finished your practice session.</p>
+      <div class="result-icon">🎉</div><h2>Gut gemacht!</h2>
+      <p id="result-summary">Du hast deine Session abgeschlossen.</p>
       <div class="result-xp" id="result-xp">+10 XP</div>
-      <button class="primary" type="button" onclick="showScreen('dashboard')">Back to dashboard</button>
-      <button class="text-button" type="button" onclick="showScreen('modes')" style="display:block; margin:12px auto 0;">Practise again</button>
+      <button class="primary" type="button" onclick="showScreen('dashboard')">Zurück zur Startseite</button>
+      <button class="text-button" type="button" onclick="showScreen('modes')" style="display:block; margin:12px auto 0;">Nochmal üben</button>
     </div>
   </section>
 </main>
 
-<footer>ZUNO © 2026 · Learn your way.</footer>
+<footer>ZUNO © 2026 · Lerne auf deine Art.</footer>
 
 <script>
 'use strict';
 
-// Add the Green Line vocabulary here. Each word belongs to exactly one unit.
+// Eigene, kompakte Lernwortschatz-Datenbank: 100 englische + 100 französische Einträge.
+// CEFR-Stufen sind Lernorientierungen, keine offizielle Oxford-Einstufung.
+const languageDatabases = {
+  en: `about|über|A1;after|nach|A1;again|wieder|A1;all|alle|A1;always|immer|A1;animal|Tier|A1;answer|Antwort|A1;beautiful|schön|A1;because|weil|A1;begin|beginnen|A1;big|groß|A1;book|Buch|A1;brother|Bruder|A1;busy|beschäftigt|A1;buy|kaufen|A1;can|können|A1;city|Stadt|A1;accident|Unfall|A2;advice|Rat|A2;although|obwohl|A2;arrive|ankommen|A2;borrow|ausleihen|A2;careful|vorsichtig|A2;choose|auswählen|A2;comfortable|bequem|A2;decide|entscheiden|A2;different|anders|A2;enough|genug|A2;experience|Erfahrung|A2;explain|erklären|A2;future|Zukunft|A2;happen|passieren|A2;healthy|gesund|A2;improve|verbessern|A2;achieve|erreichen|B1;although|obwohl|B1;benefit|Vorteil|B1;challenge|Herausforderung|B1;communicate|kommunizieren|B1;consider|in Betracht ziehen|B1;environment|Umwelt|B1;evidence|Beweis|B1;goal|Ziel|B1;influence|Einfluss|B1;knowledge|Wissen|B1;opportunity|Gelegenheit|B1;participate|teilnehmen|B1;performance|Leistung|B1;prevent|verhindern|B1;purpose|Zweck|B1;relationship|Beziehung|B1;accurate|genau|B2;approach|Ansatz|B2;assess|bewerten|B2;assume|annehmen|B2;aware|bewusst|B2;complex|komplex|B2;consequence|Folge|B2;consistent|beständig|B2;controversial|umstritten|B2;derive|ableiten|B2;establish|gründen|B2;eventually|schließlich|B2;factor|Faktor|B2;identify|identifizieren|B2;indicate|andeuten|B2;interpret|interpretieren|B2;maintain|aufrechterhalten|B2;ambiguous|mehrdeutig|C1;coherent|schlüssig|C1;compelling|überzeugend|C1;contemporary|zeitgenössisch|C1;diminish|verringern|C1;elaborate|ausführlich|C1;foster|fördern|C1;inherent|innewohnend|C1;inevitable|unvermeidlich|C1;notion|Vorstellung|C1;preliminary|vorläufig|C1;profound|tiefgreifend|C1;reluctant|widerwillig|C1;substantial|beträchtlich|C1;undergo|durchmachen|C1;undermine|untergraben|C1;validity|Gültigkeit|C1;albeit|wenn auch|C2;anomaly|Anomalie|C2;arbitrary|willkürlich|C2;conjecture|Vermutung|C2;discrepancy|Unstimmigkeit|C2;exacerbate|verschärfen|C2;fastidious|pingelig|C2;idiosyncratic|eigenwillig|C2;juxtapose|gegenüberstellen|C2;meticulous|akribisch|C2;obsolete|überholt|C2;paradigm|Paradigma|C2;pragmatic|pragmatisch|C2;proliferate|sich stark vermehren|C2;quintessential|typisch|C2`.split(';').map(row => { const [word, de, level] = row.split('|'); return { word, de, level }; }),
+  fr: `bonjour|Guten Tag|A1;merci|danke|A1;maison|Haus|A1;école|Schule|A1;livre|Buch|A1;ami|Freund|A1;famille|Familie|A1;eau|Wasser|A1;pain|Brot|A1;chat|Katze|A1;chien|Hund|A1;manger|essen|A1;boire|trinken|A1;parler|sprechen|A1;aimer|lieben / mögen|A1;petit|klein|A1;grand|groß|A1;acheter|kaufen|A2;attendre|warten|A2;besoin|Bedürfnis|A2;bientôt|bald|A2;choisir|auswählen|A2;comprendre|verstehen|A2;cuisine|Küche|A2;déjeuner|zu Mittag essen|A2;depuis|seit|A2;devoir|müssen|A2;ensemble|zusammen|A2;envoyer|schicken|A2;facile|einfach|A2;fenêtre|Fenster|A2;heureux|glücklich|A2;jamais|niemals|A2;loisir|Freizeitbeschäftigung|A2;accueillir|empfangen|B1;améliorer|verbessern|B1;appartenir|gehören|B1;avantage|Vorteil|B1;comportement|Verhalten|B1;confiance|Vertrauen|B1;conséquence|Folge|B1;défi|Herausforderung|B1;développer|entwickeln|B1;échapper|entkommen|B1;enjeu|Einsatz / Herausforderung|B1;environnement|Umwelt|B1;éprouver|empfinden|B1;éviter|vermeiden|B1;habitude|Gewohnheit|B1;inquiétude|Sorge|B1;partager|teilen|B1;aboutir|zu einem Ergebnis führen|B2;accroître|vergrößern|B2;admettre|zugeben|B2;apercevoir|erblicken|B2;approfondir|vertiefen|B2;assumer|übernehmen|B2;cependant|jedoch|B2;concerner|betreffen|B2;démarche|Vorgehensweise|B2;désormais|von nun an|B2;éventuellement|gegebenenfalls|B2;fiable|zuverlässig|B2;fournir|liefern|B2;garantir|garantieren|B2;mettre en œuvre|umsetzen|B2;néanmoins|nichtsdestotrotz|B2;prévoir|vorhersehen|B2;ambigu|mehrdeutig|C1;cohérent|schlüssig|C1;contester|bestreiten|C1;déceler|erkennen|C1;dénoncer|anprangern|C1;désigner|bezeichnen|C1;dispositif|Vorrichtung / Maßnahme|C1;émerger|auftauchen|C1;enjeu majeur|zentrale Herausforderung|C1;exhaustif|umfassend|C1;incontournable|unverzichtbar|C1;inédit|beispiellos|C1;nuancer|differenzieren|C1;pertinent|sachdienlich|C1;préconiser|empfehlen|C1;prépondérant|vorherrschend|C1;remédier|Abhilfe schaffen|C1;abroger|aufheben|C2;aléatoire|zufällig|C2;circonscrire|eingrenzen|C2;concomitant|gleichzeitig|C2;dérogation|Ausnahmegenehmigung|C2;diligence|Sorgfalt|C2;équivoque|zweideutig|C2;exacerber|verschärfen|C2;fallacieux|trügerisch|C2;inopiné|unerwartet|C2;lacunaire|lückenhaft|C2;obsolète|veraltet|C2;pérenniser|dauerhaft sichern|C2;prérogative|Vorrecht|C2;prolifique|fruchtbar / produktiv|C2`.split(';').map(row => { const [word, de, level] = row.split('|'); return { word, de, level }; })
+};
+
+// Green-Line-Unit-Wörter bleiben getrennt vom allgemeinen Wortschatz.
 const vocabulary = [
-  {
-    id: 'achieve-01',
-    word: 'achieve',
-    answers: ['erreichen', 'erzielen'],
-    sentenceStart: 'She managed to ',
-    sentenceEnd: ' her goal.',
-    unit: 1
-  }
+  { id: 'achieve-01', word: 'achieve', answers: ['erreichen', 'erzielen'], sentenceStart: '', sentenceEnd: '', unit: 1 }
 ];
 
 const unitInfo = [
-  { id: 1, title: 'Our world', icon: '🌍' },
-  { id: 2, title: 'Identity', icon: '🎭' },
-  { id: 3, title: 'Future', icon: '🚀' },
-  { id: 4, title: 'More to explore', icon: '✨' }
+  { id: 1, title: 'Unsere Welt', icon: '🌍' },
+  { id: 2, title: 'Identität', icon: '🎭' },
+  { id: 3, title: 'Zukunft', icon: '🚀' },
+  { id: 4, title: 'Mehr zu entdecken', icon: '✨' }
 ];
 
-const screens = ['dashboard', 'modes', 'unit-select', 'empty-unit', 'exercise', 'result'];
+const screens = ['dashboard', 'all-stats', 'modes', 'unit-select', 'empty-unit', 'exercise', 'result'];
 let xp = loadNumber('zuno-xp', 0);
 let streak = loadNumber('zuno-streak', 0);
 let lastPracticeDate = loadString('zuno-last-practice-date', '');
 let streakUpdatedThisSession = false;
 let learnedIds = loadArray('zuno-learned', []);
+let totalCorrect = loadNumber('zuno-total-correct', 0);
+let sessionsCompleted = loadNumber('zuno-sessions-completed', 0);
+let bestStreak = loadNumber('zuno-best-streak', streak);
+let totalPracticeSeconds = loadNumber('zuno-practice-seconds', 0);
+let sessionStartedAt = 0;
+let sessionTimeRecorded = true;
 let sessionWords = [];
 let sessionIndex = 0;
 let sessionCorrect = 0;
@@ -404,6 +476,7 @@ let sessionEarnedXP = 0;
 let hasAnsweredCurrent = false;
 let exerciseReturnScreen = 'modes';
 let currentMode = 'general';
+let practiceLanguage = loadString('zuno-language', 'en');
 
 function loadNumber(key, fallback) {
   try {
@@ -427,20 +500,49 @@ function saveProgress() {
     localStorage.setItem('zuno-streak', String(streak));
     localStorage.setItem('zuno-last-practice-date', lastPracticeDate);
     localStorage.setItem('zuno-learned', JSON.stringify(learnedIds));
-  } catch (error) {
-    // The app still works if browser storage is unavailable.
-  }
+    localStorage.setItem('zuno-total-correct', String(totalCorrect));
+    localStorage.setItem('zuno-sessions-completed', String(sessionsCompleted));
+    localStorage.setItem('zuno-best-streak', String(bestStreak));
+    localStorage.setItem('zuno-practice-seconds', String(totalPracticeSeconds));
+  } catch (error) {}
 }
 function updateDashboard() {
   document.getElementById('xp-value').textContent = String(xp);
   document.getElementById('streak-value').textContent = String(streak);
-  const total = vocabulary.length;
-  const learned = vocabulary.filter(item => learnedIds.includes(item.id)).length;
+  const allDatabaseIds = vocabulary.map(item => item.id).concat(
+    ...Object.entries(languageDatabases).map(([lang, entries]) =>
+      entries.map((item, index) => lang + '-' + item.level + '-' + index + '-' + item.word)
+    )
+  );
+  const total = allDatabaseIds.length;
+  const learned = allDatabaseIds.filter(id => learnedIds.includes(id)).length;
   const percent = total ? Math.round((learned / total) * 100) : 0;
   document.getElementById('progress-label').textContent = percent + '%';
   document.getElementById('progress-fill').style.width = percent + '%';
   const unitOneCount = vocabulary.filter(item => item.unit === 1).length;
-  document.getElementById('unit-1-count').textContent = unitOneCount + (unitOneCount === 1 ? ' word' : ' words');
+  document.getElementById('unit-1-count').textContent = unitOneCount + (unitOneCount === 1 ? ' Wort' : ' Wörter');
+}
+function formatPracticeTime(seconds) {
+  const totalMinutes = Math.floor(seconds / 60);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return hours > 0 ? hours + ' Std. ' + minutes + ' Min.' : totalMinutes + ' Min.';
+}
+function updateAllStats() {
+  document.getElementById('all-xp').textContent = xp.toLocaleString('de-DE');
+  document.getElementById('all-words').textContent = learnedIds.length.toLocaleString('de-DE');
+  document.getElementById('all-correct').textContent = totalCorrect.toLocaleString('de-DE');
+  document.getElementById('all-sessions').textContent = sessionsCompleted.toLocaleString('de-DE');
+  document.getElementById('all-best-streak').textContent = bestStreak + (bestStreak === 1 ? ' Tag' : ' Tage');
+  document.getElementById('all-time').textContent = formatPracticeTime(totalPracticeSeconds);
+}
+function recordSessionTime() {
+  if (sessionTimeRecorded || !sessionStartedAt) return;
+  const elapsed = Math.max(0, Math.floor((Date.now() - sessionStartedAt) / 1000));
+  totalPracticeSeconds += elapsed;
+  sessionTimeRecorded = true;
+  sessionStartedAt = 0;
+  saveProgress();
 }
 function showScreen(name) {
   if (!screens.includes(name)) return;
@@ -449,6 +551,7 @@ function showScreen(name) {
     if (element) element.hidden = screen !== name;
   });
   if (name === 'dashboard') updateDashboard();
+  if (name === 'all-stats') updateAllStats();
   if (name === 'unit-select') renderUnitList();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -473,7 +576,7 @@ function renderUnitList() {
     const strong = document.createElement('strong');
     strong.textContent = unit.icon + '  UNIT ' + String(unit.id).padStart(2, '0') + ' · ' + unit.title;
     const small = document.createElement('small');
-    small.textContent = count ? count + (count === 1 ? ' vocabulary word' : ' vocabulary words') : 'Coming soon';
+    small.textContent = count ? count + (count === 1 ? ' Vokabel' : ' Vokabeln') : 'Demnächst';
     copy.append(strong, small);
     const arrow = document.createElement('span');
     arrow.className = 'arrow';
@@ -499,14 +602,44 @@ function beginSession(words, mode, returnScreen) {
   sessionEarnedXP = 0;
   hasAnsweredCurrent = false;
   streakUpdatedThisSession = false;
+  sessionStartedAt = Date.now();
+  sessionTimeRecorded = false;
   currentMode = mode;
   exerciseReturnScreen = returnScreen;
-  document.getElementById('session-mode').textContent = mode === 'general' ? 'GENERAL PRACTICE' : 'UNIT PRACTICE';
+  document.getElementById('session-mode').textContent =
+    mode === 'general'
+      ? (practiceLanguage === 'fr' ? 'FRANZÖSISCH · ' : 'ENGLISCH · ') + document.getElementById('level-select').value
+      : 'UNIT-TRAINING';
   renderQuestion();
   showScreen('exercise');
 }
+function setPracticeLanguage(language) {
+  practiceLanguage = language === 'fr' ? 'fr' : 'en';
+  const toggle = document.getElementById('language-toggle');
+  if (toggle) toggle.textContent = practiceLanguage === 'fr' ? '🇫🇷 Französisch · wechseln' : '🇬🇧 Englisch · wechseln';
+  try { localStorage.setItem('zuno-language', practiceLanguage); } catch (error) {}
+}
+function togglePracticeLanguage() {
+  setPracticeLanguage(practiceLanguage === 'en' ? 'fr' : 'en');
+}
+function getGeneralWords() {
+  const level = document.getElementById('level-select').value;
+  return languageDatabases[practiceLanguage]
+    .filter(item => item.level === level)
+    .map((item, index) => ({
+      id: practiceLanguage + '-' + item.level + '-' + index + '-' + item.word,
+      word: item.word,
+      answers: [item.de],
+      sentenceStart: '',
+      sentenceEnd: '',
+      unit: 0,
+      level: item.level,
+      language: practiceLanguage
+    }));
+}
 function startGeneralPractice() {
-  beginSession(vocabulary, 'general', 'modes');
+  const words = getGeneralWords();
+  beginSession(words, 'general', 'modes');
 }
 function startUnitPractice(unitId) {
   const words = vocabulary.filter(item => item.unit === unitId);
@@ -523,18 +656,19 @@ function renderQuestion() {
   document.getElementById('question-count').textContent = (sessionIndex + 1) + ' / ' + sessionWords.length;
   const sentence = document.getElementById('sentence-text');
   sentence.replaceChildren();
-  sentence.append(document.createTextNode(item.sentenceStart));
+  sentence.append(document.createTextNode(item.sentenceStart || ''));
   const highlight = document.createElement('span');
   highlight.className = 'highlight-word';
   highlight.textContent = item.word;
-  sentence.append(highlight, document.createTextNode(item.sentenceEnd));
+  sentence.append(highlight);
+  if (item.sentenceEnd) sentence.append(document.createTextNode(item.sentenceEnd));
   const input = document.getElementById('answer-input');
   input.value = '';
   input.disabled = false;
   document.getElementById('feedback').textContent = '';
   document.getElementById('feedback').className = 'feedback';
   const checkButton = document.getElementById('check-button');
-  checkButton.textContent = 'Check answer';
+  checkButton.textContent = 'Überprüfen';
   checkButton.disabled = false;
   input.focus({ preventScroll: true });
 }
@@ -551,6 +685,7 @@ function updateDailyStreak() {
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayKey = dateKey(yesterday);
     streak = lastPracticeDate === yesterdayKey ? streak + 1 : 1;
+    bestStreak = Math.max(bestStreak, streak);
     lastPracticeDate = today;
     saveProgress();
     updateDashboard();
@@ -567,7 +702,7 @@ function checkAnswer(event) {
   const userAnswer = normalizeAnswer(input.value);
   const feedback = document.getElementById('feedback');
   if (!userAnswer) {
-    feedback.textContent = 'Type an answer first.';
+    feedback.textContent = 'Gib zuerst eine Übersetzung ein.';
     feedback.className = 'feedback incorrect';
     input.focus();
     return;
@@ -575,9 +710,10 @@ function checkAnswer(event) {
   const item = sessionWords[sessionIndex];
   const accepted = item.answers.map(normalizeAnswer);
   if (accepted.includes(userAnswer)) {
-    feedback.textContent = 'Correct! Great job. ✨';
+    feedback.textContent = 'Richtig! Sehr gut. ✨';
     feedback.className = 'feedback correct';
     sessionCorrect++;
+    totalCorrect++;
     updateDailyStreak();
     sessionEarnedXP += 10;
     xp += 10;
@@ -585,12 +721,13 @@ function checkAnswer(event) {
     saveProgress();
     updateDashboard();
   } else {
-    feedback.textContent = 'Not quite. The answer is: ' + item.answers.join(' / ');
+    feedback.textContent = 'Noch nicht ganz. Die richtige Übersetzung lautet: ' + item.answers.join(' / ');
     feedback.className = 'feedback incorrect';
   }
   hasAnsweredCurrent = true;
   input.disabled = true;
-  document.getElementById('check-button').textContent = sessionIndex === sessionWords.length - 1 ? 'Finish session' : 'Next word →';
+  document.getElementById('check-button').textContent =
+    sessionIndex === sessionWords.length - 1 ? 'Session beenden' : 'Nächstes Wort →';
 }
 function nextQuestion() {
   if (!hasAnsweredCurrent) return;
@@ -602,15 +739,23 @@ function nextQuestion() {
   renderQuestion();
 }
 function finishSession() {
-  document.getElementById('result-summary').textContent = 'You got ' + sessionCorrect + ' out of ' + sessionWords.length + ' correct.';
+  if (!sessionTimeRecorded) {
+    sessionsCompleted++;
+    recordSessionTime();
+    saveProgress();
+  }
+  document.getElementById('result-summary').textContent =
+    'Du hast ' + sessionCorrect + ' von ' + sessionWords.length + ' richtig beantwortet.';
   document.getElementById('result-xp').textContent = '+' + sessionEarnedXP + ' XP';
   showScreen('result');
 }
 function leaveExercise() {
+  recordSessionTime();
+  saveProgress();
   showScreen(exerciseReturnScreen);
 }
-
 document.getElementById('answer-form').addEventListener('submit', checkAnswer);
+setPracticeLanguage(practiceLanguage);
 updateDashboard();
 showScreen('dashboard');
 </script>
