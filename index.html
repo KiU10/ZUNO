@@ -1,1166 +1,1155 @@
-
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZUNO</title>
-<style>
-:root {
-  --iris: #8276E8;
-  --purple: #6558CC;
-  --grey: #F0F1F4;
-  --charcoal: #20212A;
-  --lime: #B9F18C;
-  --orange: #FF875E;
-  --white: #FFFFFF;
-  --muted: #777987;
-  --radius: 22px;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: #F7F7FA;
-  color: var(--charcoal);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-button, input, select { font: inherit; }
-button { cursor: pointer; border: 0; }
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 5%;
-  background: white;
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  box-shadow: 0 2px 12px #20212a0b;
-}
-.logo { font-size: 27px; font-weight: 900; letter-spacing: -1.5px; color: var(--purple); }
-.header-stats { display:flex; gap:12px; align-items:center; font-weight:700; }
-.pill { background:var(--grey); border-radius:30px; padding:9px 13px; }
-main { max-width:1000px; margin:28px auto; padding:0 18px 60px; }
-h1 { font-size:clamp(26px,5vw,38px); margin:8px 0; }
-h2 { font-size:23px; margin:0 0 15px; }
-p { line-height:1.5; }
-.muted { color:var(--muted); }
-.hero {
-  background:var(--iris);
-  color:white;
-  padding:28px;
-  border-radius:var(--radius);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:20px;
-  overflow:hidden;
-}
-.hero img { width:125px; height:125px; object-fit:contain; }
-.hero button { background:var(--lime); color:var(--charcoal); }
-.primary {
-  background:var(--purple);
-  color:white;
-  padding:13px 19px;
-  border-radius:14px;
-  font-weight:750;
-}
-.secondary {
-  background:var(--grey);
-  color:var(--charcoal);
-  padding:12px 17px;
-  border-radius:14px;
-  font-weight:700;
-}
-.cards {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-  gap:15px;
-  margin:22px 0;
-}
-.card {
-  background:white;
-  padding:20px;
-  border-radius:var(--radius);
-  box-shadow:0 5px 18px #20212a08;
-}
-.card h3 { margin:0 0 8px; }
-.card button { width:100%; margin-top:12px; }
-.progress-track {
-  background:#e7e6ef;
-  height:10px;
-  border-radius:20px;
-  overflow:hidden;
-  margin:10px 0;
-}
-.progress-fill { background:var(--lime); height:100%; width:0%; transition:width .35s; }
-.hidden { display:none !important; }
-.panel {
-  background:white;
-  border-radius:var(--radius);
-  padding:24px;
-  box-shadow:0 5px 18px #20212a08;
-  margin:18px 0;
-}
-label { display:block; font-weight:700; margin:15px 0 7px; }
-select, input[type="text"] {
-  width:100%;
-  padding:13px;
-  border:1px solid #dedee6;
-  border-radius:12px;
-  background:white;
-}
-.word-card {
-  background:var(--iris);
-  color:white;
-  padding:28px 20px;
-  border-radius:20px;
-  text-align:center;
-  margin:18px 0;
-}
-.word-card .target {
-  display:inline-block;
-  background:var(--lime);
-  color:var(--charcoal);
-  font-size:clamp(24px,5vw,36px);
-  font-weight:850;
-  padding:10px 18px;
-  border-radius:13px;
-  margin:10px 0;
-}
-.example {
-  background:#ffffff25;
-  border-radius:12px;
-  padding:12px;
-  margin-top:14px;
-  font-style:italic;
-}
-.answer-options { display:grid; gap:10px; margin:16px 0; }
-.option {
-  background:var(--grey);
-  padding:15px;
-  border-radius:13px;
-  text-align:left;
-  font-weight:650;
-  border:2px solid transparent;
-}
-.option:active { transform:scale(.99); }
-.option.correct { border-color:#5da84d; background:#e7f8df; }
-.option.wrong { border-color:#e56d60; background:#ffebe8; }
-.feedback {
-  padding:14px;
-  border-radius:13px;
-  margin:14px 0;
-  font-weight:750;
-  animation:pop .25s ease-out;
-}
-.feedback.good { background:#e6f7df; color:#326c2b; }
-.feedback.bad { background:#ffebe8; color:#a33d32; }
-@keyframes pop {
-  from { opacity:0; transform:translateY(6px); }
-  to { opacity:1; transform:translateY(0); }
-}
-.stat-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
-  gap:12px;
-}
-.stat {
-  background:var(--grey);
-  border-radius:15px;
-  padding:16px;
-}
-.stat strong { display:block; font-size:25px; margin-top:5px; }
-.stat-section { margin:24px 0; }
-.stat-section h3 { margin-bottom:12px; }
-.grade { font-size:34px; font-weight:900; color:var(--purple); }
-.small { font-size:13px; color:var(--muted); }
-.topline { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-button:disabled { opacity:.45; cursor:not-allowed; }
-hr { border:0; border-top:1px solid #eeeef2; margin:22px 0; }
-@media(max-width:600px) {
-  header { padding:13px 16px; }
-  .header-stats { gap:6px; font-size:13px; }
-  .pill { padding:7px 9px; }
-  .hero { padding:21px; }
-  .hero img { width:85px; height:85px; }
-  .panel { padding:18px; }
-}
-</style>
-</head>
-<body>
-<header>
-  <div class="logo">ZUNO.</div>
-  <div class="header-stats">
-    <span class="pill">⚡ <span id="headerXP">0</span> XP</span>
-    <span class="pill">🔥 <span id="headerStreak">0</span></span>
-    <button class="secondary" onclick="showStats()">📊</button>
-  </div>
-</header>
-
-<main>
-<section id="dashboard">
-  <p class="muted" id="greeting">Schön, dass du da bist!</p>
-  <div class="hero">
-    <div>
-      <h1>Bereit für eine neue Runde?</h1>
-      <p>Ein paar Wörter. Ein bisschen Fortschritt. Jeden Tag.</p>
-      <button class="primary" onclick="showGeneralSettings()">Jetzt lernen</button>
-    </div>
-    <img src="IMG_2557.png" alt="ZUNO Axolotl">
-  </div>
-
-  <div class="panel">
-    <div class="topline">
-      <h2>Dein Fortschritt</h2>
-      <strong id="learnedCount">0 Wörter</strong>
-    </div>
-    <div class="progress-track"><div class="progress-fill" id="dashboardProgress"></div></div>
-    <p class="muted small">Gelernte Schulvokabeln insgesamt</p>
-  </div>
-
-  <h2>Was möchtest du üben?</h2>
-  <div class="cards">
-    <div class="card">
-      <h3>🌍 Allgemein üben</h3>
-      <p class="muted">Wortschatz nach Sprache und Niveau.</p>
-      <button class="primary" onclick="showGeneralSettings()">Üben</button>
-    </div>
-    <div class="card">
-      <h3>📚 Nach Unit üben</h3>
-      <p class="muted">Deine Schulvokabeln aus dem Buch.</p>
-      <button class="primary" onclick="showUnitSettings()">Units öffnen</button>
-    </div>
-    <div class="card">
-      <h3>📈 All-Time Stats</h3>
-      <p class="muted">Deine langfristige Entwicklung.</p>
-      <button class="secondary" onclick="showStats()">Statistiken ansehen</button>
-    </div>
-  </div>
-</section>
-
-<section id="settings" class="hidden">
-  <button class="secondary" onclick="showDashboard()">← Zurück</button>
-  <div class="panel">
-    <h1>Allgemein üben</h1>
-    <p class="muted">Wähle deine Sprache und dein Niveau.</p>
-    <label for="generalLanguage">Sprache</label>
-    <select id="generalLanguage">
-      <option value="en">🇬🇧 Englisch</option>
-      <option value="fr">🇫🇷 Französisch</option>
-    </select>
-    <label for="generalLevel">Niveau</label>
-    <select id="generalLevel">
-      <option>A1</option><option>A2</option><option selected>B1</option>
-      <option>B2</option><option>C1</option><option>C2</option>
-    </select>
-    <button class="primary" onclick="startGeneral()">Lesson starten</button>
-  </div>
-</section>
-
-<section id="unitSettings" class="hidden">
-  <button class="secondary" onclick="showDashboard()">← Zurück</button>
-  <div class="panel">
-    <h1>Nach Unit üben</h1>
-    <p class="muted">Schulvokabeln. Aktuell ist Englisch verfügbar.</p>
-    <label for="unitSelect">Bereich auswählen</label>
-    <select id="unitSelect">
-      <option value="acrossCultures">Across cultures 1: The world speaks English</option>
-      <option value="unit1">Unit 1: G'day Australia!</option>
-    </select>
-    <label for="unitSection">Abschnitt</label>
-    <select id="unitSection">
-      <option value="all">Alle Abschnitte</option>
-    </select>
-    <button class="primary" onclick="startUnit()">Lesson starten</button>
-  </div>
-</section>
-
-<section id="exercise" class="hidden">
-  <div class="topline">
-    <button class="secondary" onclick="leaveExercise()">✕ Beenden</button>
-    <strong id="questionCounter">1 / 10</strong>
-  </div>
-  <div class="progress-track"><div class="progress-fill" id="lessonProgress"></div></div>
-  <div class="word-card">
-    <div id="modeLabel" class="small" style="color:white">Übersetze das Wort</div>
-    <div class="target" id="targetWord">word</div>
-    <button class="secondary" id="audioButton" onclick="speakCurrentWord()">🔊 Anhören</button>
-    <div class="example hidden" id="exampleSentence"></div>
-  </div>
-  <div id="answerArea"></div>
-  <div id="feedbackArea"></div>
-  <button class="primary hidden" id="nextButton" onclick="nextQuestion()">Weiter →</button>
-</section>
-
-<section id="result" class="hidden">
-  <div class="panel" style="text-align:center">
-    <h1 id="resultTitle">Lesson geschafft!</h1>
-    <p id="resultEmoji" style="font-size:48px">🎉</p>
-    <h2 id="resultScore">0 / 0 richtig</h2>
-    <p id="resultPercent" class="muted"></p>
-    <div class="stat-grid">
-      <div class="stat"><span>Richtig</span><strong id="resultCorrect">0</strong></div>
-      <div class="stat"><span>Falsch</span><strong id="resultWrong">0</strong></div>
-      <div class="stat"><span>XP verdient</span><strong id="resultXP">0</strong></div>
-    </div>
-    <button class="primary" onclick="showDashboard()" style="margin-top:22px">Zur Übersicht</button>
-  </div>
-</section>
-
-<section id="statsPage" class="hidden">
-  <button class="secondary" onclick="showDashboard()">← Zurück</button>
-  <h1>All-Time Stats</h1>
-  <p class="muted">Nur deine Schulvokabeln zählen in diese Statistiken.</p>
-  <div class="panel">
-    <div class="topline">
-      <div>
-        <div class="muted">Deine aktuelle Schulnote</div>
-        <div class="grade" id="overallGrade">–</div>
-      </div>
-      <div>
-        <div class="muted">Trefferquote gesamt</div>
-        <strong style="font-size:28px" id="overallAccuracy">–</strong>
-      </div>
-    </div>
-    <div class="progress-track"><div class="progress-fill" id="overallAccuracyBar"></div></div>
-    <p class="small" id="overallTotals"></p>
-  </div>
-  <div class="stat-section">
-    <h3>📚 Alle Schulvokabeln</h3>
-    <div class="stat-grid" id="allSchoolStats"></div>
-  </div>
-  <div class="stat-section">
-    <h3>🇬🇧 Englische Schulvokabeln</h3>
-    <div class="stat-grid" id="englishSchoolStats"></div>
-  </div>
-  <div class="stat-section">
-    <h3>🇫🇷 Französische Schulvokabeln</h3>
-    <div class="stat-grid" id="frenchSchoolStats"></div>
-  </div>
-  <div class="stat-section">
-    <h3>🏆 Weitere Statistiken</h3>
-    <div class="stat-grid" id="extraStats"></div>
-  </div>
-  <p class="small">Die Trefferquote berechnet sich aus allen beantworteten Schulvokabel-Fragen. Allgemeine Übungen werden nicht mitgezählt. Die Note folgt deinem angegebenen Notenschlüssel.</p>
-</section>
-</main>
-
-<script>
-const languageDatabases = {
-en: `achieve|erreichen|B1
-actual|tatsächlich|B1
-admit|zugeben|B1
-afford|sich leisten|B1
-although|obwohl|B1
-ancient|uralt|B1
-annoy|ärgern|B1
-appear|erscheinen|B1
-approach|sich nähern|B1
-argue|argumentieren|B1
-avoid|vermeiden|B1
-behave|sich benehmen|B1
-belong|gehören|B1
-benefit|Vorteil|B1
-challenge|Herausforderung|B1
-claim|behaupten|B1
-consider|in Betracht ziehen|B1
-contain|enthalten|B1
-convince|überzeugen|B1
-create|erschaffen|B1
-damage|beschädigen|B1
-decide|entscheiden|B1
-demand|fordern|B1
-describe|beschreiben|B1
-develop|entwickeln|B1
-discover|entdecken|B1
-effect|Wirkung|B1
-encourage|ermutigen|B1
-environment|Umwelt|B1
-experience|Erfahrung|B1
-fail|scheitern|B1
-figure|Figur|B1
-foreign|ausländisch|B1
-freedom|Freiheit|B1
-imagine|sich vorstellen|B1
-improve|verbessern|B1
-include|einschließen|B1
-increase|erhöhen|B1
-instead|stattdessen|B1
-involve|beinhalten|B1
-issue|Thema|B1
-knowledge|Wissen|B1
-likely|wahrscheinlich|B1
-manage|schaffen|B1
-mention|erwähnen|B1
-notice|bemerken|B1
-offer|anbieten|B1
-opinion|Meinung|B1
-opportunity|Gelegenheit|B1
-perform|ausführen|B1
-perhaps|vielleicht|B1
-prevent|verhindern|B1
-purpose|Zweck|B1
-realize|erkennen|B1
-receive|erhalten|B1
-recent|kürzlich|B1
-reduce|verringern|B1
-refuse|ablehnen|B1
-relationship|Beziehung|B1
-remain|bleiben|B1
-remind|erinnern|B1
-require|erfordern|B1
-respond|antworten|B1
-result|Ergebnis|B1
-risk|Risiko|B1
-seem|scheinen|B1
-several|mehrere|B1
-share|teilen|B1
-similar|ähnlich|B1
-society|Gesellschaft|B1
-solution|Lösung|B1
-suggest|vorschlagen|B1
-support|unterstützen|B1
-suppose|annehmen|B1
-throughout|während|B1
-though|obwohl|B1
-various|verschieden|B1
-wonder|sich fragen|B1
-wonderful|wunderbar|B1
-`,
-fr: `abandonner|aufgeben|B1
-accepter|akzeptieren|B1
-accueillir|empfangen|B1
-acheter|kaufen|B1
-agir|handeln|B1
-aider|helfen|B1
-améliorer|verbessern|B1
-apercevoir|bemerken|B1
-apprendre|lernen|B1
-arriver|ankommen|B1
-attendre|warten|B1
-avoir besoin de|brauchen|B1
-battre|schlagen|B1
-bouger|bewegen|B1
-briller|scheinen|B1
-changer|ändern|B1
-choisir|auswählen|B1
-comprendre|verstehen|B1
-conduire|fahren|B1
-connaître|kennen|B1
-construire|bauen|B1
-continuer|weitermachen|B1
-craindre|fürchten|B1
-découvrir|entdecken|B1
-décrire|beschreiben|B1
-défendre|verteidigen|B1
-demander|fragen|B1
-devenir|werden|B1
-devoir|müssen|B1
-dire|sagen|B1
-disparaître|verschwinden|B1
-écrire|schreiben|B1
-entendre|hören|B1
-essayer|versuchen|B1
-être d'accord|einverstanden sein|B1
-éviter|vermeiden|B1
-expliquer|erklären|B1
-finir|beenden|B1
-gagner|gewinnen|B1
-grandir|wachsen|B1
-imaginer|sich vorstellen|B1
-inquiéter|beunruhigen|B1
-inviter|einladen|B1
-jouer|spielen|B1
-laisser|lassen|B1
-lire|lesen|B1
-manquer|fehlen|B1
-mentir|lügen|B1
-mettre|setzen|B1
-offrir|anbieten|B1
-oublier|vergessen|B1
-partager|teilen|B1
-permettre|erlauben|B1
-perdre|verlieren|B1
-plaire|gefallen|B1
-prendre|nehmen|B1
-protéger|schützen|B1
-raconter|erzählen|B1
-recevoir|erhalten|B1
-reconnaître|erkennen|B1
-réussir|schaffen|B1
-savoir|wissen|B1
-sembler|scheinen|B1
-sentir|fühlen|B1
-servir|dienen|B1
-sortir|hinausgehen|B1
-suivre|folgen|B1
-tenir|halten|B1
-tomber|fallen|B1
-travailler|arbeiten|B1
-trouver|finden|B1
-utiliser|benutzen|B1
-venir|kommen|B1
-vivre|leben|B1
-voir|sehen|B1
-vouloir|wollen|B1
-` 
-};
-
-function parseGeneralDatabase(lang) {
-  return languageDatabases[lang].trim().split("\n").filter(Boolean).map((line, index) => {
-    const [word, translation, level] = line.split("|");
-    return { id:`general-${lang}-${index}`, word, translation, level, language:lang, school:false };
-  });
-}
-
-/* Schulvokabeln. Die Datensätze enthalten ausschließlich die Vokabeln,
-   nicht die Beispiele oder Zusatzinformationen aus dem Buch. */
-const unitVocabulary = {
-  acrossCultures: {
-    title:"Across cultures 1: The world speaks English",
-    sections:[{title:"The world speaks English", words:[
-      ["the English-speaking world","die englischsprachige Welt"],
-      ["English-speaking","englischsprachig"],
-      ["to communicate","kommunizieren"],
-      ["communication","Kommunikation"],
-      ["language","Sprache"],
-      ["native speaker","Muttersprachler/-in"],
-      ["official language","Amtssprache"],
-      ["to speak","sprechen"],
-      ["to understand","verstehen"],
-      ["to translate","übersetzen"],
-      ["translation","Übersetzung"],
-      ["accent","Akzent"],
-      ["to pronounce","aussprechen"],
-      ["pronunciation","Aussprache"],
-      ["vocabulary","Wortschatz"],
-      ["to learn by heart","auswendig lernen"],
-      ["to make progress","Fortschritte machen"],
-      ["fluent","fließend"],
-      ["fluently","fließend"],
-      ["to improve","verbessern"],
-      ["to apply (to)","gelten (für); zutreffen (auf)"],
-      ["to assist","helfen; vorantreiben"],
-      ["back","damals"],
-      ["civil rights","Bürgerrechte"],
-      ["the Dutch","das niederländische Volk"],
-      ["segregation","Rassentrennung"],
-      ["to be stuck","feststecken"],
-      ["to be said to (+ infinitive)","es heißt, dass"],
-      ["I can't help (+ -ing)","ich kann nicht anders, als"],
-      ["to have sth done","etw. machen lassen"],
-      ["to be in progress","im Gange sein"],
-      ["to bump into sb","jmdm. zufällig begegnen"],
-      ["to manage (to do sth)","es schaffen (etw. zu tun)"],
-      ["to be short of sth","etw. nicht genug haben"],
-      ["to pass (on)","weitergeben"],
-      ["to head (for/to)","sich auf den Weg machen (nach/zu)"],
-      ["to succeed (in)","Erfolg haben (bei); es schaffen"],
-      ["to trample (on)","trampeln (auf)"],
-      ["to resent sb/sth","jmdm./etw. übel nehmen"],
-      ["to place","platzieren"],
-      ["to bring up","ansprechen; zur Sprache bringen"],
-      ["to clear a case","einen Fall aufklären"],
-      ["to trace back","zurückverfolgen"],
-      ["responsibility","Verantwortung; Aufgabe"],
-      ["to take responsibility","Verantwortung übernehmen"],
-      ["to be responsible for","verantwortlich sein für"],
-      ["to apply for","sich bewerben um; beantragen"],
-      ["since","da; seit"],
-      ["the outback","das australische Hinterland; Outback"]
-    ]}]
-  },
-  unit1: {
-    title:"Unit 1: G'day Australia!",
-    sections:[
-      {title:"Check-in",words:[
-        ["G'day!","Guten Tag; Hallo; Hi"],
-        ["Australia","Australien"],
-        ["Australian","Australier/-in; australisch"],
-        ["Australia Day","Australientag"],
-        ["mate","Kumpel; Freund/-in"],
-        ["barbecue","Grillfest; Grill"],
-        ["barbie","Grillfest; Grill"],
-        ["the outback","das australische Hinterland; Outback"],
-        ["Aboriginal","Aborigine; Ureinwohner/-in"],
-        ["Aboriginal people","die australischen Ureinwohner"]
-      ]},
-      {title:"Station 1: Just me and my backpack",words:[
-        ["seashell","Muschel"],
-        ["the day after tomorrow","übermorgen"],
-        ["to overhear","zufällig mithören"],
-        ["terrace","Terrasse"],
-        ["bloke","Typ; Kerl"],
-        ["air ambulance","Rettungshubschrauber"],
-        ["satellite","Satellit"],
-        ["to cancel","absagen"],
-        ["hopefully","hoffentlich"],
-        ["to sting","stechen"],
-        ["box jellyfish","Würfelqualle"],
-        ["to beware","aufpassen; sich in Acht nehmen"],
-        ["shark","Hai"],
-        ["rip current","Brandungsrückströmung"],
-        ["to sweep","fegen; mitreißen"],
-        ["comforting","tröstend; beruhigend"],
-        ["opal","Opal"],
-        ["to succeed (in)","Erfolg haben (bei); es schaffen"],
-        ["to prevent","verhindern"],
-        ["to trample (on)","trampeln (auf)"],
-        ["That's fair enough.","Das ist durchaus verständlich."],
-        ["deadly","tödlich"],
-        ["spider","Spinne"],
-        ["heatwave","Hitzewelle"],
-        ["way back","vor langer Zeit; damals"],
-        ["plain","Ebene"]
-      ]},
-      {title:"Station 2: When did your folks get here?",words:[
-        ["folks","Eltern; Leute"],
-        ["to apply (for)","sich bewerben (um); beantragen"],
-        ["application","Bewerbung; Antrag"],
-        ["to immigrate","einwandern"],
-        ["immigrant","Einwanderer/-in"],
-        ["immigration","Einwanderung"],
-        ["to emigrate","auswandern"],
-        ["emigrant","Auswanderer/-in"],
-        ["to settle","sich niederlassen"],
-        ["settlement","Siedlung; Niederlassung"],
-        ["to migrate","wandern; migrieren"],
-        ["migration","Migration"],
-        ["to move","umziehen"],
-        ["to arrive","ankommen"],
-        ["to leave","verlassen; weggehen"],
-        ["to be born","geboren werden"],
-        ["generation","Generation"],
-        ["background","Hintergrund; Herkunft"],
-        ["祖先","Vorfahren"]
-      ]},
-      {title:"Station 3: The land owns us",words:[
-        ["land","Land"],
-        ["ownership","Besitz; Eigentum"],
-        ["to own","besitzen"],
-        ["traditional","traditionell"],
-        ["tradition","Tradition"],
-        ["culture","Kultur"],
-        ["custom","Brauch"],
-        ["belief","Glaube; Überzeugung"],
-        ["spiritual","spirituell"],
-        ["sacred","heilig"],
-        ["ancestor","Vorfahr/-in"],
-        ["community","Gemeinschaft"],
-        ["connection","Verbindung"],
-        ["to belong to","zu etw. gehören"],
-        ["to respect","respektieren"],
-        ["respect","Respekt"],
-        ["to protect","schützen"],
-        ["environment","Umwelt"],
-        ["nature","Natur"],
-        ["history","Geschichte"]
-      ]},
-      {title:"Skills: How to give a group presentation",words:[
-        ["Californian","kalifornisch; Kalifornier/-in"],
-        ["smooth","glatt; weich; geschmeidig"],
-        ["transition","Übergang"],
-        ["handout","Arbeitsblatt; Informationsblatt"],
-        ["Hawaiian","Hawaiianer/-in; hawaiianisch"],
-        ["to distract","ablenken"],
-        ["chart","Tabelle; Diagramm"],
-        ["graph","Diagramm; Schaubild"],
-        ["presentation","Präsentation; Vortrag"],
-        ["to present","präsentieren; vorstellen"],
-        ["to introduce","einführen; vorstellen"],
-        ["to conclude","abschließen"],
-        ["conclusion","Schlussfolgerung"],
-        ["to organize","organisieren"],
-        ["to prepare","vorbereiten"],
-        ["to explain","erklären"],
-        ["to summarize","zusammenfassen"],
-        ["to make eye contact","Blickkontakt herstellen"]
-      ]},
-      {title:"Unit task: Who are the Aussies? A group presentation",words:[
-        ["responsible","verantwortlich; verantwortungsvoll"],
-        ["recent","kürzlich; neueste/-r/-s; letzte/-r/-s"],
-        ["overview","Überblick"],
-        ["to enable sb to do sth","jmdm. ermöglichen, etw. zu tun"]
-      ]},
-      {title:"Story: Nona and me",words:[
-        ["determined","(fest) entschlossen; entschieden; zielstrebig"],
-        ["upright","aufrecht"],
-        ["walk","Gang"],
-        ["Miss","Fräulein (Anrede)"],
-        ["desperate","verzweifelt; hoffnungslos; ausweglos"],
-        ["to glow","leuchten; glühen"],
-        ["to sigh","seufzen"]
-      ]}
-    ]
-  }
-};
-
-/* Mehrere Beispielsätze je Wort. Die Auswahl rotiert pro Anzeige. */
-const exampleSentences = {
-  achieve:[
-    "She worked hard to achieve her goal.",
-    "You can achieve a lot with practice.",
-    "Our team wants to achieve something special."
-  ],
-  actual:[
-    "The actual reason was quite different.",
-    "What is the actual cost of the trip?",
-    "His actual job is more interesting than it sounds."
-  ],
-  admit:[
-    "He had to admit that he was wrong.",
-    "I admit that the task was difficult.",
-    "She didn't want to admit her mistake."
-  ],
-  afford:[
-    "We can't afford a new computer right now.",
-    "Can you afford to buy those shoes?",
-    "They could not afford the expensive hotel."
-  ],
-  although:[
-    "Although it was raining, we went outside.",
-    "Although she was tired, she kept studying.",
-    "He smiled although he was nervous."
-  ],
-  "the day after tomorrow":[
-    "We are leaving the day after tomorrow.",
-    "The match is the day after tomorrow.",
-    "I'll finish the project the day after tomorrow."
-  ],
-  "to overhear":[
-    "I overheard them talking about the trip.",
-    "She didn't mean to overhear the conversation.",
-    "We overheard an interesting discussion."
-  ],
-  terrace:[
-    "We had breakfast on the terrace.",
-    "The terrace has a beautiful view.",
-    "They sat outside on the terrace."
-  ],
-  hopefully:[
-    "Hopefully, the weather will be better tomorrow.",
-    "Hopefully, we can visit Australia one day.",
-    "The bus will hopefully arrive soon."
-  ],
-  "to sting":[
-    "Be careful, because some jellyfish can sting.",
-    "A bee can sting if it feels threatened.",
-    "The nettles may sting your skin."
-  ],
-  shark:[
-    "A shark was swimming near the boat.",
-    "Some sharks live close to the coast.",
-    "The documentary was about a great white shark."
-  ],
-  "to prevent":[
-    "The fence helps to prevent accidents.",
-    "We should prevent plastic from entering the ocean.",
-    "Good preparation can prevent mistakes."
-  ],
-  responsible:[
-    "Everyone is responsible for their own work.",
-    "She is responsible for organizing the presentation.",
-    "Being responsible means keeping your promises."
-  ],
-  recent:[
-    "Have you read the recent news?",
-    "Recent changes have improved the app.",
-    "The most recent episode was exciting."
-  ],
-  overview:[
-    "The teacher gave us an overview of the topic.",
-    "This chart provides an overview of the results.",
-    "Let's start with a short overview."
-  ],
-  "to enable sb to do sth":[
-    "The new system enables us to work faster.",
-    "This app enables students to practise vocabulary.",
-    "The map enables visitors to find the museum."
-  ],
-  determined:[
-    "She was determined to finish the race.",
-    "He remained determined despite the difficulties.",
-    "They are determined to improve their English."
-  ],
-  upright:[
-    "Please keep the box upright.",
-    "The bottle must stay upright.",
-    "He stood upright and looked ahead."
-  ],
-  desperate:[
-    "They were desperate to find a solution.",
-    "She felt desperate after losing her passport.",
-    "It was a desperate attempt to save the project."
-  ],
-  "to glow":[
-    "The stars seemed to glow in the dark.",
-    "The screen began to glow.",
-    "The windows glowed warmly at night."
-  ],
-  "to sigh":[
-    "He sighed with relief.",
-    "She sighed and closed the book.",
-    "I heard him sigh quietly."
-  ],
-  "G'day!":[
-    "G'day, mate! How are you?",
-    "He smiled and said, 'G'day!'",
-    "They greeted us with a friendly 'G'day!'"
-  ],
-  "box jellyfish":[
-    "A box jellyfish can be dangerous.",
-    "The warning sign showed a box jellyfish.",
-    "They learned about the box jellyfish at the aquarium."
-  ],
-  "rip current":[
-    "A rip current can pull swimmers away from the shore.",
-    "The beach has warning signs about rip currents.",
-    "Always follow the lifeguard's advice near a rip current."
-  ],
-  "heatwave":[
-    "The heatwave lasted for several days.",
-    "People looked for shade during the heatwave.",
-    "The heatwave made travelling difficult."
-  ],
-  "plain":[
-    "The cattle were grazing on the wide plain.",
-    "A river crossed the grassy plain.",
-    "The plain stretched as far as we could see."
-  ]
-};
-
 const exampleRotations = {};
-function getExample(word, translation) {
-  const key = word.toLowerCase();
-  const examples = exampleSentences[key] || [
-    `I learned the word "${word}" today.`,
-    `Can you use "${word}" in a sentence?`,
-    `We practised "${word}" in our English lesson.`
-  ];
-  const index = exampleRotations[key] || 0;
-  exampleRotations[key] = (index + 1) % examples.length;
-  return examples[index];
+let advanceTimer = null;
+let sessionToken = 0;
+
+function safeJSON(key, fallback) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key));
+    return value ?? fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 const state = {
-  xp:Number(localStorage.getItem("zuno_xp") || 0),
-  streak:Number(localStorage.getItem("zuno_streak") || 0),
-  learned:JSON.parse(localStorage.getItem("zuno_learned") || "[]"),
-  stats:JSON.parse(localStorage.getItem("zuno_stats") || "{}"),
-  session:[],
-  index:0,
-  correct:0,
-  wrong:0,
-  isSchool:false,
-  sessionLanguage:"en",
-  currentMode:"input",
-  answered:false
+  xp: Number(localStorage.getItem("zuno_xp") || 0),
+  streak: Number(localStorage.getItem("zuno_streak") || 0),
+  learned: safeJSON("zuno_learned", []),
+  stats: safeJSON("zuno_stats", {}),
+  session: [],
+  index: 0,
+  correct: 0,
+  wrong: 0,
+  isSchool: false,
+  sessionLanguage: "en",
+  currentMode: "input",
+  answered: false,
+  sessionFinished: false
 };
 
+/* ---------- DESIGN ---------- */
+
+const extraStyles = document.createElement("style");
+extraStyles.textContent = `
+  .word-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #8276E8, #6558CC);
+    box-shadow: 0 12px 30px #6558cc25;
+  }
+
+  .exercise-mascot {
+    display: block;
+    width: 88px;
+    height: 88px;
+    object-fit: contain;
+    margin: 0 auto 8px;
+    animation: mascotEnter .35s ease-out;
+  }
+
+  .example {
+    font-style: normal;
+    line-height: 1.65;
+    font-size: 15px;
+  }
+
+  .example mark {
+    background: #B9F18C;
+    color: #20212A;
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-weight: 800;
+  }
+
+  .answer-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 18px 0;
+  }
+
+  .option {
+    position: relative;
+    min-height: 76px;
+    padding: 17px 14px 17px 43px;
+    background: white;
+    border: 2px solid #e7e5f2;
+    border-radius: 17px;
+    text-align: left;
+    font-weight: 700;
+    line-height: 1.4;
+    box-shadow: 0 4px 12px #20212a08;
+    transition: transform .16s ease, border-color .16s ease,
+                background .16s ease, box-shadow .16s ease;
+  }
+
+  .option::before {
+    content: attr(data-letter);
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 23px;
+    height: 23px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: #F0F1F4;
+    color: #6558CC;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .option:active:not(:disabled) {
+    transform: scale(.98);
+  }
+
+  .option.correct {
+    background: #effbe9;
+    border-color: #83c96b;
+    color: #326c2b;
+  }
+
+  .option.wrong {
+    background: #fff0ed;
+    border-color: #ee8b7f;
+    color: #a33d32;
+  }
+
+  .option:disabled {
+    opacity: 1;
+    cursor: default;
+  }
+
+  .feedback {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 16px;
+    padding: 13px 16px;
+  }
+
+  .feedback-mascot {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .result-mascot {
+    width: 145px;
+    height: 145px;
+    object-fit: contain;
+    display: block;
+    margin: 8px auto 18px;
+    animation: mascotEnter .4s ease-out;
+  }
+
+  .primary, .secondary {
+    transition: transform .15s ease, filter .15s ease;
+  }
+
+  .primary:active, .secondary:active {
+    transform: scale(.98);
+  }
+
+  @keyframes mascotEnter {
+    from { opacity: 0; transform: translateY(8px) scale(.94); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @media(max-width: 520px) {
+    .answer-options {
+      grid-template-columns: 1fr;
+    }
+
+    .option {
+      min-height: 62px;
+    }
+
+    .exercise-mascot {
+      width: 74px;
+      height: 74px;
+    }
+  }
+
+  @media(prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      transition-duration: .01ms !important;
+    }
+  }
+`;
+document.head.appendChild(extraStyles);
+
+const mascotFiles = {
+  welcome: "IMG_2557.png",
+  studying: "IMG_2558.png",
+  celebrating: "IMG_2559.png",
+  thinking: "IMG_2560.png",
+  sleeping: "IMG_2561.png",
+  thumbsUp: "IMG_2562.png"
+};
+
+/* ---------- STORAGE ---------- */
+
 function saveState() {
-  localStorage.setItem("zuno_xp",state.xp);
-  localStorage.setItem("zuno_streak",state.streak);
-  localStorage.setItem("zuno_learned",JSON.stringify(state.learned));
-  localStorage.setItem("zuno_stats",JSON.stringify(state.stats));
+  localStorage.setItem("zuno_xp", state.xp);
+  localStorage.setItem("zuno_streak", state.streak);
+  localStorage.setItem("zuno_learned", JSON.stringify(state.learned));
+  localStorage.setItem("zuno_stats", JSON.stringify(state.stats));
 }
+
+function updateStreak() {
+  const today = new Date();
+  const todayKey = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0")
+  ].join("-");
+
+  const lastKey = localStorage.getItem("zuno_lastPracticeDate");
+
+  if (lastKey === todayKey) return;
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const yesterdayKey = [
+    yesterday.getFullYear(),
+    String(yesterday.getMonth() + 1).padStart(2, "0"),
+    String(yesterday.getDate()).padStart(2, "0")
+  ].join("-");
+
+  state.streak = lastKey === yesterdayKey ? state.streak + 1 : 1;
+
+  localStorage.setItem("zuno_lastPracticeDate", todayKey);
+  saveState();
+}
+
+/* ---------- NAVIGATION ---------- */
+
 function showOnly(id) {
-  ["dashboard","settings","unitSettings","exercise","result","statsPage"].forEach(x=>{
-    document.getElementById(x).classList.toggle("hidden",x!==id);
+  [
+    "dashboard",
+    "settings",
+    "unitSettings",
+    "exercise",
+    "result",
+    "statsPage"
+  ].forEach(section => {
+    document.getElementById(section).classList.toggle(
+      "hidden",
+      section !== id
+    );
   });
-  window.scrollTo({top:0,behavior:"smooth"});
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
-function showDashboard() { showOnly("dashboard"); updateDashboard(); }
-function showGeneralSettings() { showOnly("settings"); }
-function showUnitSettings() { showOnly("unitSettings"); }
-function showStats() { renderStats(); showOnly("statsPage"); }
+
+function showDashboard() {
+  clearTimeout(advanceTimer);
+  showOnly("dashboard");
+  updateDashboard();
+}
+
+function showGeneralSettings() {
+  showOnly("settings");
+  refreshAvailableLevels();
+}
+
+function showUnitSettings() {
+  showOnly("unitSettings");
+}
+
+function showStats() {
+  renderStats();
+  showOnly("statsPage");
+}
+
+/* ---------- DASHBOARD ---------- */
 
 function updateDashboard() {
-  document.getElementById("headerXP").textContent=state.xp;
-  document.getElementById("headerStreak").textContent=state.streak;
+  document.getElementById("headerXP").textContent = state.xp;
+  document.getElementById("headerStreak").textContent = state.streak;
+
   const allSchool = getAllSchoolWords();
-  const learnedSchool = allSchool.filter(w=>state.learned.includes(w.id)).length;
-  document.getElementById("learnedCount").textContent=`${learnedSchool} / ${allSchool.length} Wörter`;
-  document.getElementById("dashboardProgress").style.width=(allSchool.length?learnedSchool/allSchool.length*100:0)+"%";
+  const learnedSchool = allSchool.filter(word =>
+    state.learned.includes(word.id)
+  ).length;
+
+  document.getElementById("learnedCount").textContent =
+    `${learnedSchool} / ${allSchool.length} Wörter`;
+
+  document.getElementById("dashboardProgress").style.width =
+    (allSchool.length
+      ? learnedSchool / allSchool.length * 100
+      : 0) + "%";
 }
+
 function getAllSchoolWords() {
-  const words=[];
-  Object.entries(unitVocabulary).forEach(([unitKey,unit])=>{
-    unit.sections.forEach((section,sectionIndex)=>{
-      section.words.forEach(([word,translation],wordIndex)=>{
+  const words = [];
+
+  Object.entries(unitVocabulary).forEach(([unitKey, unit]) => {
+    unit.sections.forEach((section, sectionIndex) => {
+      section.words.forEach(([word, translation], wordIndex) => {
         words.push({
-          id:`school-en-${unitKey}-${sectionIndex}-${wordIndex}`,
-          word,translation,language:"en",school:true,unitKey,sectionIndex
+          id: `school-en-${unitKey}-${sectionIndex}-${wordIndex}`,
+          word,
+          translation,
+          language: "en",
+          school: true,
+          unitKey,
+          sectionIndex
         });
       });
     });
   });
+
   return words;
 }
-function getUnitWords(unitKey,sectionChoice) {
-  const unit=unitVocabulary[unitKey];
-  let result=[];
-  unit.sections.forEach((section,sectionIndex)=>{
-    if(sectionChoice==="all" || Number(sectionChoice)===sectionIndex) {
-      section.words.forEach(([word,translation],wordIndex)=>{
+
+function getUnitWords(unitKey, sectionChoice) {
+  const unit = unitVocabulary[unitKey];
+  const result = [];
+
+  unit.sections.forEach((section, sectionIndex) => {
+    if (
+      sectionChoice === "all" ||
+      Number(sectionChoice) === sectionIndex
+    ) {
+      section.words.forEach(([word, translation], wordIndex) => {
         result.push({
-          id:`school-en-${unitKey}-${sectionIndex}-${wordIndex}`,
-          word,translation,language:"en",school:true,section:section.title
+          id: `school-en-${unitKey}-${sectionIndex}-${wordIndex}`,
+          word,
+          translation,
+          language: "en",
+          school: true,
+          unitKey,
+          sectionIndex,
+          section: section.title
         });
       });
     }
   });
+
   return result;
 }
-function startGeneral() {
-  const lang=document.getElementById("generalLanguage").value;
-  const level=document.getElementById("generalLevel").value;
-  const words=parseGeneralDatabase(lang).filter(w=>w.level===level);
-  if(!words.length) { alert("Für dieses Niveau sind gerade keine Wörter vorhanden."); return; }
-  startSession(shuffle(words),false,lang);
+
+/* ---------- GENERAL PRACTICE ---------- */
+
+function refreshAvailableLevels() {
+  const language = document.getElementById("generalLanguage").value;
+  const levelSelect = document.getElementById("generalLevel");
+
+  const available = new Set(
+    parseGeneralDatabase(language).map(word => word.level)
+  );
+
+  [...levelSelect.options].forEach(option => {
+    option.disabled = !available.has(option.value);
+  });
+
+  if (!available.has(levelSelect.value)) {
+    levelSelect.value = available.values().next().value || "";
+  }
 }
+
+document.getElementById("generalLanguage").addEventListener(
+  "change",
+  refreshAvailableLevels
+);
+
+function startGeneral() {
+  const lang = document.getElementById("generalLanguage").value;
+  const level = document.getElementById("generalLevel").value;
+
+  const words = parseGeneralDatabase(lang).filter(
+    word => word.level === level
+  );
+
+  if (!words.length) {
+    alert("Für dieses Niveau sind gerade keine Wörter vorhanden.");
+    return;
+  }
+
+  startSession(shuffle(words), false, lang);
+}
+
+/* ---------- UNIT PRACTICE ---------- */
+
 function refreshUnitSections() {
-  const key=document.getElementById("unitSelect").value;
-  const select=document.getElementById("unitSection");
-  select.innerHTML='<option value="all">Alle Abschnitte</option>';
-  unitVocabulary[key].sections.forEach((section,index)=>{
-    const option=document.createElement("option");
-    option.value=String(index);
-    option.textContent=section.title;
+  const key = document.getElementById("unitSelect").value;
+  const select = document.getElementById("unitSection");
+
+  select.innerHTML =
+    '<option value="all">Alle Abschnitte</option>';
+
+  unitVocabulary[key].sections.forEach((section, index) => {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = section.title;
     select.appendChild(option);
   });
 }
-document.getElementById("unitSelect").addEventListener("change",refreshUnitSections);
+
+document.getElementById("unitSelect").addEventListener(
+  "change",
+  refreshUnitSections
+);
+
 refreshUnitSections();
+refreshAvailableLevels();
 
 function startUnit() {
-  const key=document.getElementById("unitSelect").value;
-  const section=document.getElementById("unitSection").value;
-  const words=getUnitWords(key,section);
-  if(!words.length) { alert("In diesem Abschnitt gibt es noch keine Vokabeln."); return; }
-  startSession(shuffle(words),true,"en");
-}
-function shuffle(array) {
-  const copy=[...array];
-  for(let i=copy.length-1;i>0;i--) {
-    const j=Math.floor(Math.random()*(i+1));
-    [copy[i],copy[j]]=[copy[j],copy[i]];
+  const key = document.getElementById("unitSelect").value;
+  const section = document.getElementById("unitSection").value;
+  const words = getUnitWords(key, section);
+
+  if (!words.length) {
+    alert("In diesem Abschnitt gibt es noch keine Vokabeln.");
+    return;
   }
+
+  startSession(shuffle(words), true, "en");
+}
+
+/* ---------- HELPERS ---------- */
+
+function shuffle(array) {
+  const copy = [...array];
+
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+
   return copy;
 }
-function startSession(words,isSchool,lang) {
-  state.session=words;
-  state.index=0;
-  state.correct=0;
-  state.wrong=0;
-  state.isSchool=isSchool;
-  state.sessionLanguage=lang;
-  state.answered=false;
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function normalize(text) {
+  return String(text)
+    .normalize("NFKC")
+    .toLowerCase()
+    .trim()
+    .replace(/[’‘]/g, "'")
+    .replace(/\bsth\.?/g, "something")
+    .replace(/\bsb\.?/g, "somebody")
+    .replace(/\betw\.?/g, "etwas")
+    .replace(/\bjmdm\.?/g, "jemandem")
+    .replace(/\bjmdn\.?/g, "jemanden")
+    .replace(/\s+/g, " ")
+    .replace(/[.,!?;:]+$/g, "")
+    .trim();
+}
+
+function getTranslationOptions(word) {
+  return String(word.translation)
+    .split(";")
+    .map(value => value.trim())
+    .filter(Boolean);
+}
+
+function getPrimaryTranslation(word) {
+  return getTranslationOptions(word)[0] || word.translation;
+}
+
+/* ---------- EXAMPLES ---------- */
+
+function getExample(word) {
+  const key = word.word.toLowerCase();
+  const examples = exampleSentences[key];
+
+  if (examples && examples.length) {
+    const index = exampleRotations[key] || 0;
+    exampleRotations[key] = (index + 1) % examples.length;
+    return examples[index];
+  }
+
+  if (word.school) {
+    return `In our Australia lesson, we use "${word.word}" in context.`;
+  }
+
+  return `Here is the word "${word.word}" in an everyday example.`;
+}
+
+function getExampleHTML(word) {
+  let sentence = getExample(word);
+  const target = word.word;
+
+  let pattern = new RegExp(escapeRegExp(target), "i");
+
+  if (!pattern.test(sentence)) {
+    sentence = `The word "${target}" is useful in this context.`;
+    pattern = new RegExp(escapeRegExp(target), "i");
+  }
+
+  const match = sentence.match(pattern);
+
+  if (!match) return escapeHTML(sentence);
+
+  const before = sentence.slice(0, match.index);
+  const highlighted = match[0];
+  const after = sentence.slice(match.index + highlighted.length);
+
+  return (
+    escapeHTML(before) +
+    `<mark>${escapeHTML(highlighted)}</mark>` +
+    escapeHTML(after)
+  );
+}
+
+/* ---------- SESSION ---------- */
+
+function startSession(words, isSchool, lang) {
+  clearTimeout(advanceTimer);
+  sessionToken++;
+
+  state.session = words;
+  state.index = 0;
+  state.correct = 0;
+  state.wrong = 0;
+  state.isSchool = isSchool;
+  state.sessionLanguage = lang;
+  state.answered = false;
+  state.sessionFinished = false;
+
   showOnly("exercise");
   renderQuestion();
 }
-function getModes() { return ["input","choice","reverse"]; }
-function renderQuestion() {
-  const word=state.session[state.index];
-  if(!word) return finishSession();
-  state.answered=false;
-  document.getElementById("questionCounter").textContent=`${state.index+1} / ${state.session.length}`;
-  document.getElementById("lessonProgress").style.width=(state.index/state.session.length*100)+"%";
-  document.getElementById("feedbackArea").innerHTML="";
-  document.getElementById("nextButton").classList.add("hidden");
-  const modes=getModes();
-  state.currentMode=modes[state.index % modes.length];
-  const target=document.getElementById("targetWord");
-  const example=document.getElementById("exampleSentence");
-  if(state.currentMode==="reverse") {
-    document.getElementById("modeLabel").textContent="Wie heißt das auf Englisch/Französisch?";
-    target.textContent=word.translation;
-    example.textContent=word.word;
-  } else {
-    document.getElementById("modeLabel").textContent=state.currentMode==="choice"?"Wähle die richtige Übersetzung":"Übersetze das Wort";
-    target.textContent=word.word;
-    example.textContent=getExample(word.word,word.translation);
+
+function getModes() {
+  return ["input", "choice", "reverse"];
+}
+
+function ensureExerciseMascot() {
+  let mascot = document.getElementById("exerciseMascot");
+
+  if (!mascot) {
+    mascot = document.createElement("img");
+    mascot.id = "exerciseMascot";
+    mascot.className = "exercise-mascot";
+    mascot.alt = "ZUNO Axolotl";
+
+    const wordCard = document.querySelector(".word-card");
+    wordCard.prepend(mascot);
   }
-  example.classList.remove("hidden");
+
+  mascot.src = mascotFiles.studying;
+  return mascot;
+}
+
+function renderQuestion() {
+  const word = state.session[state.index];
+
+  if (!word) {
+    finishSession(true);
+    return;
+  }
+
+  clearTimeout(advanceTimer);
+  state.answered = false;
+
+  document.getElementById("questionCounter").textContent =
+    `${state.index + 1} / ${state.session.length}`;
+
+  document.getElementById("lessonProgress").style.width =
+    (state.index / state.session.length * 100) + "%";
+
+  document.getElementById("feedbackArea").innerHTML = "";
+  document.getElementById("nextButton").classList.add("hidden");
+
+  const modes = getModes();
+  state.currentMode = modes[state.index % modes.length];
+
+  const target = document.getElementById("targetWord");
+  const example = document.getElementById("exampleSentence");
+  const label = document.getElementById("modeLabel");
+
+  ensureExerciseMascot();
+
+  if (state.currentMode === "reverse") {
+    label.textContent = "Übersetze ins Englische";
+    target.textContent = word.translation;
+
+    // Der Beispielsatz bleibt im Reverse-Modus komplett verborgen.
+    example.innerHTML = "";
+    example.classList.add("hidden");
+  } else {
+    label.textContent = state.currentMode === "choice"
+      ? "Wähle die passende Übersetzung"
+      : "Übersetze das Wort";
+
+    target.textContent = word.word;
+    example.innerHTML = getExampleHTML(word);
+    example.classList.remove("hidden");
+  }
+
   renderAnswerArea(word);
 }
+
+/* ---------- MULTIPLE CHOICE ---------- */
+
+const similarWordMap = {
+  "vocabulary": [
+    "language", "translation", "pronunciation", "accent"
+  ],
+  "to be short of sth": [
+    "to be stuck", "to manage (to do sth)", "to pass (on)"
+  ],
+  "to apply (for)": [
+    "to apply (to)", "to immigrate", "to emigrate", "to settle"
+  ],
+  "to immigrate": [
+    "to emigrate", "to migrate", "to settle", "to arrive"
+  ],
+  "to emigrate": [
+    "to immigrate", "to migrate", "to settle", "to arrive"
+  ],
+  "to succeed (in)": [
+    "to achieve", "to manage (to do sth)", "to improve"
+  ],
+  "responsibility": [
+    "responsible", "to take responsibility", "to be responsible for"
+  ],
+  "recent": [
+    "actual", "ancient", "current", "various"
+  ]
+};
+
+function getWordShape(word) {
+  const value = word.word.toLowerCase();
+
+  if (value.startsWith("to ")) return "verb";
+  if (value.endsWith("tion") || value.endsWith("ment")) return "noun";
+  if (value.endsWith("ly")) return "adverb";
+  if (value.endsWith("ous") || value.endsWith("ful") ||
+      value.endsWith("ive") || value.endsWith("al")) return "adjective";
+
+  return "other";
+}
+
+function makeOptions(correctWord) {
+  const correct = getPrimaryTranslation(correctWord);
+  const allCandidates = state.session.filter(candidate =>
+    candidate.id !== correctWord.id
+  );
+
+  const curatedNames =
+    similarWordMap[correctWord.word.toLowerCase()] || [];
+
+  const curated = curatedNames
+    .map(name => allCandidates.find(candidate =>
+      candidate.word.toLowerCase() === name.toLowerCase()
+    ))
+    .filter(Boolean);
+
+  const shape = getWordShape(correctWord);
+
+  const similar = allCandidates
+    .map(candidate => {
+      let score = 0;
+
+      if (getWordShape(candidate) === shape) score += 3;
+
+      const correctLength = correctWord.word.length;
+      const candidateLength = candidate.word.length;
+
+      if (Math.abs(correctLength - candidateLength) <= 5) score += 1;
+
+      if (
+        candidate.word.toLowerCase().startsWith("to ") &&
+        correctWord.word.toLowerCase().startsWith("to ")
+      ) score += 2;
+
+      return { candidate, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .map(item => item.candidate);
+
+  const orderedCandidates = [
+    ...curated,
+    ...shuffle(similar)
+  ];
+
+  const distractors = [];
+  const used = new Set([normalize(correct)]);
+
+  for (const candidate of orderedCandidates) {
+    const translation = getPrimaryTranslation(candidate);
+    const key = normalize(translation);
+
+    if (!key || used.has(key)) continue;
+
+    used.add(key);
+    distractors.push(translation);
+
+    if (distractors.length === 3) break;
+  }
+
+  // Fallback nur, falls die aktuelle Lesson zu wenige Wörter enthält.
+  if (distractors.length < 3) {
+    for (const candidate of shuffle(allCandidates)) {
+      const translation = getPrimaryTranslation(candidate);
+      const key = normalize(translation);
+
+      if (!key || used.has(key)) continue;
+
+      used.add(key);
+      distractors.push(translation);
+
+      if (distractors.length === 3) break;
+    }
+  }
+
+  return shuffle([correct, ...distractors]);
+}
+
+/* ---------- ANSWER AREA ---------- */
+
 function renderAnswerArea(word) {
-  const area=document.getElementById("answerArea");
-  area.innerHTML="";
-  if(state.currentMode==="choice") {
-    const options=makeOptions(word);
-    const wrapper=document.createElement("div");
-    wrapper.className="answer-options";
-    options.forEach(option=>{
-      const button=document.createElement("button");
-      button.className="option";
-      button.textContent=option;
-      button.onclick=()=>checkAnswer(option,word);
+  const area = document.getElementById("answerArea");
+  area.innerHTML = "";
+
+  if (state.currentMode === "choice") {
+    const wrapper = document.createElement("div");
+    wrapper.className = "answer-options";
+
+    makeOptions(word).forEach((option, index) => {
+      const button = document.createElement("button");
+      button.className = "option";
+      button.textContent = option;
+      button.dataset.letter = ["A", "B", "C", "D"][index] || "•";
+      button.onclick = () => checkAnswer(option, word);
       wrapper.appendChild(button);
     });
+
     area.appendChild(wrapper);
-  } else {
-    const input=document.createElement("input");
-    input.type="text";
-    input.id="answerInput";
-    input.placeholder=state.currentMode==="reverse"?"Englisches Wort eingeben …":"Deutsche Übersetzung eingeben …";
-    input.autocomplete="off";
-    input.addEventListener("keydown",e=>{if(e.key==="Enter") submitTypedAnswer();});
-    area.appendChild(input);
-    const button=document.createElement("button");
-    button.className="primary";
-    button.style.marginTop="12px";
-    button.textContent="Antwort prüfen";
-    button.onclick=submitTypedAnswer;
-    area.appendChild(button);
-    input.focus();
+    return;
   }
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.id = "answerInput";
+  input.placeholder = state.currentMode === "reverse"
+    ? "Englisches Wort eingeben …"
+    : "Deutsche Übersetzung eingeben …";
+  input.autocomplete = "off";
+  input.autocapitalize = "none";
+  input.addEventListener("keydown", event => {
+    if (event.key === "Enter") submitTypedAnswer();
+  });
+
+  area.appendChild(input);
+
+  const button = document.createElement("button");
+  button.className = "primary";
+  button.style.marginTop = "12px";
+  button.textContent = "Antwort prüfen";
+  button.onclick = submitTypedAnswer;
+
+  area.appendChild(button);
+
+  input.focus();
 }
-function makeOptions(correctWord) {
-  const pool=state.session.filter(w=>w.id!==correctWord.id).map(w=>w.translation);
-  const distractors=shuffle([...new Set(pool)]).slice(0,3);
-  return shuffle([...distractors,correctWord.translation]);
-}
+
 function submitTypedAnswer() {
-  const input=document.getElementById("answerInput");
-  if(!input) return;
-  const value=input.value.trim();
-  if(!value) return;
-  const word=state.session[state.index];
-  const expected=state.currentMode==="reverse"?word.word:word.translation;
-  checkAnswer(value,word,expected);
+  const input = document.getElementById("answerInput");
+
+  if (!input) return;
+
+  const value = input.value.trim();
+  if (!value) return;
+
+  const word = state.session[state.index];
+  checkAnswer(value, word);
 }
-function normalize(text) {
-  return text.toLowerCase().trim().replace(/[.,!?;:]/g,"").replace(/\s+/g," ");
+
+/* ---------- ANSWER CHECKING ---------- */
+
+function getAcceptedAnswers(word) {
+  if (state.currentMode === "reverse") {
+    return [word.word];
+  }
+
+  return getTranslationOptions(word);
 }
-function checkAnswer(answer,word,expected) {
-  if(state.answered) return;
-  state.answered=true;
-  const correctAnswer=expected || (state.currentMode==="reverse"?word.word:word.translation);
-  const isCorrect=normalize(answer)===normalize(correctAnswer);
-  if(isCorrect) {
+
+function checkAnswer(answer, word) {
+  if (state.answered) return;
+
+  state.answered = true;
+
+  const accepted = getAcceptedAnswers(word);
+  const isCorrect = accepted.some(value =>
+    normalize(answer) === normalize(value)
+  );
+
+  if (isCorrect) {
     state.correct++;
-    state.xp+=10;
-    if(word.school) {
-      state.learned=[...new Set([...state.learned,word.id])];
+    state.xp += 10;
+
+    if (word.school) {
+      state.learned = [
+        ...new Set([...state.learned, word.id])
+      ];
     }
+
+    updateStreak();
   } else {
     state.wrong++;
   }
-  if(word.school) recordSchoolAnswer(word,isCorrect);
+
+  if (word.school) {
+    recordSchoolAnswer(word, isCorrect);
+  }
+
   saveState();
-  document.querySelectorAll(".option").forEach(button=>{
-    button.disabled=true;
-    if(normalize(button.textContent)===normalize(correctAnswer)) button.classList.add("correct");
-    else if(normalize(button.textContent)===normalize(answer)) button.classList.add("wrong");
+
+  document.querySelectorAll(".option").forEach(button => {
+    button.disabled = true;
+
+    const optionIsCorrect = accepted.some(value =>
+      normalize(button.textContent) === normalize(value)
+    );
+
+    if (optionIsCorrect) {
+      button.classList.add("correct");
+    } else if (normalize(button.textContent) === normalize(answer)) {
+      button.classList.add("wrong");
+    }
   });
-  document.querySelectorAll("#answerArea input,#answerArea button").forEach(el=>el.disabled=true);
-  const feedback=document.getElementById("feedbackArea");
-  feedback.innerHTML=`<div class="feedback ${isCorrect?"good":"bad"}">${isCorrect?"✓ Richtig! +10 XP":"✕ Nicht ganz. Richtig wäre: "+escapeHTML(correctAnswer)}</div>`;
-  document.getElementById("nextButton").classList.remove("hidden");
-  document.getElementById("nextButton").focus();
+
+  document.querySelectorAll(
+    "#answerArea input, #answerArea button"
+  ).forEach(element => {
+    element.disabled = true;
+  });
+
+  const mascot = document.getElementById("exerciseMascot");
+  mascot.src = isCorrect
+    ? mascotFiles.thumbsUp
+    : mascotFiles.thinking;
+
+  const feedback = document.getElementById("feedbackArea");
+  const feedbackBox = document.createElement("div");
+  feedbackBox.className = `feedback ${isCorrect ? "good" : "bad"}`;
+
+  const feedbackMascot = document.createElement("img");
+  feedbackMascot.className = "feedback-mascot";
+  feedbackMascot.src = isCorrect
+    ? mascotFiles.thumbsUp
+    : mascotFiles.thinking;
+  feedbackMascot.alt = "";
+
+  const message = document.createElement("div");
+
+  if (isCorrect) {
+    message.textContent = "✓ Richtig! +10 XP";
+  } else {
+    const correctText = state.currentMode === "reverse"
+      ? word.word
+      : word.translation;
+
+    message.textContent = `✕ Nicht ganz. Richtig wäre: ${correctText}`;
+  }
+
+  feedbackBox.append(feedbackMascot, message);
+  feedback.replaceChildren(feedbackBox);
+
+  const nextButton = document.getElementById("nextButton");
+
+  if (isCorrect) {
+    nextButton.classList.add("hidden");
+
+    const currentToken = sessionToken;
+
+    advanceTimer = setTimeout(() => {
+      if (
+        currentToken === sessionToken &&
+        state.answered &&
+        !state.sessionFinished
+      ) {
+        nextQuestion();
+      }
+    }, 1500);
+  } else {
+    nextButton.classList.remove("hidden");
+    nextButton.focus();
+  }
+
   updateDashboard();
 }
-function recordSchoolAnswer(word,isCorrect) {
-  const key=word.language;
-  if(!state.stats[key]) state.stats[key]={correct:0,wrong:0};
-  if(isCorrect) state.stats[key].correct++;
-  else state.stats[key].wrong++;
+
+function recordSchoolAnswer(word, isCorrect) {
+  const key = word.language;
+
+  if (!state.stats[key]) {
+    state.stats[key] = { correct: 0, wrong: 0 };
+  }
+
+  if (isCorrect) {
+    state.stats[key].correct++;
+  } else {
+    state.stats[key].wrong++;
+  }
 }
+
+/* ---------- NEXT QUESTION ---------- */
+
 function nextQuestion() {
+  if (state.sessionFinished) return;
+
+  clearTimeout(advanceTimer);
   state.index++;
   renderQuestion();
 }
-function finishSession() {
-  const total=state.correct+state.wrong;
-  document.getElementById("resultTitle").textContent=state.correct===total?"Perfekt gemacht!":"Lesson geschafft!";
-  document.getElementById("resultEmoji").textContent=state.correct===total?"🏆":state.correct/Math.max(total,1)>=.7?"🎉":"💪";
-  document.getElementById("resultScore").textContent=`${state.correct} / ${total} richtig`;
-  document.getElementById("resultPercent").textContent=`${Math.round(state.correct/Math.max(total,1)*100)} % Trefferquote`;
-  document.getElementById("resultCorrect").textContent=state.correct;
-  document.getElementById("resultWrong").textContent=state.wrong;
-  document.getElementById("resultXP").textContent=state.correct*10;
-  showOnly("result");
+
+/* ---------- FINISH SESSION ---------- */
+
+function ensureResultMascot() {
+  let mascot = document.getElementById("resultMascot");
+
+  if (!mascot) {
+    mascot = document.createElement("img");
+    mascot.id = "resultMascot";
+    mascot.className = "result-mascot";
+    mascot.alt = "ZUNO Axolotl";
+
+    document.getElementById("resultTitle").after(mascot);
+  }
+
+  return mascot;
+}
+
+function finishSession(completed = false) {
+  if (state.sessionFinished) return;
+
+  clearTimeout(advanceTimer);
+  state.sessionFinished = true;
+
+  const total = state.correct + state.wrong;
+  const percent = total
+    ? Math.round(state.correct / total * 100)
+    : 0;
+
+  if (completed) {
+    const sessions = Number(
+      localStorage.getItem("zuno_sessions") || 0
+    );
+
+    localStorage.setItem("zuno_sessions", sessions + 1);
+  }
+
+  document.getElementById("resultTitle").textContent =
+    percent >= 90
+      ? "Stark gemacht!"
+      : completed
+        ? "Lesson geschafft!"
+        : "Bis zum nächsten Mal!";
+
+  document.getElementById("resultEmoji").textContent =
+    percent >= 90 ? "🏆" : percent >= 60 ? "🎉" : "💪";
+
+  document.getElementById("resultScore").textContent =
+    `${state.correct} / ${total} richtig`;
+
+  document.getElementById("resultPercent").textContent =
+    `${percent} % Trefferquote` +
+    (completed ? "" : " · Vorzeitig beendet");
+
+  document.getElementById("resultCorrect").textContent =
+    state.correct;
+
+  document.getElementById("resultWrong").textContent =
+    state.wrong;
+
+  document.getElementById("resultXP").textContent =
+    state.correct * 10;
+
+  const resultMascot = ensureResultMascot();
+
+  if (percent >= 90) {
+    resultMascot.src = mascotFiles.celebrating;
+  } else if (percent < 40) {
+    resultMascot.src = mascotFiles.sleeping;
+  } else {
+    resultMascot.src = mascotFiles.thumbsUp;
+  }
+
   saveState();
+  updateDashboard();
+  showOnly("result");
 }
+
 function leaveExercise() {
-  if(confirm("Lesson wirklich beenden? Dein bisheriges Ergebnis wird gespeichert.")) finishSession();
+  if (confirm("Lesson wirklich beenden? Dein bisheriges Ergebnis wird gespeichert.")) {
+    finishSession(false);
+  }
 }
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
-}
+
+/* ---------- STATS ---------- */
+
 function gradeFromPercent(percent) {
-  if(percent>=90) return 1;
-  if(percent>=75) return 2;
-  if(percent>=60) return 3;
-  if(percent>=50) return 4;
-  if(percent>=25) return 5;
+  if (percent >= 90) return 1;
+  if (percent >= 75) return 2;
+  if (percent >= 60) return 3;
+  if (percent >= 50) return 4;
+  if (percent >= 25) return 5;
   return 6;
 }
-function gradeLabel(percent,total) {
-  return total===0?"–":String(gradeFromPercent(percent));
+
+function gradeLabel(percent, total) {
+  return total === 0 ? "–" : String(gradeFromPercent(percent));
 }
-function statCard(label,value,sub="") {
-  return `<div class="stat"><span>${label}</span><strong>${value}</strong>${sub?`<div class="small">${sub}</div>`:""}</div>`;
+
+function statCard(label, value, sub = "") {
+  return `
+    <div class="stat">
+      <span>${label}</span>
+      <strong>${value}</strong>
+      ${sub ? `<div class="small">${sub}</div>` : ""}
+    </div>
+  `;
 }
+
 function renderStats() {
-  const en=state.stats.en||{correct:0,wrong:0};
-  const fr=state.stats.fr||{correct:0,wrong:0};
-  const totalCorrect=en.correct+fr.correct;
-  const totalWrong=en.wrong+fr.wrong;
-  const total=totalCorrect+totalWrong;
-  const percent=total?Math.round(totalCorrect/total*100):0;
-  document.getElementById("overallGrade").textContent=gradeLabel(percent,total);
-  document.getElementById("overallAccuracy").textContent=total?percent+"%":"–";
-  document.getElementById("overallAccuracyBar").style.width=percent+"%";
-  document.getElementById("overallTotals").textContent=`${totalCorrect} richtige von ${total} beantworteten Schulvokabel-Fragen`;
-  document.getElementById("allSchoolStats").innerHTML=
-    statCard("Richtig",totalCorrect)+statCard("Falsch",totalWrong)+statCard("Beantwortet",total)+statCard("Trefferquote",total?percent+"%":"–");
-  renderLanguageStats("englishSchoolStats",en);
-  renderLanguageStats("frenchSchoolStats",fr);
-  const sessions=Number(localStorage.getItem("zuno_sessions")||0);
-  document.getElementById("extraStats").innerHTML=
-    statCard("Gesamt-XP",state.xp)+statCard("Gelernte Wörter",getAllSchoolWords().filter(w=>state.learned.includes(w.id)).length)+statCard("Abgeschlossene Lessons",sessions);
+  const en = state.stats.en || { correct: 0, wrong: 0 };
+  const fr = state.stats.fr || { correct: 0, wrong: 0 };
+
+  const totalCorrect = en.correct + fr.correct;
+  const totalWrong = en.wrong + fr.wrong;
+  const total = totalCorrect + totalWrong;
+
+  const percent = total
+    ? Math.round(totalCorrect / total * 100)
+    : 0;
+
+  document.getElementById("overallGrade").textContent =
+    gradeLabel(percent, total);
+
+  document.getElementById("overallAccuracy").textContent =
+    total ? percent + "%" : "–";
+
+  document.getElementById("overallAccuracyBar").style.width =
+    percent + "%";
+
+  document.getElementById("overallTotals").textContent =
+    `${totalCorrect} richtige von ${total} beantworteten Schulvokabel-Fragen`;
+
+  document.getElementById("allSchoolStats").innerHTML =
+    statCard("Richtig", totalCorrect) +
+    statCard("Falsch", totalWrong) +
+    statCard("Beantwortet", total) +
+    statCard("Trefferquote", total ? percent + "%" : "–");
+
+  renderLanguageStats("englishSchoolStats", en);
+  renderLanguageStats("frenchSchoolStats", fr);
+
+  const sessions = Number(
+    localStorage.getItem("zuno_sessions") || 0
+  );
+
+  document.getElementById("extraStats").innerHTML =
+    statCard("Gesamt-XP", state.xp) +
+    statCard(
+      "Gelernte Wörter",
+      getAllSchoolWords().filter(word =>
+        state.learned.includes(word.id)
+      ).length
+    ) +
+    statCard("Abgeschlossene Lessons", sessions);
 }
-function renderLanguageStats(id,data) {
-  const total=data.correct+data.wrong;
-  const percent=total?Math.round(data.correct/total*100):0;
-  document.getElementById(id).innerHTML=
-    statCard("Richtig",data.correct)+
-    statCard("Falsch",data.wrong)+
-    statCard("Beantwortet",total)+
-    statCard("Trefferquote",total?percent+"%":"–")+
-    statCard("Schulnote",total?gradeFromPercent(percent):"–");
+
+function renderLanguageStats(id, data) {
+  const total = data.correct + data.wrong;
+  const percent = total
+    ? Math.round(data.correct / total * 100)
+    : 0;
+
+  document.getElementById(id).innerHTML =
+    statCard("Richtig", data.correct) +
+    statCard("Falsch", data.wrong) +
+    statCard("Beantwortet", total) +
+    statCard("Trefferquote", total ? percent + "%" : "–") +
+    statCard("Schulnote", total ? gradeFromPercent(percent) : "–");
 }
+
+/* ---------- AUDIO ---------- */
+
 function speakCurrentWord() {
-  if(!("speechSynthesis" in window)) {
+  if (!("speechSynthesis" in window)) {
     alert("Die Audiofunktion wird von diesem Browser leider nicht unterstützt.");
     return;
   }
-  const word=state.session[state.index];
-  const text=state.currentMode==="reverse"?word.translation:word.word;
+
+  const word = state.session[state.index];
+  if (!word) return;
+
+  const isReverse = state.currentMode === "reverse";
+  const text = isReverse ? word.translation : word.word;
+  const language = isReverse
+    ? "de-DE"
+    : word.language === "fr"
+      ? "fr-FR"
+      : "en-AU";
+
   window.speechSynthesis.cancel();
-  const utterance=new SpeechSynthesisUtterance(text);
-  utterance.lang=word.language==="fr"?"fr-FR":"en-AU";
-  utterance.rate=0.88;
-  utterance.pitch=1.02;
-  const voices=window.speechSynthesis.getVoices();
-  const matching=voices.filter(v=>v.lang.toLowerCase().startsWith(word.language==="fr"?"fr":"en"));
-  const preferred=matching.find(v=>/siri|enhanced|premium|natural/i.test(v.name)) ||
-    matching.find(v=>word.language==="en" && /Australia|United Kingdom/i.test(v.name)) ||
-    matching[0];
-  if(preferred) utterance.voice=preferred;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = language;
+  utterance.rate = 0.88;
+  utterance.pitch = 1.02;
+
+  const voices = window.speechSynthesis.getVoices();
+  const languagePrefix = language.slice(0, 2);
+
+  const matching = voices.filter(voice =>
+    voice.lang.toLowerCase().startsWith(languagePrefix)
+  );
+
+  const preferred =
+    matching.find(voice =>
+      /siri|enhanced|premium|natural/i.test(voice.name)
+    ) || matching[0];
+
+  if (preferred) {
+    utterance.voice = preferred;
+  }
+
   window.speechSynthesis.speak(utterance);
 }
+
+/* ---------- GREETING & START ---------- */
+
 function updateGreeting() {
-  const hour=new Date().getHours();
-  document.getElementById("greeting").textContent=hour<11?"Guten Morgen!":hour<18?"Schön, dass du da bist!":"Guten Abend!";
+  const hour = new Date().getHours();
+
+  document.getElementById("greeting").textContent =
+    hour < 11
+      ? "Guten Morgen!"
+      : hour < 18
+        ? "Schön, dass du da bist!"
+        : "Guten Abend!";
 }
+
 updateGreeting();
 updateDashboard();
-if("speechSynthesis" in window) {
-  window.speechSynthesis.onvoiceschanged=()=>{};
+
+if ("speechSynthesis" in window) {
+  window.speechSynthesis.onvoiceschanged = () => {};
 }
-</script>
-</body>
-</html>
