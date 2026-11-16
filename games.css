@@ -1,1 +1,240 @@
+/* =========================================
+   ZUNO ARCADE DESIGN
+========================================= */
 
+#zunoArcade {
+  margin-top: 30px;
+}
+
+.zuno-arcade-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.zuno-arcade-heading h2 {
+  margin-bottom: 4px;
+}
+
+.zuno-arcade-subtitle {
+  color: #6d7283;
+  margin-bottom: 16px;
+}
+
+.zuno-game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.zuno-game-card {
+  position: relative;
+  padding: 20px;
+  min-height: 190px;
+  background: white;
+  border: 1px solid #ecebf2;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(32, 33, 42, .05);
+}
+
+.zuno-game-icon {
+  font-size: 34px;
+  margin-bottom: 12px;
+}
+
+.zuno-game-card h3 {
+  margin-bottom: 6px;
+}
+
+.zuno-game-card p {
+  font-size: .9rem;
+  line-height: 1.45;
+  min-height: 40px;
+}
+
+.zuno-game-card button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 11px 14px;
+  background: #7d69e8;
+  color: white;
+  font-weight: 800;
+}
+
+.zuno-game-card.locked button {
+  background: #e9e7f1;
+  color: #777386;
+}
+
+.zuno-game-lock {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #f2f0f8;
+  color: #655c82;
+  font-size: .75rem;
+  font-weight: 800;
+}
+
+/* Game overlay */
+
+.zuno-game-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(25, 23, 38, .72);
+  backdrop-filter: blur(8px);
+}
+
+.zuno-game-window {
+  width: min(620px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 22px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .25);
+}
+
+.zuno-game-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.zuno-game-top h2 {
+  margin: 0;
+}
+
+.zuno-game-close {
+  padding: 9px 13px;
+  background: #f1eff7;
+  color: #49445b;
+  font-weight: 800;
+}
+
+.zuno-game-info {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 12px 0;
+  font-weight: 800;
+  color: #6252bd;
+}
+
+.zuno-game-stage {
+  display: grid;
+  place-items: center;
+  min-height: 260px;
+  padding: 14px;
+  border-radius: 18px;
+  background: #f7f6fc;
+  text-align: center;
+}
+
+.zuno-game-stage canvas {
+  display: block;
+  max-width: 100%;
+  border-radius: 12px;
+  background: #242238;
+  touch-action: none;
+}
+
+.zuno-game-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.zuno-game-actions button {
+  padding: 12px 18px;
+  background: #7d69e8;
+  color: white;
+  font-weight: 800;
+}
+
+.zuno-game-actions button.secondary {
+  background: #efedf6;
+  color: #514b66;
+}
+
+.zuno-game-message {
+  min-height: 28px;
+  margin: 12px 0 0;
+  text-align: center;
+  font-weight: 700;
+  color: #6252bd;
+}
+
+/* Memory */
+
+.zuno-memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(52px, 1fr));
+  gap: 9px;
+  width: 100%;
+  max-width: 390px;
+}
+
+.zuno-memory-card {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #7d69e8;
+  color: white;
+  font-size: clamp(1.2rem, 5vw, 2rem);
+  font-weight: 800;
+}
+
+.zuno-memory-card.revealed,
+.zuno-memory-card.matched {
+  background: #e9f6df;
+  color: #315b2b;
+}
+
+.zuno-memory-card.matched {
+  opacity: .65;
+}
+
+/* Mobile controls */
+
+.zuno-game-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.zuno-game-pad button {
+  min-height: 42px;
+  background: #efedf6;
+  color: #514b66;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+@media (max-width: 520px) {
+  .zuno-game-window {
+    padding: 16px;
+  }
+
+  .zuno-game-stage {
+    min-height: 220px;
+  }
+
+  .zuno-game-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
