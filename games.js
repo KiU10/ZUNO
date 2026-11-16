@@ -64,6 +64,44 @@
     return getStreak() >= game.unlock;
   }
 
+  /* =========================================
+     ARCADE ERSTELLEN UND AKTUALISIEREN
+  ========================================= */
+
+  function createArcade() {
+    const arcadePage = document.getElementById("arcadePage");
+
+    if (!arcadePage) return;
+
+    let arcade = document.getElementById("zunoArcade");
+
+    if (!arcade) {
+      arcade = document.createElement("section");
+      arcade.id = "zunoArcade";
+
+      arcade.innerHTML = `
+        <div class="zuno-arcade-heading">
+          <div>
+            <h1>🎮 ZUNO Arcade</h1>
+            <p class="zuno-arcade-subtitle">
+              Gib deine verdienten XP für Spielrunden aus.
+            </p>
+          </div>
+
+          <span class="pill zuno-arcade-xp">
+            ⚡ <span id="zunoArcadeXP">0</span> XP
+          </span>
+        </div>
+
+        <div class="zuno-game-grid" id="zunoGameGrid"></div>
+      `;
+
+      arcadePage.appendChild(arcade);
+    }
+
+    renderGameCards();
+  }
+
   function renderGameCards() {
     const grid = document.getElementById("zunoGameGrid");
 
@@ -75,7 +113,6 @@
       return `
         <article class="zuno-game-card ${unlocked ? "" : "locked"}">
           <div class="zuno-game-icon">${game.icon}</div>
-
           <h3>${game.title}</h3>
           <p>${game.description}</p>
 
@@ -114,47 +151,14 @@
 
     const xp = document.getElementById("zunoArcadeXP");
 
-    if (xp) {
-      xp.textContent = getXP();
-    }
+    if (xp) xp.textContent = getXP();
   }
 
-  function createArcade() {
-    const dashboard = document.getElementById("dashboard");
+  window.updateZUNOArcade = renderGameCards;
 
-    if (!dashboard) return;
-
-    if (document.getElementById("zunoArcade")) {
-      renderGameCards();
-      return;
-    }
-
-    const section = document.createElement("section");
-
-    section.id = "zunoArcade";
-
-    section.innerHTML = `
-      <div class="zuno-arcade-heading">
-        <div>
-          <h2>🎮 ZUNO Arcade</h2>
-
-          <p class="zuno-arcade-subtitle">
-            Gib deine verdienten XP für Spielrunden aus.
-          </p>
-        </div>
-
-        <span class="pill">
-          ⚡ <span id="zunoArcadeXP">${getXP()}</span> XP
-        </span>
-      </div>
-
-      <div class="zuno-game-grid" id="zunoGameGrid"></div>
-    `;
-
-    dashboard.appendChild(section);
-
-    renderGameCards();
-  }
+  /* =========================================
+     GAME OVERLAY
+  ========================================= */
 
   function stopActiveGame() {
     if (activeCleanup) {
@@ -220,14 +224,10 @@
       .addEventListener("click", closeGame);
 
     overlay.addEventListener("click", event => {
-      if (event.target === overlay) {
-        closeGame();
-      }
+      if (event.target === overlay) closeGame();
     });
 
-    bindAction("zunoStartGame", () => {
-      startGame(game.id);
-    });
+    bindAction("zunoStartGame", () => startGame(game.id));
   }
 
   function openGame(id) {
@@ -244,34 +244,22 @@
 
   function message(text) {
     const element = document.getElementById("zunoGameMessage");
-
-    if (element) {
-      element.textContent = text;
-    }
+    if (element) element.textContent = text;
   }
 
   function info(text) {
     const element = document.getElementById("zunoGameInfo");
-
-    if (element) {
-      element.textContent = text;
-    }
+    if (element) element.textContent = text;
   }
 
   function actions(html) {
     const element = document.getElementById("zunoGameActions");
-
-    if (element) {
-      element.innerHTML = html;
-    }
+    if (element) element.innerHTML = html;
   }
 
   function bindAction(id, callback) {
     const button = document.getElementById(id);
-
-    if (button) {
-      button.addEventListener("click", callback);
-    }
+    if (button) button.addEventListener("click", callback);
   }
 
   /* =========================================
@@ -293,7 +281,6 @@
 
     stopActiveGame();
 
-    // XP werden bei jedem neuen Start abgezogen.
     if (!window.ZUNOProgress.startGame()) {
       renderGameCards();
       return;
@@ -314,12 +301,8 @@
 
   function startSnake() {
     stage().innerHTML = `
-      <canvas
-        id="zunoSnakeCanvas"
-        width="320"
-        height="320"
-        aria-label="Snake-Spiel"
-      ></canvas>
+      <canvas id="zunoSnakeCanvas" width="320" height="320"
+        aria-label="Snake-Spiel"></canvas>
     `;
 
     actions(`
@@ -354,33 +337,19 @@
 
       for (let x = 0; x < cells; x++) {
         for (let y = 0; y < cells; y++) {
-          const occupied = snake.some(part =>
-            part.x === x && part.y === y
-          );
-
-          if (!occupied) {
+          if (!snake.some(part => part.x === x && part.y === y)) {
             available.push({ x, y });
           }
         }
       }
 
-      if (available.length === 0) {
-        return null;
-      }
+      if (!available.length) return null;
 
-      return available[
-        Math.floor(Math.random() * available.length)
-      ];
+      return available[Math.floor(Math.random() * available.length)];
     }
 
     function changeDirection(x, y) {
-      if (
-        x === -direction.x &&
-        y === -direction.y
-      ) {
-        return;
-      }
-
+      if (x === -direction.x && y === -direction.y) return;
       nextDirection = { x, y };
     }
 
@@ -415,25 +384,12 @@
 
       if (food) {
         ctx.fillStyle = "#ff8b68";
-
-        ctx.fillRect(
-          food.x * size,
-          food.y * size,
-          size - 2,
-          size - 2
-        );
+        ctx.fillRect(food.x * size, food.y * size, size - 2, size - 2);
       }
 
       snake.forEach((part, index) => {
-        ctx.fillStyle =
-          index === 0 ? "#c9ef9a" : "#8fcf79";
-
-        ctx.fillRect(
-          part.x * size,
-          part.y * size,
-          size - 2,
-          size - 2
-        );
+        ctx.fillStyle = index === 0 ? "#c9ef9a" : "#8fcf79";
+        ctx.fillRect(part.x * size, part.y * size, size - 2, size - 2);
       });
     }
 
@@ -446,9 +402,7 @@
       message(`Game Over! Du hast ${score} Punkte erreicht.`);
 
       actions(`
-        <button id="snakeAgain">
-          Nochmal spielen · 50 XP
-        </button>
+        <button id="snakeAgain">Nochmal spielen · 50 XP</button>
       `);
 
       bindAction("snakeAgain", () => startGame("snake"));
@@ -464,26 +418,16 @@
         y: snake[0].y + direction.y
       };
 
-      const eating =
-        food &&
-        head.x === food.x &&
-        head.y === food.y;
+      const eating = food && head.x === food.x && head.y === food.y;
 
       const hitWall =
-        head.x < 0 ||
-        head.y < 0 ||
-        head.x >= cells ||
-        head.y >= cells;
+        head.x < 0 || head.y < 0 ||
+        head.x >= cells || head.y >= cells;
 
-      // Wenn der Schwanz sich bewegt, darf das neue Kopfstück
-      // auf das bisherige Schwanzfeld ziehen.
-      const bodyToCheck = eating
-        ? snake
-        : snake.slice(0, -1);
+      const bodyToCheck = eating ? snake : snake.slice(0, -1);
 
       const hitSnake = bodyToCheck.some(part =>
-        part.x === head.x &&
-        part.y === head.y
+        part.x === head.x && part.y === head.y
       );
 
       if (hitWall || hitSnake) {
@@ -496,7 +440,6 @@
       if (eating) {
         score++;
         food = randomFood();
-
         info(`Punkte: ${score}`);
 
         if (!food) {
@@ -528,22 +471,17 @@
 
   function startReaction() {
     stage().innerHTML = `
-      <button
-        id="reactionButton"
-        style="
-          width:100%;
-          min-height:220px;
-          border-radius:18px;
-          border:0;
-          background:#d8d4e8;
-          color:#302b43;
-          font-size:1.5rem;
-          font-weight:900;
-          cursor:pointer;
-        "
-      >
-        Warte auf GRÜN ...
-      </button>
+      <button id="reactionButton" style="
+        width:100%;
+        min-height:220px;
+        border-radius:18px;
+        border:0;
+        background:#d8d4e8;
+        color:#302b43;
+        font-size:1.5rem;
+        font-weight:900;
+        cursor:pointer;
+      ">Warte auf GRÜN ...</button>
     `;
 
     actions("");
@@ -561,7 +499,6 @@
 
       ready = true;
       startTime = performance.now();
-
       button.style.background = "#9be17f";
       button.textContent = "JETZT KLICKEN!";
     }, 1200 + Math.random() * 2800);
@@ -576,24 +513,14 @@
         button.textContent = "Zu früh! Versuch es nochmal.";
         button.style.background = "#ffd8d5";
 
-        actions(`
-          <button id="reactionAgain">
-            Nochmal · 50 XP
-          </button>
-        `);
-
-        bindAction("reactionAgain", () => {
-          startGame("reaction");
-        });
-
+        actions(`<button id="reactionAgain">Nochmal · 50 XP</button>`);
+        bindAction("reactionAgain", () => startGame("reaction"));
         return;
       }
 
       finished = true;
 
-      const reaction = Math.round(
-        performance.now() - startTime
-      );
+      const reaction = Math.round(performance.now() - startTime);
 
       button.textContent = `${reaction} ms`;
       button.style.background = "#c9ef9a";
@@ -608,15 +535,8 @@
             : "Da geht noch was!"
       );
 
-      actions(`
-        <button id="reactionAgain">
-          Nochmal · 50 XP
-        </button>
-      `);
-
-      bindAction("reactionAgain", () => {
-        startGame("reaction");
-      });
+      actions(`<button id="reactionAgain">Nochmal · 50 XP</button>`);
+      bindAction("reactionAgain", () => startGame("reaction"));
     });
 
     activeCleanup = () => {
@@ -644,12 +564,7 @@
     let moves = 0;
     let timeout = null;
 
-    stage().innerHTML = `
-      <div
-        class="zuno-memory-grid"
-        id="memoryGrid"
-      ></div>
-    `;
+    stage().innerHTML = `<div class="zuno-memory-grid" id="memoryGrid"></div>`;
 
     const grid = document.getElementById("memoryGrid");
 
@@ -666,9 +581,7 @@
           locked ||
           button.classList.contains("matched") ||
           button.classList.contains("revealed")
-        ) {
-          return;
-        }
+        ) return;
 
         button.textContent = symbol;
         button.classList.add("revealed");
@@ -701,19 +614,10 @@
           info(`${matches} / 8 Paare · ${moves} Züge`);
 
           if (matches === 8) {
-            message(
-              `Geschafft! Du hast ${moves} Züge gebraucht.`
-            );
+            message(`Geschafft! Du hast ${moves} Züge gebraucht.`);
 
-            actions(`
-              <button id="memoryAgain">
-                Nochmal · 50 XP
-              </button>
-            `);
-
-            bindAction("memoryAgain", () => {
-              startGame("memory");
-            });
+            actions(`<button id="memoryAgain">Nochmal · 50 XP</button>`);
+            bindAction("memoryAgain", () => startGame("memory"));
           }
         } else {
           const previous = first;
@@ -725,15 +629,8 @@
             previous.classList.remove("revealed");
             second.classList.remove("revealed");
 
-            previous.setAttribute(
-              "aria-label",
-              "Verdeckte Karte"
-            );
-
-            second.setAttribute(
-              "aria-label",
-              "Verdeckte Karte"
-            );
+            previous.setAttribute("aria-label", "Verdeckte Karte");
+            second.setAttribute("aria-label", "Verdeckte Karte");
 
             first = null;
             locked = false;
@@ -746,9 +643,7 @@
 
     info("0 / 8 Paare · 0 Züge");
 
-    activeCleanup = () => {
-      clearTimeout(timeout);
-    };
+    activeCleanup = () => clearTimeout(timeout);
   }
 
   /* =========================================
@@ -757,21 +652,12 @@
 
   function startRunner() {
     stage().innerHTML = `
-      <canvas
-        id="runnerCanvas"
-        width="360"
-        height="220"
-        aria-label="Endless Runner"
-      ></canvas>
-
-      <p class="small">
-        Tippe oder drücke Leertaste zum Springen.
-      </p>
+      <canvas id="runnerCanvas" width="360" height="220"
+        aria-label="Endless Runner"></canvas>
+      <p class="small">Tippe oder drücke Leertaste zum Springen.</p>
     `;
 
-    actions(`
-      <button id="runnerJump">Springen</button>
-    `);
+    actions(`<button id="runnerJump">Springen</button>`);
 
     const canvas = document.getElementById("runnerCanvas");
     const ctx = canvas.getContext("2d");
@@ -784,16 +670,11 @@
     let interval = null;
 
     function jump() {
-      if (playerY >= 164) {
-        velocity = -10;
-      }
+      if (playerY >= 164) velocity = -10;
     }
 
     function keyHandler(event) {
-      if (
-        event.code === "Space" ||
-        event.code === "ArrowUp"
-      ) {
+      if (event.code === "Space" || event.code === "ArrowUp") {
         event.preventDefault();
         jump();
       }
@@ -801,7 +682,6 @@
 
     window.addEventListener("keydown", keyHandler);
     canvas.addEventListener("pointerdown", jump);
-
     bindAction("runnerJump", jump);
 
     function draw() {
@@ -830,21 +710,14 @@
 
       message(`Game Over! Score: ${score}`);
 
-      actions(`
-        <button id="runnerAgain">
-          Nochmal · 50 XP
-        </button>
-      `);
-
-      bindAction("runnerAgain", () => {
-        startGame("runner");
-      });
+      actions(`<button id="runnerAgain">Nochmal · 50 XP</button>`);
+      bindAction("runnerAgain", () => startGame("runner"));
     }
 
     function tick() {
       if (!running) return;
 
-      velocity += 0.55;
+      velocity += .55;
       playerY += velocity;
 
       if (playerY > 165) {
@@ -857,7 +730,6 @@
       if (obstacleX < -25) {
         obstacleX = 360 + Math.random() * 100;
         score++;
-
         info(`Score: ${score}`);
       }
 
@@ -868,9 +740,7 @@
 
       draw();
 
-      if (collision) {
-        endGame();
-      }
+      if (collision) endGame();
     }
 
     info("Score: 0");
@@ -881,7 +751,6 @@
     activeCleanup = () => {
       running = false;
       clearInterval(interval);
-
       window.removeEventListener("keydown", keyHandler);
       canvas.removeEventListener("pointerdown", jump);
     };
@@ -893,16 +762,9 @@
 
   function startAdventure() {
     stage().innerHTML = `
-      <canvas
-        id="adventureCanvas"
-        width="360"
-        height="240"
-        aria-label="Mini Adventure"
-      ></canvas>
-
-      <p class="small">
-        ← → bewegen · ↑ springen
-      </p>
+      <canvas id="adventureCanvas" width="360" height="240"
+        aria-label="Mini Adventure"></canvas>
+      <p class="small">← → bewegen · ↑ springen</p>
     `;
 
     actions(`
@@ -955,21 +817,12 @@
     }
 
     function keyDown(event) {
-      const movementKeys = [
-        "ArrowLeft",
-        "ArrowRight",
-        "ArrowUp",
-        " "
-      ];
+      const movementKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", " "];
 
-      if (movementKeys.includes(event.key)) {
-        event.preventDefault();
-      }
+      if (movementKeys.includes(event.key)) event.preventDefault();
 
       if (
-        (event.key === "ArrowUp" ||
-          event.key === "w" ||
-          event.key === " ") &&
+        (event.key === "ArrowUp" || event.key === "w" || event.key === " ") &&
         !keys[event.key]
       ) {
         jumpRequested = true;
@@ -1002,12 +855,7 @@
       ctx.fillStyle = "#8fcf79";
 
       platforms.forEach(platform => {
-        ctx.fillRect(
-          platform.x,
-          platform.y,
-          platform.w,
-          platform.h
-        );
+        ctx.fillRect(platform.x, platform.y, platform.w, platform.h);
       });
 
       ctx.fillStyle = "#ffcf57";
@@ -1023,22 +871,11 @@
       ctx.fillStyle = "#ff8b68";
 
       hazards.forEach(hazard => {
-        ctx.fillRect(
-          hazard.x,
-          hazard.y,
-          hazard.w,
-          hazard.h
-        );
+        ctx.fillRect(hazard.x, hazard.y, hazard.w, hazard.h);
       });
 
       ctx.fillStyle = "#c9ef9a";
-
-      ctx.fillRect(
-        player.x,
-        player.y,
-        player.width,
-        player.height
-      );
+      ctx.fillRect(player.x, player.y, player.width, player.height);
 
       ctx.fillStyle = "white";
       ctx.font = "14px sans-serif";
@@ -1053,22 +890,14 @@
 
       message(text);
 
-      actions(`
-        <button id="adventureAgain">
-          Nochmal · 50 XP
-        </button>
-      `);
-
-      bindAction("adventureAgain", () => {
-        startGame("adventure");
-      });
+      actions(`<button id="adventureAgain">Nochmal · 50 XP</button>`);
+      bindAction("adventureAgain", () => startGame("adventure"));
     }
 
     function tick() {
       if (!running) return;
 
-      const previousBottom =
-        player.y + player.height;
+      const previousBottom = player.y + player.height;
 
       if (keys.ArrowLeft || keys.a) {
         player.vx = -3;
@@ -1085,18 +914,13 @@
 
       player.x += player.vx;
       player.y += player.vy;
-
-      player.vy += 0.5;
+      player.vy += .5;
       player.grounded = false;
 
-      player.x = Math.max(
-        0,
-        Math.min(338, player.x)
-      );
+      player.x = Math.max(0, Math.min(338, player.x));
 
       platforms.forEach(platform => {
-        const newBottom =
-          player.y + player.height;
+        const newBottom = player.y + player.height;
 
         const overlaps =
           player.x + player.width > platform.x &&
@@ -1122,7 +946,6 @@
         ) {
           coin.taken = true;
           score++;
-
           info(`Münzen: ${score} / 3`);
         }
       });
@@ -1155,7 +978,6 @@
     activeCleanup = () => {
       running = false;
       clearInterval(interval);
-
       window.removeEventListener("keydown", keyDown);
       window.removeEventListener("keyup", keyUp);
     };
@@ -1166,15 +988,12 @@
   ========================================= */
 
   window.showCorrectAnimation = function() {
-    const target =
-      document.querySelector(".word-card");
+    const target = document.querySelector(".word-card");
 
     if (!target) return;
 
     target.classList.remove("zuno-correct");
-
     void target.offsetWidth;
-
     target.classList.add("zuno-correct");
 
     setTimeout(() => {
@@ -1189,31 +1008,24 @@
   function initialize() {
     createArcade();
 
-    const originalUpdateDashboard =
-      window.updateDashboard;
+    const originalUpdateDashboard = window.updateDashboard;
 
     if (
       typeof originalUpdateDashboard === "function" &&
       !originalUpdateDashboard._zunoWrapped
     ) {
       const wrappedUpdateDashboard = function(...args) {
-        const result =
-          originalUpdateDashboard.apply(this, args);
+        const result = originalUpdateDashboard.apply(this, args);
 
-        // Falls das Dashboard neu aufgebaut wurde,
-        // wird die Arcade-Sektion wieder eingefügt.
-        createArcade();
         renderGameCards();
 
         return result;
       };
 
       wrappedUpdateDashboard._zunoWrapped = true;
-
       window.updateDashboard = wrappedUpdateDashboard;
     }
 
-    createArcade();
     renderGameCards();
   }
 
