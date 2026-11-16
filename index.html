@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="de">
 <head>
@@ -101,7 +100,7 @@
 
     /* Zusatzdateien direkt von GitHub Pages laden */
     const moduleBase = "./";
-    const version = "?v=4";
+    const version = "?v=5";
 
     const status = document.getElementById("status");
 
@@ -291,6 +290,7 @@
       /* JavaScript-Dateien in der richtigen Reihenfolge laden */
       const scripts =
         "<script>\n" + patch + "\n<\/script>" +
+        '<script src="' + moduleBase + "zuno-ai.js" + version + '"><\/script>' +
         '<script src="' + moduleBase + "progress.js" + version + '"><\/script>' +
         '<script src="' + moduleBase + "games.js" + version + '"><\/script>';
 
