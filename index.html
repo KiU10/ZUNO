@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="de">
 <head>
@@ -98,10 +99,10 @@
     const source =
       "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
 
-    const moduleBase =
-      "https://cdn.jsdelivr.net/gh/KiU10/ZUNO@ZUNO2/";
+    /* Zusatzdateien direkt von GitHub Pages laden */
+    const moduleBase = "./";
+    const version = "?v=4";
 
-    const version = "?v=3";
     const status = document.getElementById("status");
 
     async function fetchText(url) {
@@ -146,7 +147,7 @@
         throw new Error("Die geladene ZUNO-Datei ist unvollständig.");
       }
 
-      /* XP-Button im Header anklickbar machen */
+      /* XP-Button anklickbar machen */
       const oldXPButton =
         '<span class="pill">⚡ <span id="headerXP">0</span> XP</span>';
 
@@ -161,7 +162,7 @@
 
       page = page.replace(oldXPButton, newXPButton);
 
-      /* Die neuen Seiten */
+      /* XP- und Arcade-Seite */
       const newPages = `
         <section id="xpPage" class="hidden zuno-xp-page">
           <button class="secondary-btn" type="button" onclick="showDashboard()">
@@ -267,7 +268,7 @@
 
       page = page.replace("</main>", newPages + "</main>");
 
-      /* Neue Seiten in die interne Seitennavigation aufnehmen */
+      /* Neue Seiten in showOnly aufnehmen */
       const oldPageList =
         "['dashboard', 'settings', 'unitSettings', 'exercise', 'result', 'statsPage']";
 
@@ -280,12 +281,14 @@
 
       page = page.replace(oldPageList, newPageList);
 
+      /* CSS-Dateien laden */
       const styles =
         '<link rel="stylesheet" href="' + moduleBase + "games.css" + version + '">' +
         '<link rel="stylesheet" href="' + moduleBase + "animations.css" + version + '">';
 
       page = page.replace("</head>", styles + "</head>");
 
+      /* JavaScript-Dateien in der richtigen Reihenfolge laden */
       const scripts =
         "<script>\n" + patch + "\n<\/script>" +
         '<script src="' + moduleBase + "progress.js" + version + '"><\/script>' +
