@@ -6,7 +6,6 @@
 
 .word-card.zuno-correct {
   animation: zunoCardBounce .55s ease;
-
   box-shadow:
     0 0 0 3px rgba(125, 210, 120, .35),
     0 0 35px rgba(125, 210, 120, .45);
@@ -21,21 +20,10 @@
 }
 
 @keyframes zunoCardBounce {
-  0% {
-    transform: scale(1);
-  }
-
-  35% {
-    transform: scale(1.025) translateY(-4px);
-  }
-
-  65% {
-    transform: scale(.99);
-  }
-
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(1); }
+  35% { transform: scale(1.025) translateY(-4px); }
+  65% { transform: scale(.99); }
+  100% { transform: scale(1); }
 }
 
 @keyframes zunoSuccessPop {
@@ -43,12 +31,10 @@
     opacity: 0;
     transform: scale(.85) translateY(8px);
   }
-
   70% {
     opacity: 1;
     transform: scale(1.04);
   }
-
   100% {
     opacity: 1;
     transform: scale(1);
@@ -56,17 +42,9 @@
 }
 
 @keyframes zunoCorrectOption {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.035);
-  }
-
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+  100% { transform: scale(1); }
 }
 
 /* Streak */
@@ -95,17 +73,14 @@
     transform: scale(1);
     filter: drop-shadow(0 0 0 transparent);
   }
-
   35% {
     transform: scale(1.12);
     filter: drop-shadow(0 0 12px #ff9b36);
   }
-
   65% {
     transform: scale(.97);
     filter: drop-shadow(0 0 18px #ffb347);
   }
-
   100% {
     transform: scale(1);
     filter: drop-shadow(0 0 0 transparent);
@@ -119,18 +94,12 @@
 }
 
 @keyframes zunoXpPop {
-  0% {
-    transform: scale(1);
-  }
-
+  0% { transform: scale(1); }
   45% {
     transform: scale(1.2);
     color: #7d69e8;
   }
-
-  100% {
-    transform: scale(1);
-  }
+  100% { transform: scale(1); }
 }
 
 /* Arcade */
@@ -140,13 +109,6 @@
     transform .2s ease,
     box-shadow .2s ease,
     border-color .2s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .zuno-game-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 30px rgba(50, 40, 100, .12);
-  }
 }
 
 .zuno-game-card.locked {
@@ -159,12 +121,59 @@
 }
 
 @keyframes zunoOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* XP-Seite */
+
+.zuno-xp-balance {
+  animation: zunoBalanceIn .45s ease both;
+}
+
+.zuno-xp-info-card {
+  animation: zunoInfoIn .45s ease both;
+}
+
+.zuno-xp-info-card:nth-child(2) {
+  animation-delay: .08s;
+}
+
+.zuno-arcade-cta {
+  animation: zunoCtaIn .5s ease both;
+  animation-delay: .12s;
+}
+
+@keyframes zunoBalanceIn {
   from {
     opacity: 0;
+    transform: translateY(10px);
   }
-
   to {
     opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zunoInfoIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zunoCtaIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
