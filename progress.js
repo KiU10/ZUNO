@@ -3,8 +3,9 @@
 ========================================= */
 
 (() => {
-  const GAME_COST = 50;
+  "use strict";
 
+  const GAME_COST = 50;
   const LAST_LESSON_KEY = "zuno_last_lesson_day";
 
   function getToday() {
@@ -32,11 +33,14 @@
     const today = getToday();
     const lastDay = localStorage.getItem(LAST_LESSON_KEY);
 
-    // Bereits heute eine Lesson abgeschlossen.
-    if (lastDay === today) return false;
+    if (lastDay === today) {
+      return false;
+    }
+
+    const currentStreak = Number(state.streak) || 0;
 
     if (lastDay === getYesterday()) {
-      state.streak += 1;
+      state.streak = currentStreak + 1;
     } else {
       state.streak = 1;
     }
@@ -76,14 +80,19 @@
   if (typeof originalFinishSession === "function") {
     window.finishSession = function(...args) {
       const completed =
+        Array.isArray(state.session) &&
         state.index >= state.session.length;
 
       const result = originalFinishSession.apply(this, args);
 
+      const attempts =
+        (Number(state.correct) || 0) +
+        (Number(state.wrong) || 0);
+
       if (
         completed &&
         !state._zunoStreakRecorded &&
-        state.correct + state.wrong > 0
+        attempts > 0
       ) {
         state._zunoStreakRecorded = true;
         updateStreak();
@@ -102,9 +111,14 @@
   if (typeof originalCheckAnswer === "function") {
     window.checkAnswer = function(answer, word) {
       const wasAnswered = state.answered;
-      const correct = !wasAnswered && answerMatches(answer, word);
 
-      const result = originalCheckAnswer.apply(this, arguments);
+      const correct =
+        !wasAnswered &&
+        typeof answerMatches === "function" &&
+        answerMatches(answer, word);
+
+      const result =
+        originalCheckAnswer.apply(this, arguments);
 
       if (correct && state.answered) {
         if (window.showCorrectAnimation) {
@@ -122,11 +136,11 @@
 
   window.ZUNOProgress = {
     get streak() {
-      return state.streak;
+      return Number(state.streak) || 0;
     },
 
     get xp() {
-      return state.xp;
+      return Number(state.xp) || 0;
     },
 
     get gameCost() {
@@ -134,17 +148,21 @@
     },
 
     get unlockedGames() {
+      const streak = Number(state.streak) || 0;
+
       return {
         snake: true,
         reaction: true,
         memory: true,
-        runner: state.streak >= 3,
-        adventure: state.streak >= 5
+        runner: streak >= 3,
+        adventure: streak >= 5
       };
     },
 
     startGame() {
-      if (state.xp < GAME_COST) {
+      const currentXP = Number(state.xp) || 0;
+
+      if (currentXP < GAME_COST) {
         alert(
           `Du brauchst ${GAME_COST} XP für eine Spielrunde.`
         );
@@ -152,8 +170,8 @@
         return false;
       }
 
-      // XP werden beim Start abgezogen.
-      state.xp -= GAME_COST;
+      // XP werden ausschließlich beim Start einer Runde abgezogen.
+      state.xp = currentXP - GAME_COST;
 
       saveState();
       updateDashboard();
@@ -170,21 +188,33 @@
     const streakElement =
       document.getElementById("headerStreak");
 
-    if (!streakElement) return;
+    const pill = streakElement
+      ? streakElement.closest(".pill")
+      : null;
 
-    const pill = streakElement.closest(".pill");
-
-    if (!pill) return;
-
-    pill.classList.remove("zuno-streak-burst");
-
-    void pill.offsetWidth;
-
-    pill.classList.add("zuno-streak-burst");
-
-    setTimeout(() => {
+    if (pill) {
       pill.classList.remove("zuno-streak-burst");
-    }, 1100);
+
+      void pill.offsetWidth;
+
+      pill.classList.add("zuno-streak-burst");
+
+      setTimeout(() => {
+        pill.classList.remove("zuno-streak-burst");
+      }, 1100);
+
+      return;
+    }
+
+    // Fallback, falls die App keinen headerStreak besitzt.
+    const burst = document.createElement("div");
+
+    burst.className = "zuno-streak-toast";
+    burst.textContent = `🔥 ${state.streak}-Tage-Streak!`;
+
+    document.body.appendChild(burst);
+
+    setTimeout(() => burst.remove(), 1600);
   };
 
 })();
