@@ -77,7 +77,7 @@
       }
     }
 
-    @media(prefers-reduced-motion: reduce) {
+    @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation: none !important;
         transition: none !important;
@@ -107,13 +107,17 @@
     const moduleBase =
       "https://cdn.jsdelivr.net/gh/KiU10/ZUNO@ZUNO2/";
 
+    const version = "?v=2";
+
     const status = document.getElementById("status");
 
     async function fetchText(url) {
-      const response = await fetch(url, {cache: "no-store"});
+      const response = await fetch(url, { cache: "no-store" });
 
       if (!response.ok) {
-        throw new Error("GitHub antwortet mit HTTP " + response.status);
+        throw new Error(
+          "GitHub antwortet mit HTTP " + response.status
+        );
       }
 
       return response.text();
@@ -121,11 +125,6 @@
 
     try {
       status.textContent = "Lade deine bisherigen Lerninhalte ...";
-
-      /*
-       * Der alte Loader enthält deinen vollständigen Vokabel-Patch.
-       * Wir übernehmen ihn aus der vorherigen GitHub-Version.
-       */
 
       const previousLoader = await fetchText(oldLoader);
 
@@ -135,52 +134,63 @@
       const patchStart = previousLoader.indexOf(startMarker);
 
       if (patchStart === -1) {
-        throw new Error("Der bisherige Vokabel-Patch wurde nicht gefunden.");
+        throw new Error(
+          "Der bisherige Vokabel-Patch wurde nicht gefunden."
+        );
       }
 
       const contentStart = patchStart + startMarker.length;
       const patchEnd = previousLoader.indexOf(endMarker, contentStart);
 
       if (patchEnd === -1) {
-        throw new Error("Der Vokabel-Patch konnte nicht vollständig gelesen werden.");
+        throw new Error(
+          "Der Vokabel-Patch konnte nicht vollständig gelesen werden."
+        );
       }
 
-      const patch = previousLoader.slice(contentStart, patchEnd);
+      let patch = previousLoader.slice(contentStart, patchEnd);
+
+      // Verhindert, dass ein Script-Endtag den eingefügten Patch beendet.
+      patch = patch.replace(/<\/script/gi, "<\\/script");
 
       status.textContent = "Verbinde mit der ZUNO-App ...";
 
       let page = await fetchText(source);
 
-      if (!page.includes("</body>") || !page.includes("</head>")) {
-        throw new Error("Die geladene ZUNO-Datei ist unvollständig.");
+      if (
+        !page.includes("</body>") ||
+        !page.includes("</head>")
+      ) {
+        throw new Error(
+          "Die geladene ZUNO-Datei ist unvollständig."
+        );
       }
 
-      /*
-       * Stylesheets einbinden.
-       */
-
-      const styles = `
-        <link rel="stylesheet" href="${moduleBase}games.css">
-        <link rel="stylesheet" href="${moduleBase}animations.css">
-      `;
+      const styles =
+        '<link rel="stylesheet" href="' +
+        moduleBase + "games.css" + version + '">' +
+        '<link rel="stylesheet" href="' +
+        moduleBase + "animations.css" + version + '">';
 
       page = page.replace("</head>", styles + "</head>");
 
-      /*
-       * Erst den alten Vokabel-Patch ausführen.
-       * Danach XP/Streak-System und Arcade laden.
-       */
+      const scripts =
+        "<script>\n" +
+        patch +
+        "\n<\/script>" +
 
-      const scripts = `
-        <script>
-        ${patch}
-        <\/script>
+        '<script src="' +
+        moduleBase + "progress.js" + version +
+        '"><\/script>' +
 
-        <script src="${moduleBase}progress.js"><\/script>
-        <script src="${moduleBase}games.js"><\/script>
-      `;
+        '<script src="' +
+        moduleBase + "games.js" + version +
+        '"><\/script>';
 
-      page = page.replace("</body>", scripts + "</body>");
+      page = page.replace(
+        "</body>",
+        scripts + "</body>"
+      );
 
       status.textContent = "ZUNO geladen. Starte App ...";
 
