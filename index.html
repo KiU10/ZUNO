@@ -20,18 +20,6 @@
     body {
       margin: 0;
       min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-    }
-
-    main {
-      width: min(440px, 100%);
-      background: #fff;
-      border: 1px solid #ecebf2;
-      border-radius: 22px;
-      padding: 26px;
-      box-shadow: 0 18px 42px #20212a12;
     }
 
     .logo {
@@ -72,9 +60,7 @@
     }
 
     @keyframes load {
-      to {
-        transform: translateX(150%);
-      }
+      to { transform: translateX(150%); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -87,7 +73,15 @@
 </head>
 
 <body>
-  <main aria-live="polite">
+  <main id="loader" aria-live="polite" style="
+    width:min(440px,calc(100% - 32px));
+    margin:15vh auto;
+    background:white;
+    border:1px solid #ecebf2;
+    border-radius:22px;
+    padding:26px;
+    box-shadow:0 18px 42px #20212a12;
+  ">
     <div class="logo">ZUNO.</div>
     <p id="status">Lerninhalte werden geladen …</p>
     <div class="track" aria-hidden="true"><span></span></div>
@@ -107,17 +101,14 @@
     const moduleBase =
       "https://cdn.jsdelivr.net/gh/KiU10/ZUNO@ZUNO2/";
 
-    const version = "?v=2";
-
+    const version = "?v=3";
     const status = document.getElementById("status");
 
     async function fetchText(url) {
       const response = await fetch(url, { cache: "no-store" });
 
       if (!response.ok) {
-        throw new Error(
-          "GitHub antwortet mit HTTP " + response.status
-        );
+        throw new Error("GitHub antwortet mit HTTP " + response.status);
       }
 
       return response.text();
@@ -134,63 +125,173 @@
       const patchStart = previousLoader.indexOf(startMarker);
 
       if (patchStart === -1) {
-        throw new Error(
-          "Der bisherige Vokabel-Patch wurde nicht gefunden."
-        );
+        throw new Error("Der bisherige Vokabel-Patch wurde nicht gefunden.");
       }
 
       const contentStart = patchStart + startMarker.length;
       const patchEnd = previousLoader.indexOf(endMarker, contentStart);
 
       if (patchEnd === -1) {
-        throw new Error(
-          "Der Vokabel-Patch konnte nicht vollständig gelesen werden."
-        );
+        throw new Error("Der Vokabel-Patch konnte nicht vollständig gelesen werden.");
       }
 
       let patch = previousLoader.slice(contentStart, patchEnd);
-
-      // Verhindert, dass ein Script-Endtag den eingefügten Patch beendet.
       patch = patch.replace(/<\/script/gi, "<\\/script");
 
       status.textContent = "Verbinde mit der ZUNO-App ...";
 
       let page = await fetchText(source);
 
-      if (
-        !page.includes("</body>") ||
-        !page.includes("</head>")
-      ) {
-        throw new Error(
-          "Die geladene ZUNO-Datei ist unvollständig."
-        );
+      if (!page.includes("</body>") || !page.includes("</head>")) {
+        throw new Error("Die geladene ZUNO-Datei ist unvollständig.");
       }
 
+      /* XP-Button im Header anklickbar machen */
+      const oldXPButton =
+        '<span class="pill">⚡ <span id="headerXP">0</span> XP</span>';
+
+      const newXPButton =
+        '<button class="pill zuno-xp-trigger" type="button" ' +
+        'onclick="showXPPage()" aria-label="XP-Übersicht öffnen">' +
+        '⚡ <span id="headerXP">0</span> XP</button>';
+
+      if (!page.includes(oldXPButton)) {
+        throw new Error("Der XP-Button in der Original-App wurde nicht gefunden.");
+      }
+
+      page = page.replace(oldXPButton, newXPButton);
+
+      /* Die neuen Seiten */
+      const newPages = `
+        <section id="xpPage" class="hidden zuno-xp-page">
+          <button class="secondary-btn" type="button" onclick="showDashboard()">
+            ← Zurück
+          </button>
+
+          <div class="zuno-xp-hero">
+            <div class="zuno-xp-copy">
+              <span class="zuno-eyebrow">DEIN FORTSCHRITT</span>
+              <h1>Deine XP.</h1>
+              <p>
+                Lerne neue Wörter, sammle Erfahrung und schalte
+                neue Möglichkeiten frei.
+              </p>
+            </div>
+
+            <img
+              class="zuno-xp-mascot"
+              src="IMG_2563.png"
+              alt="ZUNO Maskottchen"
+              onerror="this.style.display='none'"
+            >
+          </div>
+
+          <div class="zuno-xp-balance">
+            <span class="zuno-xp-symbol">⚡</span>
+            <div>
+              <span class="zuno-xp-label">Dein aktueller Kontostand</span>
+              <strong><span id="zunoXPBalance">0</span> XP</strong>
+            </div>
+          </div>
+
+          <div class="zuno-xp-info-grid">
+            <article class="zuno-xp-info-card">
+              <span class="zuno-info-icon">📚</span>
+              <h3>XP verdienen</h3>
+              <p>
+                Beantworte Vokabelfragen richtig und sammle
+                <strong>10 XP</strong> pro richtiger Antwort.
+              </p>
+            </article>
+
+            <article class="zuno-xp-info-card">
+              <span class="zuno-info-icon">🎮</span>
+              <h3>XP ausgeben</h3>
+              <p>
+                Eine neue Spielrunde kostet
+                <strong>50 XP</strong>. Spiele selbst geben keine XP zurück.
+              </p>
+            </article>
+          </div>
+
+          <div class="zuno-xp-streak">
+            <span>🔥</span>
+            <div>
+              <strong><span id="zunoXPStreak">0</span>-Tage-Streak</strong>
+              <p>Bleib täglich dran, um weitere Spiele freizuschalten.</p>
+            </div>
+          </div>
+
+          <button
+            class="zuno-arcade-cta"
+            type="button"
+            onclick="showArcadePage()"
+          >
+            <span class="zuno-arcade-cta-icon">🎮</span>
+            <span>
+              <strong>Zur ZUNO Arcade</strong>
+              <small>Entdecke alle verfügbaren Spiele</small>
+            </span>
+            <span class="zuno-cta-arrow">→</span>
+          </button>
+        </section>
+
+        <section id="arcadePage" class="hidden zuno-arcade-page">
+          <button class="secondary-btn" type="button" onclick="showXPPage()">
+            ← Zurück zu deinen XP
+          </button>
+
+          <div id="zunoArcade">
+            <div class="zuno-arcade-heading">
+              <div>
+                <span class="zuno-eyebrow">ZEIT FÜR EINE RUNDE?</span>
+                <h1>🎮 ZUNO Arcade</h1>
+                <p class="zuno-arcade-subtitle">
+                  Gib deine verdienten XP für Spielrunden aus.
+                </p>
+              </div>
+
+              <span class="pill zuno-arcade-xp">
+                ⚡ <span id="zunoArcadeXP">0</span> XP
+              </span>
+            </div>
+
+            <div class="zuno-game-grid" id="zunoGameGrid"></div>
+          </div>
+        </section>
+      `;
+
+      if (!page.includes("</main>")) {
+        throw new Error("Der Hauptbereich der App wurde nicht gefunden.");
+      }
+
+      page = page.replace("</main>", newPages + "</main>");
+
+      /* Neue Seiten in die interne Seitennavigation aufnehmen */
+      const oldPageList =
+        "['dashboard', 'settings', 'unitSettings', 'exercise', 'result', 'statsPage']";
+
+      const newPageList =
+        "['dashboard', 'settings', 'unitSettings', 'exercise', 'result', 'statsPage', 'xpPage', 'arcadePage']";
+
+      if (!page.includes(oldPageList)) {
+        throw new Error("Die Seitennavigation der App wurde nicht gefunden.");
+      }
+
+      page = page.replace(oldPageList, newPageList);
+
       const styles =
-        '<link rel="stylesheet" href="' +
-        moduleBase + "games.css" + version + '">' +
-        '<link rel="stylesheet" href="' +
-        moduleBase + "animations.css" + version + '">';
+        '<link rel="stylesheet" href="' + moduleBase + "games.css" + version + '">' +
+        '<link rel="stylesheet" href="' + moduleBase + "animations.css" + version + '">';
 
       page = page.replace("</head>", styles + "</head>");
 
       const scripts =
-        "<script>\n" +
-        patch +
-        "\n<\/script>" +
+        "<script>\n" + patch + "\n<\/script>" +
+        '<script src="' + moduleBase + "progress.js" + version + '"><\/script>' +
+        '<script src="' + moduleBase + "games.js" + version + '"><\/script>';
 
-        '<script src="' +
-        moduleBase + "progress.js" + version +
-        '"><\/script>' +
-
-        '<script src="' +
-        moduleBase + "games.js" + version +
-        '"><\/script>';
-
-      page = page.replace(
-        "</body>",
-        scripts + "</body>"
-      );
+      page = page.replace("</body>", scripts + "</body>");
 
       status.textContent = "ZUNO geladen. Starte App ...";
 
@@ -200,10 +301,7 @@
 
     } catch (error) {
       status.className = "error";
-
-      status.textContent =
-        "Fehler beim Laden: " + error.message;
-
+      status.textContent = "Fehler beim Laden: " + error.message;
       console.error("ZUNO loading error:", error);
     }
   })();
