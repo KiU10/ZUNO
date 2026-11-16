@@ -529,7 +529,78 @@ function zunoHighlightExample(sentence, highlight) {
          FRAGE ANZEIGEN
       --------------------------------------- */
 
-      function renderQuestion() {
+function renderQuestion() {
+  const word = state.session[state.index];
+  if (!word) return finishSession();
+
+  state.answered = false;
+
+  document.getElementById('questionCounter').textContent =
+    (state.index + 1) + ' / ' + state.session.length;
+
+  document.getElementById('lessonProgress').style.width =
+    (state.index / state.session.length * 100) + '%';
+
+  document.getElementById('feedbackArea').innerHTML = '';
+  document.getElementById('nextButton').classList.add('hidden');
+
+  const mode = getModes()[state.index % 3];
+  state.currentMode = mode;
+
+  const target = document.getElementById('targetWord');
+  const example = document.getElementById('exampleSentence');
+  const mascot = document.getElementById('exerciseMascot');
+
+  mascot.src = 'IMG_2558.png';
+
+  if (mode === 'reverse') {
+    document.getElementById('modeLabel').textContent =
+      word.language === 'fr'
+        ? 'Wie heißt das auf Französisch?'
+        : 'Wie heißt das auf Englisch?';
+
+    target.textContent = word.translation;
+
+    const germanExample = getGermanExample(word);
+
+    if (germanExample) {
+      example.innerHTML = zunoHighlightExample(
+        germanExample.text,
+        germanExample.highlight
+      );
+      example.classList.remove('hidden');
+    } else {
+      example.textContent = '';
+      example.classList.add('hidden');
+    }
+
+    mascot.src = 'IMG_2560.png';
+
+  } else {
+    document.getElementById('modeLabel').textContent =
+      mode === 'choice'
+        ? 'Wähle die richtige Übersetzung'
+        : 'Übersetze das Wort';
+
+    target.textContent = word.word;
+
+    const sentence = getExample(word.word);
+
+    if (sentence) {
+      example.innerHTML = highlightWord(sentence, word.word);
+      example.classList.remove('hidden');
+    } else {
+      example.textContent = '';
+      example.classList.add('hidden');
+    }
+
+    if (mode === 'choice') mascot.src = 'IMG_2560.png';
+  }
+
+  renderAnswerArea(word);
+  addDontKnowButton(word);
+}
+) {
         const word = state.session[state.index];
 
         if (!word) return finishSession();
