@@ -58,9 +58,18 @@
   width: 100%;
   margin-top: 12px;
   padding: 11px 14px;
+  border: 0;
+  border-radius: 12px;
   background: #7d69e8;
   color: white;
   font-weight: 800;
+  cursor: pointer;
+}
+
+.zuno-game-card button:disabled {
+  background: #e9e7f1;
+  color: #777386;
+  cursor: not-allowed;
 }
 
 .zuno-game-card.locked button {
@@ -116,9 +125,12 @@
 
 .zuno-game-close {
   padding: 9px 13px;
+  border: 0;
+  border-radius: 10px;
   background: #f1eff7;
   color: #49445b;
   font-weight: 800;
+  cursor: pointer;
 }
 
 .zuno-game-info {
@@ -158,9 +170,12 @@
 
 .zuno-game-actions button {
   padding: 12px 18px;
+  border: 0;
+  border-radius: 12px;
   background: #7d69e8;
   color: white;
   font-weight: 800;
+  cursor: pointer;
 }
 
 .zuno-game-actions button.secondary {
@@ -174,6 +189,12 @@
   text-align: center;
   font-weight: 700;
   color: #6252bd;
+}
+
+.zuno-game-stage .small {
+  margin: 10px 0 0;
+  color: #6d7283;
+  font-size: .85rem;
 }
 
 /* Memory */
@@ -190,11 +211,13 @@
   aspect-ratio: 1;
   display: grid;
   place-items: center;
+  border: 0;
   border-radius: 13px;
   background: #7d69e8;
   color: white;
   font-size: clamp(1.2rem, 5vw, 2rem);
   font-weight: 800;
+  cursor: pointer;
 }
 
 .zuno-memory-card.revealed,
@@ -205,6 +228,7 @@
 
 .zuno-memory-card.matched {
   opacity: .65;
+  cursor: default;
 }
 
 /* Mobile controls */
@@ -219,15 +243,28 @@
 
 .zuno-game-pad button {
   min-height: 42px;
+  border: 0;
+  border-radius: 10px;
   background: #efedf6;
   color: #514b66;
   font-size: 18px;
   font-weight: 900;
+  cursor: pointer;
+}
+
+.zuno-game-card button:focus-visible,
+.zuno-game-actions button:focus-visible,
+.zuno-game-close:focus-visible,
+.zuno-memory-card:focus-visible,
+.zuno-game-pad button:focus-visible {
+  outline: 3px solid #b8aaff;
+  outline-offset: 3px;
 }
 
 @media (max-width: 520px) {
   .zuno-game-window {
     padding: 16px;
+    max-height: 94vh;
   }
 
   .zuno-game-stage {
@@ -236,5 +273,10 @@
 
   .zuno-game-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .zuno-game-info {
+    flex-wrap: wrap;
+    gap: 10px;
   }
 }
