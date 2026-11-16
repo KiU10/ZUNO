@@ -1,1 +1,164 @@
+/* =========================================
+   ZUNO ANIMATIONS
+========================================= */
 
+/* Richtige Antwort */
+
+.word-card.zuno-correct {
+  animation: zunoCardBounce .55s ease;
+
+  box-shadow:
+    0 0 0 3px rgba(125, 210, 120, .35),
+    0 0 35px rgba(125, 210, 120, .45);
+}
+
+.feedback.good {
+  animation: zunoSuccessPop .35s cubic-bezier(.2, 1.5, .5, 1);
+}
+
+.option.correct {
+  animation: zunoCorrectOption .4s ease;
+}
+
+@keyframes zunoCardBounce {
+  0% {
+    transform: scale(1);
+  }
+
+  35% {
+    transform: scale(1.025) translateY(-4px);
+  }
+
+  65% {
+    transform: scale(.99);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes zunoSuccessPop {
+  0% {
+    opacity: 0;
+    transform: scale(.85) translateY(8px);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes zunoCorrectOption {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.035);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Streak */
+
+.zuno-streak-burst {
+  animation: zunoStreakBurst 1s ease;
+}
+
+@keyframes zunoStreakBurst {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 transparent);
+  }
+
+  35% {
+    transform: scale(1.12);
+    filter: drop-shadow(0 0 12px #ff9b36);
+  }
+
+  65% {
+    transform: scale(.97);
+    filter: drop-shadow(0 0 18px #ffb347);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 transparent);
+  }
+}
+
+/* XP */
+
+.zuno-xp-pop {
+  animation: zunoXpPop .45s ease;
+}
+
+@keyframes zunoXpPop {
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.2);
+    color: #7d69e8;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Arcade */
+
+.zuno-game-card {
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease;
+}
+
+.zuno-game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(50, 40, 100, .12);
+}
+
+.zuno-game-card.locked {
+  filter: grayscale(.75);
+  opacity: .7;
+}
+
+.zuno-game-overlay {
+  animation: zunoOverlayIn .25s ease;
+}
+
+@keyframes zunoOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
