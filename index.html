@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="de">
 <head>
@@ -98,9 +99,8 @@
     const source =
       "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
 
-    /* Zusatzdateien direkt von GitHub Pages laden */
     const moduleBase = "./";
-    const version = "?v=5";
+    const version = "?v=6";
 
     const status = document.getElementById("status");
 
@@ -146,7 +146,103 @@
         throw new Error("Die geladene ZUNO-Datei ist unvollständig.");
       }
 
-      /* XP-Button anklickbar machen */
+      /* VORLESEFUNKTION KORRIGIEREN */
+      const speechPattern =
+        /    function speakCurrentWord\(\) \{[\s\S]*?\n    \}\n\n    function updateGreeting\(\)/;
+
+      const fixedSpeechFunction = `    function speakCurrentWord() {
+      if (!('speechSynthesis' in window)) {
+        alert('Die Audiofunktion wird in diesem Browser nicht unterstützt.');
+        return;
+      }
+
+      const word = state.session[state.index];
+      if (!word) return;
+
+      const isReverse = state.currentMode === 'reverse';
+
+      // Es wird immer das sichtbare Wort vorgelesen.
+      const text = isReverse ? word.translation : word.word;
+
+      // Reverse zeigt Deutsch, die anderen Modi die Zielsprache.
+      const speechLanguage = isReverse ? 'de' : word.language;
+
+      const languageCode =
+        speechLanguage === 'fr' ? 'fr-FR' :
+        speechLanguage === 'de' ? 'de-DE' : 'en-US';
+
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = languageCode;
+      utterance.rate = 0.88;
+      utterance.pitch = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find((voice) =>
+        voice.lang.toLowerCase().startsWith(speechLanguage)
+      );
+
+      if (preferred) utterance.voice = preferred;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function updateGreeting()`;
+
+      if (!speechPattern.test(page)) {
+        throw new Error("Die Vorlesefunktion wurde in der Original-App nicht gefunden.");
+      }
+
+      page = page.replace(speechPattern, fixedSpeechFunction);
+
+      /* AUTOMATISCHES BEENDEN DER LETZTEN FRAGE */
+      const answerPattern =
+        /      if \(isCorrect\) \{[\s\S]*?\n      \}\n    \}\n\n    function recordSchoolAnswer/;
+
+      const fixedAnswerFlow = `      const isLastQuestion =
+        state.index === state.session.length - 1;
+
+      if (isLastQuestion) {
+        // Letzte Frage: Feedback anzeigen und danach automatisch beenden.
+        document.getElementById('nextButton').classList.add('hidden');
+
+        window.setTimeout(() => {
+          if (
+            state.answered &&
+            !state.sessionFinished &&
+            state.index === state.session.length - 1
+          ) {
+            finishSession();
+          }
+        }, 1500);
+
+      } else if (isCorrect) {
+        // Richtige Antworten führen wie bisher automatisch weiter.
+        document.getElementById('nextButton').classList.add('hidden');
+
+        window.setTimeout(() => {
+          if (state.answered && state.index < state.session.length - 1) {
+            nextQuestion();
+          }
+        }, 1500);
+
+      } else {
+        // Falsche Antworten benötigen weiterhin einen Klick auf Weiter.
+        document.getElementById('nextButton').classList.remove('hidden');
+        document.getElementById('nextButton').focus();
+      }
+    }
+
+    function recordSchoolAnswer`;
+
+      if (!answerPattern.test(page)) {
+        throw new Error("Der Antwortablauf wurde in der Original-App nicht gefunden.");
+      }
+
+      page = page.replace(answerPattern, fixedAnswerFlow);
+
+      /* XP-BUTTON ANKLICKBAR MACHEN */
       const oldXPButton =
         '<span class="pill">⚡ <span id="headerXP">0</span> XP</span>';
 
@@ -161,7 +257,7 @@
 
       page = page.replace(oldXPButton, newXPButton);
 
-      /* XP- und Arcade-Seite */
+      /* XP- UND ARCADE-SEITE */
       const newPages = `
         <section id="xpPage" class="hidden zuno-xp-page">
           <button class="secondary-btn" type="button" onclick="showDashboard()">
@@ -267,7 +363,7 @@
 
       page = page.replace("</main>", newPages + "</main>");
 
-      /* Neue Seiten in showOnly aufnehmen */
+      /* NEUE SEITEN IN showOnly AUFNEHMEN */
       const oldPageList =
         "['dashboard', 'settings', 'unitSettings', 'exercise', 'result', 'statsPage']";
 
@@ -280,14 +376,14 @@
 
       page = page.replace(oldPageList, newPageList);
 
-      /* CSS-Dateien laden */
+      /* CSS-DATEIEN LADEN */
       const styles =
         '<link rel="stylesheet" href="' + moduleBase + "games.css" + version + '">' +
         '<link rel="stylesheet" href="' + moduleBase + "animations.css" + version + '">';
 
       page = page.replace("</head>", styles + "</head>");
 
-      /* JavaScript-Dateien in der richtigen Reihenfolge laden */
+      /* JAVASCRIPT-DATEIEN IN DER RICHTIGEN REIHENFOLGE LADEN */
       const scripts =
         "<script>\n" + patch + "\n<\/script>" +
         '<script src="' + moduleBase + "zuno-ai.js" + version + '"><\/script>' +
