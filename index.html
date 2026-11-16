@@ -6,30 +6,99 @@
   <meta name="theme-color" content="#7d69e8">
   <title>ZUNO</title>
   <style>
-    :root{font-family:Inter,"Segoe UI",sans-serif;color:#20212a;background:#f7f7fa}
-    *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}
-    main{width:min(440px,100%);background:#fff;border:1px solid #ecebf2;border-radius:22px;padding:26px;box-shadow:0 18px 42px #20212a12}
-    .logo{color:#6351c7;font-weight:900;font-size:26px;letter-spacing:-.08em}
-    .muted{color:#6d7283;line-height:1.55}
-    .error{background:#ffeceb;color:#9d3b33;padding:14px;border-radius:12px;line-height:1.5}
-    .track{height:5px;border-radius:9px;background:#eceaf5;overflow:hidden;margin:20px 0 12px}
-    .track span{display:block;width:40%;height:100%;background:#7d69e8;border-radius:inherit;animation:load 1s ease-in-out infinite alternate}
-    @keyframes load{to{transform:translateX(150%)}}
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+    :root {
+      font-family: Inter, "Segoe UI", sans-serif;
+      color: #20212a;
+      background: #f7f7fa;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    main {
+      width: min(440px, 100%);
+      background: #fff;
+      border: 1px solid #ecebf2;
+      border-radius: 22px;
+      padding: 26px;
+      box-shadow: 0 18px 42px #20212a12;
+    }
+
+    .logo {
+      color: #6351c7;
+      font-weight: 900;
+      font-size: 26px;
+      letter-spacing: -.08em;
+    }
+
+    .muted {
+      color: #6d7283;
+      line-height: 1.55;
+    }
+
+    .error {
+      background: #ffeceb;
+      color: #9d3b33;
+      padding: 14px;
+      border-radius: 12px;
+      line-height: 1.5;
+    }
+
+    .track {
+      height: 5px;
+      border-radius: 9px;
+      background: #eceaf5;
+      overflow: hidden;
+      margin: 20px 0 12px;
+    }
+
+    .track span {
+      display: block;
+      width: 40%;
+      height: 100%;
+      background: #7d69e8;
+      border-radius: inherit;
+      animation: load 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes load {
+      to {
+        transform: translateX(150%);
+      }
+    }
+
+    @media(prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
   </style>
 </head>
+
 <body>
   <main aria-live="polite">
     <div class="logo">ZUNO.</div>
     <p id="status">Lerninhalte werden geladen …</p>
     <div class="track" aria-hidden="true"><span></span></div>
-    <p class="muted">Deine Vokabeln, Beispiele, Fortschritte und Maskottchen bleiben erhalten.</p>
+    <p class="muted">
+      Deine Vokabeln, Beispiele, Fortschritte und Maskottchen bleiben erhalten.
+    </p>
   </main>
 
   <script>
-  (async function loadZuno(){
-    const source = "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
+  (async function loadZuno() {
+    const source =
+      "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
 
     const patch = String.raw`
 
@@ -204,6 +273,7 @@ Object.assign(exampleSentences, zunoCuratedExamples);
 
 function getExample(word) {
   const key = String(word).toLowerCase();
+
   const examples = exampleSentences[key] || [
     'We learned how to use "' + word + '" in class.',
     'She used the word "' + word + '" in her sentence.',
@@ -212,6 +282,7 @@ function getExample(word) {
 
   const index = exampleRotations[key] || 0;
   exampleRotations[key] = (index + 1) % examples.length;
+
   return examples[index];
 }
 
@@ -338,10 +409,12 @@ const zunoGermanRotations = {};
 function getGermanExample(word) {
   const key = String(word.word).toLowerCase();
   const examples = zunoGermanExamples[key];
+
   if (!examples || !examples.length) return null;
 
   const index = zunoGermanRotations[key] || 0;
   zunoGermanRotations[key] = (index + 1) % examples.length;
+
   return examples[index];
 }
 
@@ -368,42 +441,103 @@ function zunoHighlightExample(sentence, highlight) {
 ========================================= */
 
 const zunoAnswerAlternatives = {
-  'to be short of sth': ['to lack something','not have enough of something'],
-  'to manage (to do sth)': ['to succeed in doing something','to be able to do something'],
-  'to apply (for)': ['to make an application','to ask for'],
-  'to bump into sb': ['to meet somebody by chance','to run into somebody'],
-  'to learn by heart': ['to memorise','to memorize'],
-  'to make progress': ['to improve','to get better'],
-  'to be stuck': ['to be unable to move','to be unable to continue'],
-  'to communicate': ['to exchange information','to get a message across'],
-  'to immigrate': ['to move to another country','to come to live in a country'],
-  'to emigrate': ['to leave your own country to live elsewhere'],
-  'to succeed (in)': ['to be successful','to manage'],
-  'to prevent': ['to stop something from happening','to avoid'],
-  'to assist': ['to help'],
-  'to overhear': ['to hear something accidentally','to hear without intending to'],
-  'to respect': ['to show respect for','to value'],
-  'to distract': ['to take somebody’s attention away','to disturb'],
-  'to glow': ['to shine softly','to give off light'],
-  'to sigh': ['to breathe out deeply'],
-  'to sting': ['to cause a sharp pain'],
-  community: ['a group of people living in the same area'],
-  ancestor: ['a family member from long ago','a person you are descended from']
+  'to be short of sth': [
+    'to lack something',
+    'not have enough of something'
+  ],
+  'to manage (to do sth)': [
+    'to succeed in doing something',
+    'to be able to do something'
+  ],
+  'to apply (for)': [
+    'to make an application',
+    'to ask for'
+  ],
+  'to bump into sb': [
+    'to meet somebody by chance',
+    'to run into somebody'
+  ],
+  'to learn by heart': [
+    'to memorise',
+    'to memorize'
+  ],
+  'to make progress': [
+    'to improve',
+    'to get better'
+  ],
+  'to be stuck': [
+    'to be unable to move',
+    'to be unable to continue'
+  ],
+  'to communicate': [
+    'to exchange information',
+    'to get a message across'
+  ],
+  'to immigrate': [
+    'to move to another country',
+    'to come to live in a country'
+  ],
+  'to emigrate': [
+    'to leave your own country to live elsewhere'
+  ],
+  'to succeed (in)': [
+    'to be successful',
+    'to manage'
+  ],
+  'to prevent': [
+    'to stop something from happening',
+    'to avoid'
+  ],
+  'to assist': [
+    'to help'
+  ],
+  'to overhear': [
+    'to hear something accidentally',
+    'to hear without intending to'
+  ],
+  'to respect': [
+    'to show respect for',
+    'to value'
+  ],
+  'to distract': [
+    'to take somebody’s attention away',
+    'to disturb'
+  ],
+  'to glow': [
+    'to shine softly',
+    'to give off light'
+  ],
+  'to sigh': [
+    'to breathe out deeply'
+  ],
+  'to sting': [
+    'to cause a sharp pain'
+  ],
+  community: [
+    'a group of people living in the same area'
+  ],
+  ancestor: [
+    'a family member from long ago',
+    'a person you are descended from'
+  ]
 };
 
 
 /* =========================================
-   MULTIPLE-CHOICE-FIX
+   ANTWORT-PRÜFUNG
 ========================================= */
 
 function zunoNormalize(value) {
-  return String(value || '')
+  return String(value ?? '')
     .normalize('NFKC')
     .toLowerCase()
     .trim()
     .replace(/[’‘]/g, "'")
     .replace(/\bsth\b\.?/g, 'something')
     .replace(/\bsb\b\.?/g, 'somebody')
+    .replace(/\betw\b\.?/g, 'etwas')
+    .replace(/\bjmdm\b\.?/g, 'jemandem')
+    .replace(/\bjmdn\b\.?/g, 'jemanden')
     .replace(/[.,!?;:]+$/g, '')
     .replace(/\s+/g, ' ');
 }
@@ -414,15 +548,21 @@ function zunoEditDistance(a, b) {
     () => []
   );
 
-  for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
-  for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+  for (let i = 0; i <= a.length; i++) {
+    matrix[0][i] = i;
+  }
+
+  for (let j = 0; j <= b.length; j++) {
+    matrix[j][0] = j;
+  }
 
   for (let j = 1; j <= b.length; j++) {
     for (let i = 1; i <= a.length; i++) {
       matrix[j][i] = Math.min(
         matrix[j][i - 1] + 1,
         matrix[j - 1][i] + 1,
-        matrix[j - 1][i - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+        matrix[j - 1][i - 1] +
+          (a[i - 1] === b[j - 1] ? 0 : 1)
       );
     }
   }
@@ -435,14 +575,19 @@ function zunoCloseEnough(submitted, expected) {
   if (submitted === expected) return true;
 
   const maxDistance = expected.length >= 8 ? 2 : 1;
+
   return zunoEditDistance(submitted, expected) <= maxDistance;
 }
+
 window.answerMatches = function(answer, word) {
+  if (!word) return false;
+
   const expected = state.currentMode === 'reverse'
     ? word.word
     : word.translation;
 
   const submitted = zunoNormalize(answer);
+
   if (!submitted) return false;
 
   const accepted = String(expected)
@@ -450,14 +595,17 @@ window.answerMatches = function(answer, word) {
     .map(zunoNormalize)
     .filter(Boolean);
 
-  // Multiple Choice: sowohl die vollständige Übersetzung
-  // als auch einzelne gültige Übersetzungen akzeptieren.
+  // Multiple Choice:
+  // Die komplette angezeigte Übersetzung ODER eine einzelne
+  // gültige Übersetzungsvariante wird akzeptiert.
   if (state.currentMode === 'choice') {
     return submitted === zunoNormalize(expected) ||
-           accepted.includes(submitted);
+      accepted.includes(submitted);
   }
 
-  if (accepted.some(item => zunoCloseEnough(submitted, item))) {
+  if (accepted.some(item =>
+    zunoCloseEnough(submitted, item)
+  )) {
     return true;
   }
 
@@ -466,17 +614,21 @@ window.answerMatches = function(answer, word) {
       zunoAnswerAlternatives[String(word.word).toLowerCase()] || [];
 
     if (alternatives.some(item =>
-      zunoCloseEnough(submitted, zunoNormalize(item))
-    )) return true;
+      zunoCloseEnough(
+        submitted,
+        zunoNormalize(item)
+      )
+    )) {
+      return true;
+    }
   }
 
   return false;
 };
 
 
-
 /* =========================================
-   NEUE ANTWORTOPTIONEN
+   ANTWORTOPTIONEN
 ========================================= */
 
 window.makeOptions = function(correctWord) {
@@ -496,7 +648,9 @@ window.makeOptions = function(correctWord) {
             item.word.toLowerCase() === name.toLowerCase()
           );
 
-          if (match) candidates.push(match.translation);
+          if (match) {
+            candidates.push(match.translation);
+          }
         });
       }
     });
@@ -512,12 +666,17 @@ window.makeOptions = function(correctWord) {
 
   all.forEach(option => {
     const normalized = zunoNormalize(option);
+
     if (!normalized || seen.has(normalized)) return;
+
     seen.add(normalized);
     unique.push(option);
   });
 
-  return shuffle([...unique.slice(0, 3), correct]);
+  return shuffle([
+    ...unique.slice(0, 3),
+    correct
+  ]);
 };
 
 
@@ -527,7 +686,10 @@ window.makeOptions = function(correctWord) {
 
 window.renderQuestion = function() {
   const word = state.session[state.index];
-  if (!word) return finishSession();
+
+  if (!word) {
+    return finishSession();
+  }
 
   state.answered = false;
 
@@ -566,6 +728,7 @@ window.renderQuestion = function() {
         germanExample.text,
         germanExample.highlight
       );
+
       example.classList.remove('hidden');
     } else {
       example.textContent = '';
@@ -585,14 +748,20 @@ window.renderQuestion = function() {
     const sentence = getExample(word.word);
 
     if (sentence) {
-      example.innerHTML = highlightWord(sentence, word.word);
+      example.innerHTML = highlightWord(
+        sentence,
+        word.word
+      );
+
       example.classList.remove('hidden');
     } else {
       example.textContent = '';
       example.classList.add('hidden');
     }
 
-    if (mode === 'choice') mascot.src = 'IMG_2560.png';
+    if (mode === 'choice') {
+      mascot.src = 'IMG_2560.png';
+    }
   }
 
   renderAnswerArea(word);
@@ -636,6 +805,7 @@ function addDontKnowButton(word) {
 
     const currentWord = state.session[state.index];
 
+    // Das Wort wird für eine spätere Wiederholung vorgemerkt.
     state.session.splice(state.index + 1, 0, currentWord);
 
     checkAnswer('', currentWord);
@@ -656,23 +826,27 @@ window.speakCurrentWord = function() {
   ) {
     document.getElementById('feedbackArea').innerHTML =
       '<div class="feedback bad" role="status">Die Sprachausgabe wird von diesem Browser nicht unterstützt.</div>';
+
     return;
   }
 
   const word = state.session[state.index];
+
   if (!word) return;
 
-  const reverse = state.currentMode === 'reverse';
-  const text = reverse ? word.translation : word.word;
+  // Das Ausgangswort ist in allen Modi das englische
+  // oder französische Wort in word.word.
+  const text = word.word;
 
-  const lang = reverse
-    ? 'de-DE'
-    : (word.language === 'fr' ? 'fr-FR' : 'en-AU');
+  const lang = word.language === 'fr'
+    ? 'fr-FR'
+    : 'en-AU';
 
   try {
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
+
     utterance.lang = lang;
     utterance.rate = 0.88;
     utterance.pitch = 1;
@@ -681,7 +855,8 @@ window.speakCurrentWord = function() {
     const prefix = lang.slice(0, 2).toLowerCase();
 
     const matching = voices.filter(voice =>
-      voice.lang && voice.lang.toLowerCase().startsWith(prefix)
+      voice.lang &&
+      voice.lang.toLowerCase().startsWith(prefix)
     );
 
     let voice = matching.find(item =>
@@ -694,7 +869,10 @@ window.speakCurrentWord = function() {
       );
     }
 
-    if (voice) utterance.voice = voice;
+    if (voice) {
+      utterance.voice = voice;
+    }
+
     window.speechSynthesis.speak(utterance);
 
   } catch (error) {
@@ -934,12 +1112,6 @@ const zunoAcrossCultures2 = {
 
 /* =========================================
    NEUE LERNBEREICHE HINZUFÜGEN
-   Reihenfolge:
-   1. Across Cultures 1 (bestehend)
-   2. Unit 1: G'day Australia (bestehend)
-   3. Focus 1: Aotearoa
-   4. Text Smart 1
-   5. Across Cultures 2
 ========================================= */
 
 Object.assign(unitVocabulary, {
@@ -961,8 +1133,11 @@ if (zunoUnitSelect) {
     ["textSmart1","Text Smart 1: Text analysis"],
     ["acrossCultures2","Across Cultures 2: The language of tolerance"]
   ].forEach(([value,label]) => {
-    if (!Array.from(zunoUnitSelect.options).some(option => option.value === value)) {
-      zunoUnitSelect.add(new Option(label,value));
+    const exists = Array.from(zunoUnitSelect.options)
+      .some(option => option.value === value);
+
+    if (!exists) {
+      zunoUnitSelect.add(new Option(label, value));
     }
   });
 
@@ -988,10 +1163,14 @@ if (zunoUnitSelect) {
         });
 
         if (!response.ok) {
-          throw new Error("GitHub antwortet mit HTTP " + response.status);
+          throw new Error(
+            "GitHub antwortet mit HTTP " + response.status
+          );
         }
 
-        status.textContent = "Verbindung erfolgreich. Lade ZUNO ...";
+        status.textContent =
+          "Verbindung erfolgreich. Lade ZUNO ...";
+
         page = await response.text();
 
       } finally {
@@ -999,7 +1178,9 @@ if (zunoUnitSelect) {
       }
 
       if (!page.includes("</body>")) {
-        throw new Error("Die geladene ZUNO-Datei ist unvollständig.");
+        throw new Error(
+          "Die geladene ZUNO-Datei ist unvollständig."
+        );
       }
 
       status.textContent = "ZUNO geladen. Starte App ...";
@@ -1018,6 +1199,7 @@ if (zunoUnitSelect) {
 
       if (status) {
         status.className = "error";
+
         status.textContent =
           error.name === "AbortError"
             ? "Zeitüberschreitung: GitHub hat nicht rechtzeitig geantwortet."
