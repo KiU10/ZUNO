@@ -20,111 +20,149 @@
     <div class="logo">ZUNO.</div>
     <p id="status">Lerninhalte werden geladen …</p>
     <div class="track" aria-hidden="true"><span></span></div>
-    <p class="muted">Deine bestehenden Vokabeln, Beispiele, Fortschritte und Maskottchen bleiben erhalten.</p>
+    <p class="muted">Deine Vokabeln, Beispiele, Fortschritte und Maskottchen bleiben erhalten.</p>
   </main>
   <script>
   (async function loadZuno(){
     const source = "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
-    const patch = [
-      "const zunoCuratedExamples = {",
-      "  'to overhear': ['I overheard my neighbours talking about their holiday.', 'She accidentally overheard an interesting conversation.', 'We overheard the announcement while waiting for the train.'],",
-      "  achieve: ['She trained every day to achieve her goal.', 'Our team achieved an important victory.', 'You can achieve great things if you keep practising.'],",
-      "  'to be short of sth': ['We are short of time, so let us take the earlier bus.', 'The team is short of players before the final.', 'They were short of money, so they cooked at home.'],",
-      "  'to immigrate': ['Her grandparents immigrated to Australia in the 1950s.', 'Many people immigrate to build a safer life.', 'The family immigrated together and settled near the coast.'],",
-      "  'to emigrate': ['They emigrated from Ireland to start over abroad.', 'He emigrated when he found work in another country.', 'Her family emigrated several generations ago.'],",
-      "  immigrant: ['The museum recorded the stories of immigrant families.', 'As a young immigrant, he had to learn a new language.', 'The city welcomed immigrants from many countries.'],",
-      "  immigration: ['The class discussed immigration and its effect on communities.', 'Immigration has shaped the history of the country.', 'The report explains recent changes to immigration.'],",
-      "  migration: ['Bird migration begins when the weather turns cold.', 'The map shows the migration of families across the region.', 'Seasonal migration brings the animals to the coast.'],",
-      "  'to apply (for)': ['I want to apply for a weekend job at the bookshop.', 'She applied for a place on the exchange programme.', 'You need to apply before the closing date.'],",
-      "  'to bump into sb': ['I bumped into my cousin at the station.', 'We often bump into our neighbours at the market.', 'She bumped into an old friend on her way home.'],",
-      "  'to learn by heart': ['We had to learn the short poem by heart.', 'He learned the speech by heart before the presentation.', 'I learn new phrases by heart by saying them aloud.'],",
-      "  'to make progress': ['After a month of practice, she made real progress.', 'You make progress when you keep trying.', 'The group has made progress on its project.'],",
-      "  'to communicate': ['The radio helps the rescue team communicate in the outback.', 'They communicate clearly even when the room is noisy.', 'A smile can help people communicate across languages.'],",
-      "  'to prevent': ['A helmet can prevent serious head injuries.', 'The warning signs help prevent accidents near the water.', 'Good planning can prevent delays.'],",
-      "  'to assist': ['A guide assisted the visitors at the wildlife centre.', 'The new ramp assists people who use wheelchairs.', 'Volunteers came to assist after the storm.'],",
-      "  'to settle': ['They settled in a small town near the sea.', 'It took a few weeks to settle into her new school.', 'The family settled near relatives after moving abroad.'],",
-      "  'to be stuck': ['Our car was stuck in the mud after the rain.', 'I got stuck on the last question in the quiz.', 'The hikers were stuck until the rescue team arrived.'],",
-      "  'to respect': ['Visitors should respect the signs on the sacred site.', 'We respect one another’s beliefs.', 'The students respect the local community’s traditions.'],",
-      "  'to distract': ['Please put your phone away; it distracts everyone.', 'The loud music distracted me from my reading.', 'She closed the door to avoid being distracted.'],",
-      "  community: ['The community organised a clean-up at the beach.', 'A close-knit community supported the new family.', 'The community centre offers free activities for children.'],",
-      "  ancestor: ['An ancestor of mine came to Australia long ago.', 'The old photograph showed one of her ancestors.', 'They learned how their ancestors lived from the museum exhibit.'],",
-      "  'to glow': ['The lighthouse began to glow as the sun went down.', 'Her lantern glowed in the dark tent.', 'The windows glowed warmly on the cold evening.'],",
-      "  'to sigh': ['He sighed with relief when the missing dog came home.', 'She sighed and looked at the long list of chores.', 'I heard him sigh after the difficult exam.'],",
-      "  'to sting': ['A bee may sting if it feels threatened.', 'The jellyfish can sting swimmers near the shore.', 'The nettle stung his hand when he touched it.'],",
-      "  'to succeed (in)': ['She succeeded in finding the right track.', 'With practice, he succeeded in speaking more confidently.', 'The team succeeded in raising money for the shelter.'],",
-      "  'to manage (to do sth)': ['We managed to catch the last bus.', 'He managed to finish the project before dinner.', 'Can you manage to carry both bags?'],",
-      "  'to head (for/to)': ['At sunrise, we headed for the coast.', 'They headed to the station after lunch.', 'The hikers headed for the shelter before the storm.'],",
-      "  'box jellyfish': ['A box jellyfish drifted near the warning buoy.', 'The sign warns swimmers about box jellyfish.', 'The guide explained why box jellyfish can be dangerous.'],",
-      "  'rip current': ['The lifeguard spotted a rip current near the rocks.', 'A rip current can pull swimmers away from the shore.', 'The beach is closed because of a strong rip current.'],",
-      "  heatwave: ['During the heatwave, the library stayed open late.', 'The heatwave dried out the garden.', 'People carried extra water during the heatwave.'],",
-      "  'native speaker': ['A native speaker helped us practise the dialogue.', 'She spoke with a native speaker during her exchange.', 'The class asked a native speaker about local expressions.'],",
-      "  'official language': ['English is an official language in Australia.', 'The country recognises more than one official language.', 'They translated the notice into the official language.']",
-      "};",
-      "Object.assign(exampleSentences, zunoCuratedExamples);",
-      "function getExample(word) {",
-      "  const key = String(word).toLowerCase();",
-      "  const examples = exampleSentences[key];",
-      "  if (!examples || !examples.length) return null;",
-      "  const index = exampleRotations[key] || 0;",
-      "  exampleRotations[key] = (index + 1) % examples.length;",
-      "  return examples[index];",
-      "}",
-      "function renderQuestion() {",
-      "  const word = state.session[state.index];",
-      "  if (!word) return finishSession();",
-      "  state.answered = false;",
-      "  document.getElementById('questionCounter').textContent = (state.index + 1) + ' / ' + state.session.length;",
-      "  document.getElementById('lessonProgress').style.width = (state.index / state.session.length * 100) + '%';",
-      "  document.getElementById('feedbackArea').innerHTML = '';",
-      "  document.getElementById('nextButton').classList.add('hidden');",
-      "  const mode = getModes()[state.index % 3]; state.currentMode = mode;",
-      "  const target = document.getElementById('targetWord');",
-      "  const example = document.getElementById('exampleSentence');",
-      "  const mascot = document.getElementById('exerciseMascot'); mascot.src = 'IMG_2558.png';",
-      "  if (mode === 'reverse') {",
-      "    const language = word.language === 'fr' ? 'Französisch' : 'Englisch';",
-      "    document.getElementById('modeLabel').textContent = 'Wie heißt das auf ' + language + '?';",
-      "    target.textContent = word.translation; example.classList.add('hidden'); example.textContent = ''; mascot.src = 'IMG_2560.png';",
-      "  } else {",
-      "    document.getElementById('modeLabel').textContent = mode === 'choice' ? 'Wähle die richtige Übersetzung' : 'Übersetze das Wort';",
-      "    target.textContent = word.word;",
-      "    const sentence = getExample(word.word);",
-      "    if (sentence) { example.innerHTML = highlightWord(sentence, word.word); example.classList.remove('hidden'); }",
-      "    else { example.textContent = ''; example.classList.add('hidden'); }",
-      "    if (mode === 'choice') mascot.src = 'IMG_2560.png';",
-      "  }",
-      "  renderAnswerArea(word);",
-      "}",
-      "function speakCurrentWord() {",
-      "  if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {",
-      "    document.getElementById('feedbackArea').innerHTML = '<div class=\\\"feedback bad\\\" role=\\\"status\\\">Die Sprachausgabe wird von diesem Browser nicht unterstützt.</div>'; return;",
-      "  }",
-      "  const word = state.session[state.index]; if (!word) return;",
-      "  const reverse = state.currentMode === 'reverse';",
-      "  const text = reverse ? word.translation : word.word;",
-      "  const lang = reverse ? 'de-DE' : (word.language === 'fr' ? 'fr-FR' : 'en-AU');",
-      "  try {",
-      "    window.speechSynthesis.cancel();",
-      "    const utterance = new SpeechSynthesisUtterance(text); utterance.lang = lang; utterance.rate = 0.88; utterance.pitch = 1;",
-      "    const prefix = lang.slice(0, 2).toLowerCase();",
-      "    const voices = window.speechSynthesis.getVoices().filter(function(voice) { return voice.lang && voice.lang.toLowerCase().indexOf(prefix) === 0; });",
-      "    let voice = voices[0];",
-      "    if (prefix === 'en') voice = voices.find(function(item) { return /australia|en-au/i.test(item.lang + ' ' + item.name); }) || voice;",
-      "    else voice = voices.find(function(item) { return item.lang.toLowerCase() === lang.toLowerCase(); }) || voice;",
-      "    if (voice) utterance.voice = voice; window.speechSynthesis.speak(utterance);",
-      "  } catch (error) { console.warn('Speech synthesis unavailable', error); }",
-      "}",
-      ""
-    ].join('\\n');
+    const patch = String.raw`
+      const zunoCuratedExamples = {
+        'to overhear': ['I overheard my neighbours talking about their holiday.', 'She accidentally overheard an interesting conversation.', 'We overheard the announcement while waiting for the train.'],
+        achieve: ['She trained every day to achieve her goal.', 'Our team achieved an important victory.', 'You can achieve great things if you keep practising.'],
+        'to be short of sth': ['We are short of time, so let us take the earlier bus.', 'The team is short of players before the final.', 'They were short of money, so they cooked at home.'],
+        'to immigrate': ['Her grandparents immigrated to Australia in the 1950s.', 'Many people immigrate to build a safer life.', 'The family immigrated together and settled near the coast.'],
+        'to emigrate': ['They emigrated from Ireland to start over abroad.', 'He emigrated when he found work in another country.', 'Her family emigrated several generations ago.'],
+        immigrant: ['The museum recorded the stories of immigrant families.', 'As a young immigrant, he had to learn a new language.', 'The city welcomed immigrants from many countries.'],
+        immigration: ['The class discussed immigration and its effect on communities.', 'Immigration has shaped the history of the country.', 'The report explains recent changes to immigration.'],
+        migration: ['Bird migration begins when the weather turns cold.', 'The map shows the migration of families across the region.', 'Seasonal migration brings the animals to the coast.'],
+        'to apply (for)': ['I want to apply for a weekend job at the bookshop.', 'She applied for a place on the exchange programme.', 'You need to apply before the closing date.'],
+        'to bump into sb': ['I bumped into my cousin at the station.', 'We often bump into our neighbours at the market.', 'She bumped into an old friend on her way home.'],
+        'to learn by heart': ['We had to learn the short poem by heart.', 'He learned the speech by heart before the presentation.', 'I learn new phrases by heart by saying them aloud.'],
+        'to make progress': ['After a month of practice, she made real progress.', 'You make progress when you keep trying.', 'The group has made progress on its project.'],
+        'to communicate': ['The radio helps the rescue team communicate in the outback.', 'They communicate clearly even when the room is noisy.', 'A smile can help people communicate across languages.'],
+        'to prevent': ['A helmet can prevent serious head injuries.', 'The warning signs help prevent accidents near the water.', 'Good planning can prevent delays.'],
+        'to assist': ['A guide assisted the visitors at the wildlife centre.', 'The new ramp assists people who use wheelchairs.', 'Volunteers came to assist after the storm.'],
+        'to settle': ['They settled in a small town near the sea.', 'It took a few weeks to settle into her new school.', 'The family settled near relatives after moving abroad.'],
+        'to be stuck': ['Our car was stuck in the mud after the rain.', 'I got stuck on the last question in the quiz.', 'The hikers were stuck until the rescue team arrived.'],
+        'to respect': ['Visitors should respect the signs on the sacred site.', 'We respect one another’s beliefs.', 'The students respect the local community’s traditions.'],
+        'to distract': ['Please put your phone away; it distracts everyone.', 'The loud music distracted me from my reading.', 'She closed the door to avoid being distracted.'],
+        community: ['The community organised a clean-up at the beach.', 'A close-knit community supported the new family.', 'The community centre offers free activities for children.'],
+        ancestor: ['An ancestor of mine came to Australia long ago.', 'The old photograph showed one of her ancestors.', 'They learned how their ancestors lived from the museum exhibit.'],
+        'to glow': ['The lighthouse began to glow as the sun went down.', 'Her lantern glowed in the dark tent.', 'The windows glowed warmly on the cold evening.'],
+        'to sigh': ['He sighed with relief when the missing dog came home.', 'She sighed and looked at the long list of chores.', 'I heard him sigh after the difficult exam.'],
+        'to sting': ['A bee may sting if it feels threatened.', 'The jellyfish can sting swimmers near the shore.', 'The nettle stung his hand when he touched it.'],
+        'to succeed (in)': ['She succeeded in finding the right track.', 'With practice, he succeeded in speaking more confidently.', 'The team succeeded in raising money for the shelter.'],
+        'to manage (to do sth)': ['We managed to catch the last bus.', 'He managed to finish the project before dinner.', 'Can you manage to carry both bags?'],
+        'to head (for/to)': ['At sunrise, we headed for the coast.', 'They headed to the station after lunch.', 'The hikers headed for the shelter before the storm.'],
+        'box jellyfish': ['A box jellyfish drifted near the warning buoy.', 'The sign warns swimmers about box jellyfish.', 'The guide explained why box jellyfish can be dangerous.'],
+        'rip current': ['The lifeguard spotted a rip current near the rocks.', 'A rip current can pull swimmers away from the shore.', 'The beach is closed because of a strong rip current.'],
+        heatwave: ['During the heatwave, the library stayed open late.', 'The heatwave dried out the garden.', 'People carried extra water during the heatwave.'],
+        'native speaker': ['A native speaker helped us practise the dialogue.', 'She spoke with a native speaker during her exchange.', 'The class asked a native speaker about local expressions.'],
+        'official language': ['English is an official language in Australia.', 'The country recognises more than one official language.', 'They translated the notice into the official language.']
+      };
+      Object.assign(exampleSentences, zunoCuratedExamples);
+
+      function getExample(word) {
+        const key = String(word).toLowerCase();
+        const examples = exampleSentences[key];
+        if (!examples || !examples.length) return null;
+        const index = exampleRotations[key] || 0;
+        exampleRotations[key] = (index + 1) % examples.length;
+        return examples[index];
+      }
+
+      const zunoAnswerAlternatives = {
+        'to be short of sth': ['to lack something', 'not have enough of something'],
+        'to manage (to do sth)': ['to succeed in doing something', 'to be able to do something'],
+        'to apply (for)': ['to make an application', 'to ask for'],
+        'to bump into sb': ['to meet somebody by chance', 'to run into somebody'],
+        'to learn by heart': ['to memorise', 'to memorize'],
+        'to make progress': ['to improve', 'to get better'],
+        'to be stuck': ['to be unable to move', 'to be unable to continue'],
+        'to communicate': ['to exchange information', 'to get a message across'],
+        'to immigrate': ['to move to another country', 'to come to live in a country'],
+        'to emigrate': ['to leave your own country to live elsewhere'],
+        'to succeed (in)': ['to be successful', 'to manage'],
+        'to prevent': ['to stop something from happening', 'to avoid'],
+        'to assist': ['to help'],
+        'to overhear': ['to hear something accidentally', 'to hear without intending to'],
+        'to respect': ['to show respect for', 'to value'],
+        'to distract': ['to take somebody’s attention away', 'to disturb'],
+        'to glow': ['to shine softly', 'to give off light'],
+        'to sigh': ['to breathe out deeply'],
+        'to sting': ['to cause a sharp pain'],
+        'community': ['a group of people living in the same area'],
+        'ancestor': ['a family member from long ago', 'a person you are descended from']
+      };
+
+      function answerMatches(answer, word) {
+        const expected = state.currentMode === 'reverse' ? word.word : word.translation;
+        const normal = (value) => normalize(value).replace(/[.!?]/g, '').trim();
+        const submitted = normal(answer);
+        const accepted = String(expected).split(';').map(normal);
+        if (accepted.includes(submitted)) return true;
+        const alternatives = zunoAnswerAlternatives[String(word.word).toLowerCase()] || [];
+        if (state.currentMode === 'reverse' && alternatives.some((item) => normal(item) === submitted)) return true;
+        return false;
+      }
+
+      function renderQuestion() {
+        const word = state.session[state.index];
+        if (!word) return finishSession();
+        state.answered = false;
+        document.getElementById('questionCounter').textContent = (state.index + 1) + ' / ' + state.session.length;
+        document.getElementById('lessonProgress').style.width = (state.index / state.session.length * 100) + '%';
+        document.getElementById('feedbackArea').innerHTML = '';
+        document.getElementById('nextButton').classList.add('hidden');
+        const mode = getModes()[state.index % 3]; state.currentMode = mode;
+        const target = document.getElementById('targetWord');
+        const example = document.getElementById('exampleSentence');
+        const mascot = document.getElementById('exerciseMascot'); mascot.src = 'IMG_2558.png';
+        if (mode === 'reverse') {
+          const language = word.language === 'fr' ? 'Französisch' : 'Englisch';
+          document.getElementById('modeLabel').textContent = 'Wie heißt das auf ' + language + '?';
+          target.textContent = word.translation; example.classList.add('hidden'); example.textContent = ''; mascot.src = 'IMG_2560.png';
+        } else {
+          document.getElementById('modeLabel').textContent = mode === 'choice' ? 'Wähle die richtige Übersetzung' : 'Übersetze das Wort';
+          target.textContent = word.word;
+          const sentence = getExample(word.word);
+          if (sentence) { example.innerHTML = highlightWord(sentence, word.word); example.classList.remove('hidden'); }
+          else { example.textContent = ''; example.classList.add('hidden'); }
+          if (mode === 'choice') mascot.src = 'IMG_2560.png';
+        }
+        renderAnswerArea(word);
+      }
+
+      function speakCurrentWord() {
+        if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+          document.getElementById('feedbackArea').innerHTML = '<div class="feedback bad" role="status">Die Sprachausgabe wird von diesem Browser nicht unterstützt.</div>'; return;
+        }
+        const word = state.session[state.index]; if (!word) return;
+        const reverse = state.currentMode === 'reverse';
+        const text = reverse ? word.translation : word.word;
+        const lang = reverse ? 'de-DE' : (word.language === 'fr' ? 'fr-FR' : 'en-AU');
+        try {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text); utterance.lang = lang; utterance.rate = 0.88; utterance.pitch = 1;
+          const prefix = lang.slice(0, 2).toLowerCase();
+          const voices = window.speechSynthesis.getVoices().filter((voice) => voice.lang && voice.lang.toLowerCase().startsWith(prefix));
+          let voice = voices[0];
+          if (prefix === 'en') voice = voices.find((item) => /australia|en-au/i.test(item.lang + ' ' + item.name)) || voice;
+          else voice = voices.find((item) => item.lang.toLowerCase() === lang.toLowerCase()) || voice;
+          if (voice) utterance.voice = voice;
+          window.speechSynthesis.speak(utterance);
+        } catch (error) { console.warn('Speech synthesis unavailable', error); }
+      }
+    `;
     try {
-      const response = await fetch(source, { cache: 'no-store' });
-      if (!response.ok) throw new Error('ZUNO source unavailable (' + response.status + ')');
-      let html = await response.text();
-      if (!html.includes('</body>')) throw new Error('Incomplete ZUNO source');
-      html = html.replace('</body>', '<script>' + patch + '<\\/script></body>');
-      document.open(); document.write(html); document.close();
+      const response = await fetch(source, {cache:"no-store"});
+      if (!response.ok) throw new Error("ZUNO source unavailable (" + response.status + ")");
+      let page = await response.text();
+      if (!page.includes("</body>")) throw new Error("Incomplete ZUNO source");
+      page = page.replace("</body>", "<script>\n" + patch + "\n<\\/script></body>");
+      document.open(); document.write(page); document.close();
     } catch (error) {
-      document.getElementById('status').outerHTML = '<p class="error" role="alert">ZUNO konnte die App nicht laden. Bitte prüfe die Internetverbindung und lade die Seite erneut. Deine Fortschritte wurden nicht verändert.</p>';
+      document.getElementById("status").outerHTML = '<p class="error" role="alert">ZUNO konnte nicht geladen werden. Bitte prüfe deine Internetverbindung und lade die Seite erneut. Deine gespeicherten Fortschritte bleiben erhalten.</p>';
       console.error(error);
     }
   })();
