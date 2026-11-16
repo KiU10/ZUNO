@@ -29,13 +29,26 @@
     return `${year}-${month}-${day}`;
   }
 
+  function updateXPDisplay() {
+    if (typeof state === "undefined") return;
+
+    const xp = Number(state.xp) || 0;
+    const streak = Number(state.streak) || 0;
+
+    const balance = document.getElementById("zunoXPBalance");
+    const arcadeXP = document.getElementById("zunoArcadeXP");
+    const streakDisplay = document.getElementById("zunoXPStreak");
+
+    if (balance) balance.textContent = xp;
+    if (arcadeXP) arcadeXP.textContent = xp;
+    if (streakDisplay) streakDisplay.textContent = streak;
+  }
+
   function updateStreak() {
     const today = getToday();
     const lastDay = localStorage.getItem(LAST_LESSON_KEY);
 
-    if (lastDay === today) {
-      return false;
-    }
+    if (lastDay === today) return false;
 
     const currentStreak = Number(state.streak) || 0;
 
@@ -49,12 +62,61 @@
 
     saveState();
     updateDashboard();
+    updateXPDisplay();
 
     if (window.showStreakAnimation) {
       window.showStreakAnimation();
     }
 
     return true;
+  }
+
+  /* =========================================
+     XP-SEITE UND NAVIGATION
+  ========================================= */
+
+  window.showXPPage = function() {
+    updateXPDisplay();
+
+    if (typeof showOnly === "function") {
+      showOnly("xpPage");
+    }
+  };
+
+  window.showArcadePage = function() {
+    updateXPDisplay();
+
+    if (typeof showOnly === "function") {
+      showOnly("arcadePage");
+    }
+
+    if (window.updateZUNOArcade) {
+      window.updateZUNOArcade();
+    }
+  };
+
+  /* =========================================
+     XP-ANZEIGE BEI DASHBOARD-UPDATES
+  ========================================= */
+
+  const originalUpdateDashboard = window.updateDashboard;
+
+  if (typeof originalUpdateDashboard === "function") {
+    window.updateDashboard = function(...args) {
+      const result = originalUpdateDashboard.apply(this, args);
+
+      updateXPDisplay();
+
+      const xpButton = document.querySelector(".zuno-xp-trigger");
+
+      if (xpButton) {
+        xpButton.classList.remove("zuno-xp-pop");
+        void xpButton.offsetWidth;
+        xpButton.classList.add("zuno-xp-pop");
+      }
+
+      return result;
+    };
   }
 
   /* =========================================
@@ -66,7 +128,6 @@
   if (typeof originalStartSession === "function") {
     window.startSession = function(...args) {
       state._zunoStreakRecorded = false;
-
       return originalStartSession.apply(this, args);
     };
   }
@@ -98,6 +159,8 @@
         updateStreak();
       }
 
+      updateXPDisplay();
+
       return result;
     };
   }
@@ -125,6 +188,8 @@
           window.showCorrectAnimation();
         }
       }
+
+      updateXPDisplay();
 
       return result;
     };
@@ -163,18 +228,15 @@
       const currentXP = Number(state.xp) || 0;
 
       if (currentXP < GAME_COST) {
-        alert(
-          `Du brauchst ${GAME_COST} XP für eine Spielrunde.`
-        );
-
+        alert(`Du brauchst ${GAME_COST} XP für eine Spielrunde.`);
         return false;
       }
 
-      // XP werden ausschließlich beim Start einer Runde abgezogen.
       state.xp = currentXP - GAME_COST;
 
       saveState();
       updateDashboard();
+      updateXPDisplay();
 
       return true;
     }
@@ -194,9 +256,7 @@
 
     if (pill) {
       pill.classList.remove("zuno-streak-burst");
-
       void pill.offsetWidth;
-
       pill.classList.add("zuno-streak-burst");
 
       setTimeout(() => {
@@ -206,7 +266,6 @@
       return;
     }
 
-    // Fallback, falls die App keinen headerStreak besitzt.
     const burst = document.createElement("div");
 
     burst.className = "zuno-streak-toast";
@@ -216,5 +275,7 @@
 
     setTimeout(() => burst.remove(), 1600);
   };
+
+  updateXPDisplay();
 
 })();
