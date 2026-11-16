@@ -119,8 +119,8 @@
 
       const previousLoader = await fetchText(oldLoader);
 
-      const startMarker = "const patch = String.raw`";
-      const endMarker = "\n    `;\n\n    try {";
+      const startMarker = "const patch = String.raw";
+      const endMarker = "\n    ;\n\n    try {";
 
       const patchStart = previousLoader.indexOf(startMarker);
 
