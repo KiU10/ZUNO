@@ -32,154 +32,169 @@
   (async function loadZuno(){
     const source = "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
 
-    const zunoCuratedExamples = {
-const zunoGermanExamples = {
-  achieve: [
-    {text: 'Sie erreichte ihr Ziel nach monatelangem Training.', highlight: 'erreichte'},
-    {text: 'Unser Team hat heute viel erreicht.', highlight: 'erreicht'},
-    {text: 'Mit Übung kannst du wirklich viel erreichen.', highlight: 'erreichen'}
-  ],
-  'to overhear': [
-    {text: 'Ich habe zufällig ein interessantes Gespräch mitgehört.', highlight: 'mitgehört'},
-    {text: 'Sie hörte die beiden über ihre Reise sprechen.', highlight: 'hörte'},
-    {text: 'Wir haben die Unterhaltung nebenan mitbekommen.', highlight: 'mitbekommen'}
-  ],
-  'to immigrate': [
-    {text: 'Ihre Großeltern wanderten in den 1950er-Jahren nach Australien ein.', highlight: 'wanderten ... ein'},
-    {text: 'Viele Menschen wandern aus verschiedenen Gründen ein.', highlight: 'wandern ... ein'},
-    {text: 'Die Familie ist vor vielen Jahren eingewandert.', highlight: 'eingewandert'}
-  ],
-  'to emigrate': [
-    {text: 'Sie wanderten aus Irland aus.', highlight: 'wanderten ... aus'},
-    {text: 'Seine Familie ist vor langer Zeit ausgewandert.', highlight: 'ausgewandert'},
-    {text: 'Immer mehr Menschen wandern aus ihrer Heimat aus.', highlight: 'wandern ... aus'}
-  ],
-  'to communicate': [
-    {text: 'Wir kommunizieren jeden Tag miteinander.', highlight: 'kommunizieren'},
-    {text: 'Sie kommunizierte problemlos auf Englisch.', highlight: 'kommunizierte'},
-    {text: 'Die beiden haben über das Internet kommuniziert.', highlight: 'kommuniziert'}
-  ],
-  'to prevent': [
-    {text: 'Ein Helm kann schwere Verletzungen verhindern.', highlight: 'verhindern'},
-    {text: 'Die Warnung verhinderte einen Unfall.', highlight: 'verhinderte'},
-    {text: 'Wir müssen verhindern, dass das wieder passiert.', highlight: 'verhindern'}
-  ],
-  'to assist': [
-    {text: 'Die Mitarbeiter halfen den Besuchern.', highlight: 'halfen'},
-    {text: 'Kannst du mir bitte helfen?', highlight: 'helfen'},
-    {text: 'Sie hat uns bei der Arbeit unterstützt.', highlight: 'unterstützt'}
-  ],
-  'to settle': [
-    {text: 'Die Familie ließ sich an der Küste nieder.', highlight: 'ließ sich ... nieder'},
-    {text: 'Sie haben sich in einer kleinen Stadt niedergelassen.', highlight: 'niedergelassen'},
-    {text: 'Nach ihrem Umzug ließen sie sich dort nieder.', highlight: 'ließen sich ... nieder'}
-  ],
-  'to respect': [
-    {text: 'Wir respektieren die Traditionen anderer Menschen.', highlight: 'respektieren'},
-    {text: 'Er respektierte ihre Entscheidung.', highlight: 'respektierte'},
-    {text: 'Man sollte andere Meinungen respektieren.', highlight: 'respektieren'}
-  ],
-  'to distract': [
-    {text: 'Das laute Geräusch lenkte mich vom Lernen ab.', highlight: 'lenkte ... ab'},
-    {text: 'Bitte lenk mich nicht ab!', highlight: 'lenk ... ab'},
-    {text: 'Sein Handy hat ihn ständig abgelenkt.', highlight: 'abgelenkt'}
-  ],
-  'to glow': [
-    {text: 'Die Sterne leuchteten hell am Himmel.', highlight: 'leuchteten'},
-    {text: 'Die Lampe glüht noch immer.', highlight: 'glüht'},
-    {text: 'Die Fenster leuchteten in der Dunkelheit.', highlight: 'leuchteten'}
-  ],
-  'to sigh': [
-    {text: 'Sie seufzte erleichtert.', highlight: 'seufzte'},
-    {text: 'Er hat tief geseufzt.', highlight: 'geseufzt'},
-    {text: 'Ich seufze manchmal, wenn ich gestresst bin.', highlight: 'seufze'}
-  ],
-  'to sting': [
-    {text: 'Eine Biene kann dich stechen.', highlight: 'stechen'},
-    {text: 'Mich hat gerade eine Mücke gestochen.', highlight: 'gestochen'},
-    {text: 'Die Qualle sticht, wenn man sie berührt.', highlight: 'sticht'}
-  ],
-  'to succeed (in)': [
-    {text: 'Sie schaffte es, den Wettbewerb zu gewinnen.', highlight: 'schaffte es'},
-    {text: 'Er hat es geschafft, die Aufgabe zu lösen.', highlight: 'geschafft'},
-    {text: 'Mit viel Übung wirst du erfolgreich sein.', highlight: 'erfolgreich'}
-  ],
-  'to manage (to do sth)': [
-    {text: 'Wir schafften es gerade noch, den Bus zu erreichen.', highlight: 'schafften es'},
-    {text: 'Sie hat es geschafft, das Problem zu lösen.', highlight: 'geschafft'},
-    {text: 'Kannst du das alleine schaffen?', highlight: 'schaffen'}
-  ],
-  'to bump into sb': [
-    {text: 'Ich bin gestern zufällig einem alten Freund begegnet.', highlight: 'begegnet'},
-    {text: 'Sie traf ihren Lehrer zufällig in der Stadt.', highlight: 'traf'},
-    {text: 'Wir sind uns am Bahnhof über den Weg gelaufen.', highlight: 'über den Weg gelaufen'}
-  ],
-  'to apply (for)': [
-    {text: 'Sie bewarb sich um einen Praktikumsplatz.', highlight: 'bewarb sich'},
-    {text: 'Ich habe mich für einen Ferienjob beworben.', highlight: 'beworben'},
-    {text: 'Er bewirbt sich gerade um eine neue Stelle.', highlight: 'bewirbt sich'}
-  ],
-  'to make progress': [
-    {text: 'Du machst große Fortschritte in Englisch.', highlight: 'machst ... Fortschritte'},
-    {text: 'Sie hat in kurzer Zeit Fortschritte gemacht.', highlight: 'Fortschritte gemacht'},
-    {text: 'Wir kommen mit unserem Projekt gut voran.', highlight: 'kommen ... voran'}
-  ],
-  'to be short of sth': [
-    {text: 'Wir haben heute nicht genug Zeit.', highlight: 'nicht genug Zeit'},
-    {text: 'Dem Team fehlen gerade zwei Spieler.', highlight: 'fehlen'},
-    {text: 'Ihnen ging während der Reise das Geld aus.', highlight: 'ging ... aus'}
-  ],
-  'to be stuck': [
-    {text: 'Unser Auto steckt im Schlamm fest.', highlight: 'steckt ... fest'},
-    {text: 'Ich bin bei der letzten Aufgabe nicht weitergekommen.', highlight: 'nicht weitergekommen'},
-    {text: 'Sie saßen wegen des Schnees fest.', highlight: 'saßen ... fest'}
-  ],
-  'to learn by heart': [
-    {text: 'Ich muss das Gedicht auswendig lernen.', highlight: 'auswendig lernen'},
-    {text: 'Sie hat ihre Rede auswendig gelernt.', highlight: 'auswendig gelernt'},
-    {text: 'Wir lernen die neuen Vokabeln auswendig.', highlight: 'auswendig'}
-  ],
-  'to head (for/to)': [
-    {text: 'Wir machten uns auf den Weg zur Küste.', highlight: 'machten uns auf den Weg'},
-    {text: 'Sie steuerten direkt auf den Bahnhof zu.', highlight: 'steuerten ... zu'},
-    {text: 'Die Wanderer machten sich früh auf den Weg.', highlight: 'machten sich ... auf den Weg'}
-  ]
-};
+    const patch = String.raw`
 
-const zunoGermanRotations = {};
+      /* ---------------------------------------
+         DEUTSCHE BEISPIELSÄTZE
+      --------------------------------------- */
 
-function getGermanExample(word) {
-  const examples = zunoGermanExamples[String(word.word).toLowerCase()];
-  if (!examples || !examples.length) return null;
+      const zunoGermanExamples = {
+        achieve: [
+          {text:'Sie erreichte ihr Ziel nach monatelangem Training.',highlight:'erreichte'},
+          {text:'Unser Team hat heute viel erreicht.',highlight:'erreicht'},
+          {text:'Mit Übung kannst du wirklich viel erreichen.',highlight:'erreichen'}
+        ],
+        'to overhear': [
+          {text:'Ich habe zufällig ein interessantes Gespräch mitgehört.',highlight:'mitgehört'},
+          {text:'Sie hörte die beiden über ihre Reise sprechen.',highlight:'hörte'},
+          {text:'Wir haben die Unterhaltung nebenan mitbekommen.',highlight:'mitbekommen'}
+        ],
+        'to immigrate': [
+          {text:'Ihre Großeltern wanderten in den 1950er-Jahren nach Australien ein.',highlight:'wanderten ... ein'},
+          {text:'Viele Menschen wandern aus verschiedenen Gründen ein.',highlight:'wandern ... ein'},
+          {text:'Die Familie ist vor vielen Jahren eingewandert.',highlight:'eingewandert'}
+        ],
+        'to emigrate': [
+          {text:'Sie wanderten aus Irland aus.',highlight:'wanderten ... aus'},
+          {text:'Seine Familie ist vor langer Zeit ausgewandert.',highlight:'ausgewandert'},
+          {text:'Immer mehr Menschen wandern aus ihrer Heimat aus.',highlight:'wandern ... aus'}
+        ],
+        'to communicate': [
+          {text:'Wir kommunizieren jeden Tag miteinander.',highlight:'kommunizieren'},
+          {text:'Sie kommunizierte problemlos auf Englisch.',highlight:'kommunizierte'},
+          {text:'Die beiden haben über das Internet kommuniziert.',highlight:'kommuniziert'}
+        ],
+        'to prevent': [
+          {text:'Ein Helm kann schwere Verletzungen verhindern.',highlight:'verhindern'},
+          {text:'Die Warnung verhinderte einen Unfall.',highlight:'verhinderte'},
+          {text:'Wir müssen verhindern, dass das wieder passiert.',highlight:'verhindern'}
+        ],
+        'to assist': [
+          {text:'Die Mitarbeiter halfen den Besuchern.',highlight:'halfen'},
+          {text:'Kannst du mir bitte helfen?',highlight:'helfen'},
+          {text:'Sie hat uns bei der Arbeit unterstützt.',highlight:'unterstützt'}
+        ],
+        'to settle': [
+          {text:'Die Familie ließ sich an der Küste nieder.',highlight:'ließ sich ... nieder'},
+          {text:'Sie haben sich in einer kleinen Stadt niedergelassen.',highlight:'niedergelassen'},
+          {text:'Nach ihrem Umzug ließen sie sich dort nieder.',highlight:'ließen sich ... nieder'}
+        ],
+        'to respect': [
+          {text:'Wir respektieren die Traditionen anderer Menschen.',highlight:'respektieren'},
+          {text:'Er respektierte ihre Entscheidung.',highlight:'respektierte'},
+          {text:'Man sollte andere Meinungen respektieren.',highlight:'respektieren'}
+        ],
+        'to distract': [
+          {text:'Das laute Geräusch lenkte mich vom Lernen ab.',highlight:'lenkte ... ab'},
+          {text:'Bitte lenk mich nicht ab!',highlight:'lenk ... ab'},
+          {text:'Sein Handy hat ihn ständig abgelenkt.',highlight:'abgelenkt'}
+        ],
+        'to glow': [
+          {text:'Die Sterne leuchteten hell am Himmel.',highlight:'leuchteten'},
+          {text:'Die Lampe glüht noch immer.',highlight:'glüht'},
+          {text:'Die Fenster leuchteten in der Dunkelheit.',highlight:'leuchteten'}
+        ],
+        'to sigh': [
+          {text:'Sie seufzte erleichtert.',highlight:'seufzte'},
+          {text:'Er hat tief geseufzt.',highlight:'geseufzt'},
+          {text:'Ich seufze manchmal, wenn ich gestresst bin.',highlight:'seufze'}
+        ],
+        'to sting': [
+          {text:'Eine Biene kann dich stechen.',highlight:'stechen'},
+          {text:'Mich hat gerade eine Mücke gestochen.',highlight:'gestochen'},
+          {text:'Die Qualle sticht, wenn man sie berührt.',highlight:'sticht'}
+        ],
+        'to succeed (in)': [
+          {text:'Sie schaffte es, den Wettbewerb zu gewinnen.',highlight:'schaffte es'},
+          {text:'Er hat es geschafft, die Aufgabe zu lösen.',highlight:'geschafft'},
+          {text:'Mit viel Übung wirst du erfolgreich sein.',highlight:'erfolgreich'}
+        ],
+        'to manage (to do sth)': [
+          {text:'Wir schafften es gerade noch, den Bus zu erreichen.',highlight:'schafften es'},
+          {text:'Sie hat es geschafft, das Problem zu lösen.',highlight:'geschafft'},
+          {text:'Kannst du das alleine schaffen?',highlight:'schaffen'}
+        ],
+        'to bump into sb': [
+          {text:'Ich bin gestern zufällig einem alten Freund begegnet.',highlight:'begegnet'},
+          {text:'Sie traf ihren Lehrer zufällig in der Stadt.',highlight:'traf'},
+          {text:'Wir sind uns am Bahnhof über den Weg gelaufen.',highlight:'über den Weg gelaufen'}
+        ],
+        'to apply (for)': [
+          {text:'Sie bewarb sich um einen Praktikumsplatz.',highlight:'bewarb sich'},
+          {text:'Ich habe mich für einen Ferienjob beworben.',highlight:'beworben'},
+          {text:'Er bewirbt sich gerade um eine neue Stelle.',highlight:'bewirbt sich'}
+        ],
+        'to make progress': [
+          {text:'Du machst große Fortschritte in Englisch.',highlight:'machst ... Fortschritte'},
+          {text:'Sie hat in kurzer Zeit Fortschritte gemacht.',highlight:'Fortschritte gemacht'},
+          {text:'Wir kommen mit unserem Projekt gut voran.',highlight:'kommen ... voran'}
+        ],
+        'to be short of sth': [
+          {text:'Wir haben heute nicht genug Zeit.',highlight:'nicht genug Zeit'},
+          {text:'Dem Team fehlen gerade zwei Spieler.',highlight:'fehlen'},
+          {text:'Ihnen ging während der Reise das Geld aus.',highlight:'ging ... aus'}
+        ],
+        'to be stuck': [
+          {text:'Unser Auto steckt im Schlamm fest.',highlight:'steckt ... fest'},
+          {text:'Ich bin bei der letzten Aufgabe nicht weitergekommen.',highlight:'nicht weitergekommen'},
+          {text:'Sie saßen wegen des Schnees fest.',highlight:'saßen ... fest'}
+        ],
+        'to learn by heart': [
+          {text:'Ich muss das Gedicht auswendig lernen.',highlight:'auswendig lernen'},
+          {text:'Sie hat ihre Rede auswendig gelernt.',highlight:'auswendig gelernt'},
+          {text:'Wir lernen die neuen Vokabeln auswendig.',highlight:'auswendig'}
+        ],
+        'to head (for/to)': [
+          {text:'Wir machten uns auf den Weg zur Küste.',highlight:'machten uns auf den Weg'},
+          {text:'Sie steuerten direkt auf den Bahnhof zu.',highlight:'steuerten ... zu'},
+          {text:'Die Wanderer machten sich früh auf den Weg.',highlight:'machten sich ... auf den Weg'}
+        ]
+      };
 
-  const key = String(word.word).toLowerCase();
-  const index = zunoGermanRotations[key] || 0;
-  zunoGermanRotations[key] = (index + 1) % examples.length;
+      const zunoGermanRotations = {};
 
-  return examples[index];
-}
+      function getGermanExample(word) {
+        const key = String(word.word).toLowerCase();
+        const examples = zunoGermanExamples[key];
 
-function zunoHighlightExample(sentence, highlight) {
-  const escaped = escapeHTML(sentence);
-  const parts = String(highlight).split(' ... ').map(part =>
-    part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  );
+        if (!examples || !examples.length) return null;
 
-  let pattern = parts.join('.*?');
+        const index = zunoGermanRotations[key] || 0;
+        zunoGermanRotations[key] = (index + 1) % examples.length;
 
-  try {
-    return escaped.replace(
-      new RegExp('(' + pattern + ')', 'i'),
-      '<mark>$1</mark>'
-    );
-  } catch (error) {
-    return escaped;
-  }
-}
+        return examples[index];
+      }
+
+      function zunoEscapeHTML(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function zunoHighlightExample(sentence, highlight) {
+        const escaped = zunoEscapeHTML(sentence);
+        const parts = String(highlight).split(' ... ').map(part =>
+          part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        );
+
+        const pattern = parts.join('.*?');
+
+        try {
+          return escaped.replace(
+            new RegExp('(' + pattern + ')', 'i'),
+            '<mark>$1</mark>'
+          );
+        } catch (error) {
+          return escaped;
+        }
+      }
 
 
       /* ---------------------------------------
-         BEISPIELSÄTZE
+         ENGLISCHE BEISPIELSÄTZE
       --------------------------------------- */
 
       const zunoCuratedExamples = {
@@ -455,10 +470,10 @@ function zunoHighlightExample(sentence, highlight) {
         return String(value || '')
           .toLowerCase()
           .normalize('NFD')
-          .replace(/[\\u0300-\\u036f]/g, '')
+          .replace(/[\u0300-\u036f]/g, '')
           .replace(/[’‘]/g, "'")
-          .replace(/[^a-z0-9\\s']/g, ' ')
-          .replace(/\\s+/g, ' ')
+          .replace(/[^a-z0-9\s']/g, ' ')
+          .replace(/\s+/g, ' ')
           .trim();
       }
 
@@ -498,7 +513,6 @@ function zunoHighlightExample(sentence, highlight) {
           : word.translation;
 
         const submitted = zunoNormalize(answer);
-
         if (!submitted) return false;
 
         const accepted = String(expected)
@@ -506,6 +520,12 @@ function zunoHighlightExample(sentence, highlight) {
           .map(zunoNormalize)
           .filter(Boolean);
 
+        // Multiple Choice: keine Tippfehler-Toleranz.
+        if (state.currentMode === 'choice') {
+          return accepted.includes(submitted);
+        }
+
+        // Texteingabe: kleine Tippfehler tolerieren.
         if (accepted.some(item => zunoCloseEnough(submitted, item))) {
           return true;
         }
@@ -529,80 +549,8 @@ function zunoHighlightExample(sentence, highlight) {
          FRAGE ANZEIGEN
       --------------------------------------- */
 
-function renderQuestion() {
-  const word = state.session[state.index];
-  if (!word) return finishSession();
-
-  state.answered = false;
-
-  document.getElementById('questionCounter').textContent =
-    (state.index + 1) + ' / ' + state.session.length;
-
-  document.getElementById('lessonProgress').style.width =
-    (state.index / state.session.length * 100) + '%';
-
-  document.getElementById('feedbackArea').innerHTML = '';
-  document.getElementById('nextButton').classList.add('hidden');
-
-  const mode = getModes()[state.index % 3];
-  state.currentMode = mode;
-
-  const target = document.getElementById('targetWord');
-  const example = document.getElementById('exampleSentence');
-  const mascot = document.getElementById('exerciseMascot');
-
-  mascot.src = 'IMG_2558.png';
-
-  if (mode === 'reverse') {
-    document.getElementById('modeLabel').textContent =
-      word.language === 'fr'
-        ? 'Wie heißt das auf Französisch?'
-        : 'Wie heißt das auf Englisch?';
-
-    target.textContent = word.translation;
-
-    const germanExample = getGermanExample(word);
-
-    if (germanExample) {
-      example.innerHTML = zunoHighlightExample(
-        germanExample.text,
-        germanExample.highlight
-      );
-      example.classList.remove('hidden');
-    } else {
-      example.textContent = '';
-      example.classList.add('hidden');
-    }
-
-    mascot.src = 'IMG_2560.png';
-
-  } else {
-    document.getElementById('modeLabel').textContent =
-      mode === 'choice'
-        ? 'Wähle die richtige Übersetzung'
-        : 'Übersetze das Wort';
-
-    target.textContent = word.word;
-
-    const sentence = getExample(word.word);
-
-    if (sentence) {
-      example.innerHTML = highlightWord(sentence, word.word);
-      example.classList.remove('hidden');
-    } else {
-      example.textContent = '';
-      example.classList.add('hidden');
-    }
-
-    if (mode === 'choice') mascot.src = 'IMG_2560.png';
-  }
-
-  renderAnswerArea(word);
-  addDontKnowButton(word);
-}
-) {
+      function renderQuestion() {
         const word = state.session[state.index];
-
         if (!word) return finishSession();
 
         state.answered = false;
@@ -634,8 +582,20 @@ function renderQuestion() {
             'Wie heißt das auf ' + language + '?';
 
           target.textContent = word.translation;
-          example.classList.add('hidden');
-          example.textContent = '';
+
+          const germanExample = getGermanExample(word);
+
+          if (germanExample) {
+            example.innerHTML = zunoHighlightExample(
+              germanExample.text,
+              germanExample.highlight
+            );
+            example.classList.remove('hidden');
+          } else {
+            example.textContent = '';
+            example.classList.add('hidden');
+          }
+
           mascot.src = 'IMG_2560.png';
 
         } else {
@@ -662,8 +622,6 @@ function renderQuestion() {
         }
 
         renderAnswerArea(word);
-
-        /* Weiß-ich-nicht-Button ergänzen */
         addDontKnowButton(word);
       }
 
@@ -676,7 +634,6 @@ function renderQuestion() {
         const answerArea = document.getElementById('answerArea');
 
         if (!answerArea || state.answered) return;
-
         if (answerArea.querySelector('#zunoDontKnow')) return;
 
         const button = document.createElement('button');
@@ -705,19 +662,9 @@ function renderQuestion() {
 
           const currentWord = state.session[state.index];
 
-          /*
-            Die aktuelle Vokabel wird hinter zehn weitere
-            Vokabeln verschoben. Sind weniger als zehn
-            vorhanden, kommt sie ans Ende.
-          */
+          // Vokabel zehn Fragen später erneut abfragen.
           state.session.splice(state.index + 1, 0, currentWord);
 
-          /*
-            Eine leere Antwort löst die normale falsche
-            Antwort-Rückmeldung aus. Dadurch wird die
-            richtige Lösung angezeigt und der Fortschritt
-            wie bei einer falschen Antwort behandelt.
-          */
           checkAnswer('', currentWord);
         });
 
@@ -744,11 +691,6 @@ function renderQuestion() {
 
         const reverse = state.currentMode === 'reverse';
 
-        /*
-          Immer nur das sichtbare Wort sprechen.
-          Vorwärts: Fremdsprache.
-          Rückwärts: Deutsch.
-        */
         const text = reverse ? word.translation : word.word;
 
         const lang = reverse
@@ -768,7 +710,7 @@ function renderQuestion() {
             const prefix = lang.slice(0, 2).toLowerCase();
             const voices = window.speechSynthesis.getVoices();
 
-            let matching = voices.filter(voice =>
+            const matching = voices.filter(voice =>
               voice.lang &&
               voice.lang.toLowerCase().startsWith(prefix)
             );
