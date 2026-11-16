@@ -3,6 +3,8 @@
 ========================================= */
 
 (() => {
+  "use strict";
+
   const COST = 50;
 
   const games = [
@@ -47,7 +49,15 @@
   let activeCleanup = null;
 
   function getStreak() {
-    return window.ZUNOProgress.streak;
+    return window.ZUNOProgress
+      ? Number(window.ZUNOProgress.streak) || 0
+      : 0;
+  }
+
+  function getXP() {
+    return window.ZUNOProgress
+      ? Number(window.ZUNOProgress.xp) || 0
+      : 0;
   }
 
   function isUnlocked(game) {
@@ -73,8 +83,11 @@
             unlocked
               ? `
                 <span class="zuno-game-lock">
-                  ${game.unlock === 0 ? "Immer verfügbar" : `${game.unlock}-Tage-Streak erreicht`}
+                  ${game.unlock === 0
+                    ? "Immer verfügbar"
+                    : `${game.unlock}-Tage-Streak erreicht`}
                 </span>
+
                 <button type="button" data-game="${game.id}">
                   Spielen · ${COST} XP
                 </button>
@@ -83,6 +96,7 @@
                 <span class="zuno-game-lock">
                   🔒 Ab ${game.unlock}-Tage-Streak
                 </span>
+
                 <button type="button" disabled>
                   Noch gesperrt
                 </button>
@@ -100,13 +114,18 @@
 
     const xp = document.getElementById("zunoArcadeXP");
 
-    if (xp) xp.textContent = state.xp;
+    if (xp) {
+      xp.textContent = getXP();
+    }
   }
 
   function createArcade() {
     const dashboard = document.getElementById("dashboard");
 
-    if (!dashboard || document.getElementById("zunoArcade")) {
+    if (!dashboard) return;
+
+    if (document.getElementById("zunoArcade")) {
+      renderGameCards();
       return;
     }
 
@@ -118,13 +137,14 @@
       <div class="zuno-arcade-heading">
         <div>
           <h2>🎮 ZUNO Arcade</h2>
+
           <p class="zuno-arcade-subtitle">
             Gib deine verdienten XP für Spielrunden aus.
           </p>
         </div>
 
         <span class="pill">
-          ⚡ <span id="zunoArcadeXP">${state.xp}</span> XP
+          ⚡ <span id="zunoArcadeXP">${getXP()}</span> XP
         </span>
       </div>
 
@@ -164,7 +184,14 @@
       <div class="zuno-game-window">
         <div class="zuno-game-top">
           <h2>${game.icon} ${game.title}</h2>
-          <button class="zuno-game-close" type="button">✕</button>
+
+          <button
+            class="zuno-game-close"
+            type="button"
+            aria-label="Spiel schließen"
+          >
+            ✕
+          </button>
         </div>
 
         <div class="zuno-game-stage" id="zunoGameStage">
@@ -178,7 +205,9 @@
         <div class="zuno-game-info" id="zunoGameInfo"></div>
 
         <div class="zuno-game-actions" id="zunoGameActions">
-          <button type="button" id="zunoStartGame">Spiel starten</button>
+          <button type="button" id="zunoStartGame">
+            Spiel starten · ${COST} XP
+          </button>
         </div>
 
         <p class="zuno-game-message" id="zunoGameMessage"></p>
@@ -191,10 +220,14 @@
       .addEventListener("click", closeGame);
 
     overlay.addEventListener("click", event => {
-      if (event.target === overlay) closeGame();
+      if (event.target === overlay) {
+        closeGame();
+      }
     });
 
-    bindAction("zunoStartGame", () => startGame(game.id));
+    bindAction("zunoStartGame", () => {
+      startGame(game.id);
+    });
   }
 
   function openGame(id) {
@@ -211,22 +244,34 @@
 
   function message(text) {
     const element = document.getElementById("zunoGameMessage");
-    if (element) element.textContent = text;
+
+    if (element) {
+      element.textContent = text;
+    }
   }
 
   function info(text) {
     const element = document.getElementById("zunoGameInfo");
-    if (element) element.textContent = text;
+
+    if (element) {
+      element.textContent = text;
+    }
   }
 
   function actions(html) {
     const element = document.getElementById("zunoGameActions");
-    if (element) element.innerHTML = html;
+
+    if (element) {
+      element.innerHTML = html;
+    }
   }
 
   function bindAction(id, callback) {
     const button = document.getElementById(id);
-    if (button) button.addEventListener("click", callback);
+
+    if (button) {
+      button.addEventListener("click", callback);
+    }
   }
 
   /* =========================================
@@ -238,9 +283,19 @@
 
     if (!game || !isUnlocked(game)) return;
 
+    if (
+      !window.ZUNOProgress ||
+      typeof window.ZUNOProgress.startGame !== "function"
+    ) {
+      message("Das XP-System konnte nicht geladen werden.");
+      return;
+    }
+
     stopActiveGame();
 
+    // XP werden bei jedem neuen Start abgezogen.
     if (!window.ZUNOProgress.startGame()) {
+      renderGameCards();
       return;
     }
 
@@ -259,7 +314,12 @@
 
   function startSnake() {
     stage().innerHTML = `
-      <canvas id="zunoSnakeCanvas" width="320" height="320"></canvas>
+      <canvas
+        id="zunoSnakeCanvas"
+        width="320"
+        height="320"
+        aria-label="Snake-Spiel"
+      ></canvas>
     `;
 
     actions(`
@@ -276,28 +336,52 @@
     const cells = 20;
 
     let snake = [
-      {x: 8, y: 10},
-      {x: 7, y: 10},
-      {x: 6, y: 10}
+      { x: 8, y: 10 },
+      { x: 7, y: 10 },
+      { x: 6, y: 10 }
     ];
 
-    let direction = {x: 1, y: 0};
-    let nextDirection = {...direction};
+    let direction = { x: 1, y: 0 };
+    let nextDirection = { ...direction };
     let food = randomFood();
+
     let score = 0;
     let running = true;
-    let interval;
+    let interval = null;
 
     function randomFood() {
-      return {
-        x: Math.floor(Math.random() * cells),
-        y: Math.floor(Math.random() * cells)
-      };
+      const available = [];
+
+      for (let x = 0; x < cells; x++) {
+        for (let y = 0; y < cells; y++) {
+          const occupied = snake.some(part =>
+            part.x === x && part.y === y
+          );
+
+          if (!occupied) {
+            available.push({ x, y });
+          }
+        }
+      }
+
+      if (available.length === 0) {
+        return null;
+      }
+
+      return available[
+        Math.floor(Math.random() * available.length)
+      ];
     }
 
     function changeDirection(x, y) {
-      if (x === -direction.x && y === -direction.y) return;
-      nextDirection = {x, y};
+      if (
+        x === -direction.x &&
+        y === -direction.y
+      ) {
+        return;
+      }
+
+      nextDirection = { x, y };
     }
 
     function keyHandler(event) {
@@ -329,11 +413,20 @@
       ctx.fillStyle = "#242238";
       ctx.fillRect(0, 0, 320, 320);
 
-      ctx.fillStyle = "#ff8b68";
-      ctx.fillRect(food.x * size, food.y * size, size - 2, size - 2);
+      if (food) {
+        ctx.fillStyle = "#ff8b68";
+
+        ctx.fillRect(
+          food.x * size,
+          food.y * size,
+          size - 2,
+          size - 2
+        );
+      }
 
       snake.forEach((part, index) => {
-        ctx.fillStyle = index === 0 ? "#c9ef9a" : "#8fcf79";
+        ctx.fillStyle =
+          index === 0 ? "#c9ef9a" : "#8fcf79";
 
         ctx.fillRect(
           part.x * size,
@@ -352,7 +445,11 @@
 
       message(`Game Over! Du hast ${score} Punkte erreicht.`);
 
-      actions(`<button id="snakeAgain">Nochmal spielen · 50 XP</button>`);
+      actions(`
+        <button id="snakeAgain">
+          Nochmal spielen · 50 XP
+        </button>
+      `);
 
       bindAction("snakeAgain", () => startGame("snake"));
     }
@@ -360,12 +457,17 @@
     function tick() {
       if (!running) return;
 
-      direction = {...nextDirection};
+      direction = { ...nextDirection };
 
       const head = {
         x: snake[0].x + direction.x,
         y: snake[0].y + direction.y
       };
+
+      const eating =
+        food &&
+        head.x === food.x &&
+        head.y === food.y;
 
       const hitWall =
         head.x < 0 ||
@@ -373,8 +475,15 @@
         head.x >= cells ||
         head.y >= cells;
 
-      const hitSnake = snake.some(part =>
-        part.x === head.x && part.y === head.y
+      // Wenn der Schwanz sich bewegt, darf das neue Kopfstück
+      // auf das bisherige Schwanzfeld ziehen.
+      const bodyToCheck = eating
+        ? snake
+        : snake.slice(0, -1);
+
+      const hitSnake = bodyToCheck.some(part =>
+        part.x === head.x &&
+        part.y === head.y
       );
 
       if (hitWall || hitSnake) {
@@ -384,10 +493,16 @@
 
       snake.unshift(head);
 
-      if (head.x === food.x && head.y === food.y) {
+      if (eating) {
         score++;
         food = randomFood();
+
         info(`Punkte: ${score}`);
+
+        if (!food) {
+          endGame();
+          return;
+        }
       } else {
         snake.pop();
       }
@@ -413,15 +528,20 @@
 
   function startReaction() {
     stage().innerHTML = `
-      <button id="reactionButton" style="
-        width:100%;
-        min-height:220px;
-        border-radius:18px;
-        background:#d8d4e8;
-        color:#302b43;
-        font-size:1.5rem;
-        font-weight:900;
-      ">
+      <button
+        id="reactionButton"
+        style="
+          width:100%;
+          min-height:220px;
+          border-radius:18px;
+          border:0;
+          background:#d8d4e8;
+          color:#302b43;
+          font-size:1.5rem;
+          font-weight:900;
+          cursor:pointer;
+        "
+      >
         Warte auf GRÜN ...
       </button>
     `;
@@ -433,8 +553,8 @@
 
     let finished = false;
     let ready = false;
-    let timeout;
-    let startTime;
+    let timeout = null;
+    let startTime = 0;
 
     timeout = setTimeout(() => {
       if (finished) return;
@@ -456,15 +576,24 @@
         button.textContent = "Zu früh! Versuch es nochmal.";
         button.style.background = "#ffd8d5";
 
-        actions(`<button id="reactionAgain">Nochmal · 50 XP</button>`);
-        bindAction("reactionAgain", () => startGame("reaction"));
+        actions(`
+          <button id="reactionAgain">
+            Nochmal · 50 XP
+          </button>
+        `);
+
+        bindAction("reactionAgain", () => {
+          startGame("reaction");
+        });
 
         return;
       }
 
       finished = true;
 
-      const reaction = Math.round(performance.now() - startTime);
+      const reaction = Math.round(
+        performance.now() - startTime
+      );
 
       button.textContent = `${reaction} ms`;
       button.style.background = "#c9ef9a";
@@ -479,8 +608,15 @@
             : "Da geht noch was!"
       );
 
-      actions(`<button id="reactionAgain">Nochmal · 50 XP</button>`);
-      bindAction("reactionAgain", () => startGame("reaction"));
+      actions(`
+        <button id="reactionAgain">
+          Nochmal · 50 XP
+        </button>
+      `);
+
+      bindAction("reactionAgain", () => {
+        startGame("reaction");
+      });
     });
 
     activeCleanup = () => {
@@ -500,7 +636,7 @@
     ];
 
     const cards = [...symbols, ...symbols]
-      .sort(() => Math.random() - .5);
+      .sort(() => Math.random() - 0.5);
 
     let first = null;
     let locked = false;
@@ -509,7 +645,10 @@
     let timeout = null;
 
     stage().innerHTML = `
-      <div class="zuno-memory-grid" id="memoryGrid"></div>
+      <div
+        class="zuno-memory-grid"
+        id="memoryGrid"
+      ></div>
     `;
 
     const grid = document.getElementById("memoryGrid");
@@ -520,16 +659,20 @@
       button.className = "zuno-memory-card";
       button.textContent = "?";
       button.dataset.symbol = symbol;
+      button.setAttribute("aria-label", "Verdeckte Karte");
 
       button.addEventListener("click", () => {
         if (
           locked ||
           button.classList.contains("matched") ||
           button.classList.contains("revealed")
-        ) return;
+        ) {
+          return;
+        }
 
         button.textContent = symbol;
         button.classList.add("revealed");
+        button.setAttribute("aria-label", symbol);
 
         if (!first) {
           first = button;
@@ -548,6 +691,9 @@
           first.classList.remove("revealed");
           second.classList.remove("revealed");
 
+          first.disabled = true;
+          second.disabled = true;
+
           first = null;
           locked = false;
           matches++;
@@ -555,18 +701,39 @@
           info(`${matches} / 8 Paare · ${moves} Züge`);
 
           if (matches === 8) {
-            message(`Geschafft! Du hast ${moves} Züge gebraucht.`);
+            message(
+              `Geschafft! Du hast ${moves} Züge gebraucht.`
+            );
 
-            actions(`<button id="memoryAgain">Nochmal · 50 XP</button>`);
-            bindAction("memoryAgain", () => startGame("memory"));
+            actions(`
+              <button id="memoryAgain">
+                Nochmal · 50 XP
+              </button>
+            `);
+
+            bindAction("memoryAgain", () => {
+              startGame("memory");
+            });
           }
         } else {
+          const previous = first;
+
           timeout = setTimeout(() => {
-            first.textContent = "?";
+            previous.textContent = "?";
             second.textContent = "?";
 
-            first.classList.remove("revealed");
+            previous.classList.remove("revealed");
             second.classList.remove("revealed");
+
+            previous.setAttribute(
+              "aria-label",
+              "Verdeckte Karte"
+            );
+
+            second.setAttribute(
+              "aria-label",
+              "Verdeckte Karte"
+            );
 
             first = null;
             locked = false;
@@ -590,11 +757,21 @@
 
   function startRunner() {
     stage().innerHTML = `
-      <canvas id="runnerCanvas" width="360" height="220"></canvas>
-      <p class="small">Tippe oder drücke Leertaste zum Springen.</p>
+      <canvas
+        id="runnerCanvas"
+        width="360"
+        height="220"
+        aria-label="Endless Runner"
+      ></canvas>
+
+      <p class="small">
+        Tippe oder drücke Leertaste zum Springen.
+      </p>
     `;
 
-    actions(`<button id="runnerJump">Springen</button>`);
+    actions(`
+      <button id="runnerJump">Springen</button>
+    `);
 
     const canvas = document.getElementById("runnerCanvas");
     const ctx = canvas.getContext("2d");
@@ -604,14 +781,19 @@
     let obstacleX = 360;
     let score = 0;
     let running = true;
-    let interval;
+    let interval = null;
 
     function jump() {
-      if (playerY >= 164) velocity = -10;
+      if (playerY >= 164) {
+        velocity = -10;
+      }
     }
 
     function keyHandler(event) {
-      if (event.code === "Space" || event.code === "ArrowUp") {
+      if (
+        event.code === "Space" ||
+        event.code === "ArrowUp"
+      ) {
         event.preventDefault();
         jump();
       }
@@ -619,6 +801,7 @@
 
     window.addEventListener("keydown", keyHandler);
     canvas.addEventListener("pointerdown", jump);
+
     bindAction("runnerJump", jump);
 
     function draw() {
@@ -647,14 +830,21 @@
 
       message(`Game Over! Score: ${score}`);
 
-      actions(`<button id="runnerAgain">Nochmal · 50 XP</button>`);
-      bindAction("runnerAgain", () => startGame("runner"));
+      actions(`
+        <button id="runnerAgain">
+          Nochmal · 50 XP
+        </button>
+      `);
+
+      bindAction("runnerAgain", () => {
+        startGame("runner");
+      });
     }
 
     function tick() {
       if (!running) return;
 
-      velocity += .55;
+      velocity += 0.55;
       playerY += velocity;
 
       if (playerY > 165) {
@@ -667,6 +857,7 @@
       if (obstacleX < -25) {
         obstacleX = 360 + Math.random() * 100;
         score++;
+
         info(`Score: ${score}`);
       }
 
@@ -677,7 +868,9 @@
 
       draw();
 
-      if (collision) endGame();
+      if (collision) {
+        endGame();
+      }
     }
 
     info("Score: 0");
@@ -688,6 +881,7 @@
     activeCleanup = () => {
       running = false;
       clearInterval(interval);
+
       window.removeEventListener("keydown", keyHandler);
       canvas.removeEventListener("pointerdown", jump);
     };
@@ -699,8 +893,16 @@
 
   function startAdventure() {
     stage().innerHTML = `
-      <canvas id="adventureCanvas" width="360" height="240"></canvas>
-      <p class="small">← → bewegen · ↑ springen</p>
+      <canvas
+        id="adventureCanvas"
+        width="360"
+        height="240"
+        aria-label="Mini Adventure"
+      ></canvas>
+
+      <p class="small">
+        ← → bewegen · ↑ springen
+      </p>
     `;
 
     actions(`
@@ -718,42 +920,62 @@
       vx: 0,
       vy: 0,
       width: 22,
-      height: 28
+      height: 28,
+      grounded: false
     };
 
     const platforms = [
-      {x: 0, y: 210, w: 360, h: 30},
-      {x: 95, y: 165, w: 65, h: 10},
-      {x: 205, y: 125, w: 65, h: 10}
+      { x: 0, y: 210, w: 360, h: 30 },
+      { x: 95, y: 165, w: 65, h: 10 },
+      { x: 205, y: 125, w: 65, h: 10 }
     ];
 
     const coins = [
-      {x: 120, y: 140, taken: false},
-      {x: 230, y: 100, taken: false},
-      {x: 320, y: 185, taken: false}
+      { x: 120, y: 140, taken: false },
+      { x: 230, y: 100, taken: false },
+      { x: 320, y: 185, taken: false }
     ];
 
     const hazards = [
-      {x: 175, y: 194, w: 20, h: 16}
+      { x: 175, y: 194, w: 20, h: 16 }
     ];
 
     const keys = {};
 
+    let jumpRequested = false;
     let score = 0;
     let running = true;
-    let interval;
+    let interval = null;
+
+    function jump() {
+      if (player.grounded) {
+        player.vy = -10;
+        player.grounded = false;
+      }
+    }
 
     function keyDown(event) {
-      keys[event.key] = true;
-
-      if ([
+      const movementKeys = [
         "ArrowLeft",
         "ArrowRight",
         "ArrowUp",
         " "
-      ].includes(event.key)) {
+      ];
+
+      if (movementKeys.includes(event.key)) {
         event.preventDefault();
       }
+
+      if (
+        (event.key === "ArrowUp" ||
+          event.key === "w" ||
+          event.key === " ") &&
+        !keys[event.key]
+      ) {
+        jumpRequested = true;
+      }
+
+      keys[event.key] = true;
     }
 
     function keyUp(event) {
@@ -771,9 +993,7 @@
       player.x = Math.min(338, player.x + 18);
     });
 
-    bindAction("adventureJump", () => {
-      if (player.y >= 180) player.vy = -10;
-    });
+    bindAction("adventureJump", jump);
 
     function draw() {
       ctx.fillStyle = "#242238";
@@ -833,34 +1053,50 @@
 
       message(text);
 
-      actions(`<button id="adventureAgain">Nochmal · 50 XP</button>`);
-      bindAction("adventureAgain", () => startGame("adventure"));
+      actions(`
+        <button id="adventureAgain">
+          Nochmal · 50 XP
+        </button>
+      `);
+
+      bindAction("adventureAgain", () => {
+        startGame("adventure");
+      });
     }
 
     function tick() {
       if (!running) return;
 
-      const previousBottom = player.y + player.height;
+      const previousBottom =
+        player.y + player.height;
 
-      if (keys.ArrowLeft || keys.a) player.vx = -3;
-      else if (keys.ArrowRight || keys.d) player.vx = 3;
-      else player.vx = 0;
+      if (keys.ArrowLeft || keys.a) {
+        player.vx = -3;
+      } else if (keys.ArrowRight || keys.d) {
+        player.vx = 3;
+      } else {
+        player.vx = 0;
+      }
 
-      if (
-        (keys.ArrowUp || keys.w || keys[" "]) &&
-        player.y >= 180
-      ) {
-        player.vy = -10;
+      if (jumpRequested) {
+        jump();
+        jumpRequested = false;
       }
 
       player.x += player.vx;
       player.y += player.vy;
-      player.vy += .5;
 
-      player.x = Math.max(0, Math.min(338, player.x));
+      player.vy += 0.5;
+      player.grounded = false;
+
+      player.x = Math.max(
+        0,
+        Math.min(338, player.x)
+      );
 
       platforms.forEach(platform => {
-        const newBottom = player.y + player.height;
+        const newBottom =
+          player.y + player.height;
 
         const overlaps =
           player.x + player.width > platform.x &&
@@ -874,6 +1110,7 @@
         ) {
           player.y = platform.y - player.height;
           player.vy = 0;
+          player.grounded = true;
         }
       });
 
@@ -885,6 +1122,7 @@
         ) {
           coin.taken = true;
           score++;
+
           info(`Münzen: ${score} / 3`);
         }
       });
@@ -892,7 +1130,8 @@
       const hitHazard = hazards.some(hazard =>
         player.x + player.width > hazard.x &&
         player.x < hazard.x + hazard.w &&
-        player.y + player.height > hazard.y
+        player.y + player.height > hazard.y &&
+        player.y < hazard.y + hazard.h
       );
 
       if (hitHazard || player.y > 260) {
@@ -916,28 +1155,30 @@
     activeCleanup = () => {
       running = false;
       clearInterval(interval);
+
       window.removeEventListener("keydown", keyDown);
       window.removeEventListener("keyup", keyUp);
     };
   }
 
   /* =========================================
-     ANIMATIONEN
+     RICHTIGE ANTWORT ANIMIEREN
   ========================================= */
 
   window.showCorrectAnimation = function() {
-    const card = document.querySelector(".word-card");
+    const target =
+      document.querySelector(".word-card");
 
-    if (!card) return;
+    if (!target) return;
 
-    card.classList.remove("zuno-correct");
+    target.classList.remove("zuno-correct");
 
-    void card.offsetWidth;
+    void target.offsetWidth;
 
-    card.classList.add("zuno-correct");
+    target.classList.add("zuno-correct");
 
     setTimeout(() => {
-      card.classList.remove("zuno-correct");
+      target.classList.remove("zuno-correct");
     }, 600);
   };
 
@@ -948,18 +1189,31 @@
   function initialize() {
     createArcade();
 
-    const originalUpdateDashboard = window.updateDashboard;
+    const originalUpdateDashboard =
+      window.updateDashboard;
 
-    if (typeof originalUpdateDashboard === "function") {
-      window.updateDashboard = function(...args) {
-        const result = originalUpdateDashboard.apply(this, args);
+    if (
+      typeof originalUpdateDashboard === "function" &&
+      !originalUpdateDashboard._zunoWrapped
+    ) {
+      const wrappedUpdateDashboard = function(...args) {
+        const result =
+          originalUpdateDashboard.apply(this, args);
 
+        // Falls das Dashboard neu aufgebaut wurde,
+        // wird die Arcade-Sektion wieder eingefügt.
+        createArcade();
         renderGameCards();
 
         return result;
       };
+
+      wrappedUpdateDashboard._zunoWrapped = true;
+
+      window.updateDashboard = wrappedUpdateDashboard;
     }
 
+    createArcade();
     renderGameCards();
   }
 
