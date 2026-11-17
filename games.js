@@ -1,11 +1,13 @@
 /* =========================================
    ZUNO ARCADE
+   Enhanced Games Edition
 ========================================= */
 
 (() => {
   "use strict";
 
   const COST = 50;
+  const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const games = [
     {
@@ -48,6 +50,158 @@
   let overlay = null;
   let activeCleanup = null;
 
+  /* =========================================
+     STYLES
+  ========================================= */
+
+  function injectGameStyles() {
+    if (document.getElementById("zunoEnhancedGameStyles")) return;
+
+    const style = document.createElement("style");
+    style.id = "zunoEnhancedGameStyles";
+
+    style.textContent = `
+      .zuno-game-stage {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .zuno-game-stage canvas {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto;
+        border-radius: 14px;
+        touch-action: none;
+      }
+
+      .zuno-countdown {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        pointer-events: none;
+        background: rgba(20, 18, 38, .55);
+        backdrop-filter: blur(5px);
+        color: white;
+        font-size: clamp(4rem, 18vw, 7rem);
+        font-weight: 1000;
+        animation: zunoCountdownIn .45s ease both;
+      }
+
+      .zuno-countdown.go {
+        color: #c9ef9a;
+      }
+
+      @keyframes zunoCountdownIn {
+        0% { transform: scale(.35); opacity: 0; }
+        65% { transform: scale(1.12); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+
+      .zuno-game-stage.zuno-game-shake {
+        animation: zunoGameShake .35s ease;
+      }
+
+      @keyframes zunoGameShake {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-7px); }
+        40% { transform: translateX(7px); }
+        60% { transform: translateX(-4px); }
+        80% { transform: translateX(4px); }
+      }
+
+      .zuno-game-stage.zuno-game-success {
+        animation: zunoGameSuccess .55s ease;
+      }
+
+      @keyframes zunoGameSuccess {
+        0% { transform: scale(1); }
+        45% { transform: scale(1.035); }
+        100% { transform: scale(1); }
+      }
+
+      .zuno-game-message {
+        font-weight: 800;
+      }
+
+      .zuno-memory-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 9px;
+        max-width: 340px;
+        margin: 0 auto;
+        perspective: 800px;
+      }
+
+      .zuno-memory-card {
+        aspect-ratio: 1;
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 12px;
+        background: #39344f;
+        color: white;
+        font-size: clamp(1.3rem, 6vw, 2rem);
+        font-weight: 900;
+        cursor: pointer;
+        transition: transform .25s ease, background .25s ease;
+        transform-style: preserve-3d;
+      }
+
+      .zuno-memory-card.revealed {
+        background: #c9ef9a;
+        color: #242238;
+        transform: rotateY(180deg);
+      }
+
+      .zuno-memory-card.matched {
+        background: #8fcf79;
+        color: #172313;
+        transform: scale(.94);
+        opacity: .8;
+      }
+
+      .zuno-memory-card:disabled {
+        cursor: default;
+      }
+
+      .zuno-reaction-ready {
+        animation: zunoReactionPulse .65s ease-in-out infinite alternate;
+      }
+
+      @keyframes zunoReactionPulse {
+        from { box-shadow: 0 0 0 rgba(155,225,127,0); }
+        to { box-shadow: 0 0 35px rgba(155,225,127,.65); }
+      }
+
+      .zuno-game-stage button:focus-visible,
+      .zuno-game-actions button:focus-visible {
+        outline: 3px solid #c9ef9a;
+        outline-offset: 3px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .zuno-countdown,
+        .zuno-game-stage.zuno-game-shake,
+        .zuno-game-stage.zuno-game-success,
+        .zuno-reaction-ready {
+          animation: none !important;
+        }
+
+        .zuno-memory-card {
+          transition: none !important;
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  /* =========================================
+     HELPERS
+  ========================================= */
+
   function getStreak() {
     return window.ZUNOProgress
       ? Number(window.ZUNOProgress.streak) || 0
@@ -64,8 +218,73 @@
     return getStreak() >= game.unlock;
   }
 
+  function randomBetween(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function animateStage(className) {
+    const element = stage();
+    if (!element || REDUCED_MOTION) return;
+
+    element.classList.remove(className);
+    void element.offsetWidth;
+    element.classList.add(className);
+
+    setTimeout(() => {
+      element.classList.remove(className);
+    }, 600);
+  }
+
+  function createParticles(canvas, x, y, color, amount = 10) {
+    if (REDUCED_MOTION) return;
+
+    const ctx = canvas.getContext("2d");
+    const particles = [];
+
+    for (let i = 0; i < amount; i++) {
+      particles.push({
+        x,
+        y,
+        vx: randomBetween(-3, 3),
+        vy: randomBetween(-3, 3),
+        life: 1,
+        size: randomBetween(2, 5)
+      });
+    }
+
+    let frame = 0;
+
+    function animate() {
+      if (!canvas.isConnected || frame++ > 24) return;
+
+      particles.forEach(particle => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.life -= .04;
+
+        ctx.globalAlpha = Math.max(0, particle.life);
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(
+          particle.x,
+          particle.y,
+          particle.size,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+      });
+
+      ctx.globalAlpha = 1;
+
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  }
+
   /* =========================================
-     ARCADE ERSTELLEN UND AKTUALISIEREN
+     ARCADE ERSTELLEN
   ========================================= */
 
   function createArcade() {
@@ -263,6 +482,54 @@
   }
 
   /* =========================================
+     COUNTDOWN
+  ========================================= */
+
+  function startCountdown(onFinish) {
+    let count = 3;
+    let stopped = false;
+    let timeout = null;
+
+    const element = document.createElement("div");
+    element.className = "zuno-countdown";
+    element.textContent = count;
+
+    stage().appendChild(element);
+
+    function next() {
+      if (stopped || !element.isConnected) return;
+
+      if (count > 1) {
+        count--;
+        element.textContent = count;
+
+        element.style.animation = "none";
+        void element.offsetWidth;
+        element.style.animation = "";
+
+        timeout = setTimeout(next, 1000);
+      } else {
+        element.textContent = "GO!";
+        element.classList.add("go");
+
+        timeout = setTimeout(() => {
+          element.remove();
+
+          if (!stopped) onFinish();
+        }, 500);
+      }
+    }
+
+    timeout = setTimeout(next, 1000);
+
+    return () => {
+      stopped = true;
+      clearTimeout(timeout);
+      element.remove();
+    };
+  }
+
+  /* =========================================
      JEDE RUNDE KOSTET 50 XP
   ========================================= */
 
@@ -303,14 +570,12 @@
     stage().innerHTML = `
       <canvas id="zunoSnakeCanvas" width="320" height="320"
         aria-label="Snake-Spiel"></canvas>
+      <p class="small">Wische in die gewünschte Richtung.</p>
     `;
 
-    actions(`
-      <button class="secondary" id="snakeUp">↑</button>
-      <button class="secondary" id="snakeLeft">←</button>
-      <button class="secondary" id="snakeDown">↓</button>
-      <button class="secondary" id="snakeRight">→</button>
-    `);
+    // Keine Pfeilbuttons mehr. Desktop nutzt die Tastatur,
+    // Touchgeräte nutzen Wischgesten.
+    actions("");
 
     const canvas = document.getElementById("zunoSnakeCanvas");
     const ctx = canvas.getContext("2d");
@@ -329,8 +594,10 @@
     let food = randomFood();
 
     let score = 0;
-    let running = true;
+    let running = false;
     let interval = null;
+    let countdownCleanup = null;
+    let touchStart = null;
 
     function randomFood() {
       const available = [];
@@ -371,26 +638,105 @@
       }
     }
 
+    function touchStartHandler(event) {
+      if (!running || !event.changedTouches.length) return;
+
+      const touch = event.changedTouches[0];
+
+      touchStart = {
+        x: touch.clientX,
+        y: touch.clientY
+      };
+    }
+
+    function touchEndHandler(event) {
+      if (!running || !touchStart || !event.changedTouches.length) return;
+
+      const touch = event.changedTouches[0];
+
+      const dx = touch.clientX - touchStart.x;
+      const dy = touch.clientY - touchStart.y;
+
+      touchStart = null;
+
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 18) return;
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        changeDirection(dx > 0 ? 1 : -1, 0);
+      } else {
+        changeDirection(0, dy > 0 ? 1 : -1);
+      }
+    }
+
     window.addEventListener("keydown", keyHandler);
 
-    bindAction("snakeUp", () => changeDirection(0, -1));
-    bindAction("snakeDown", () => changeDirection(0, 1));
-    bindAction("snakeLeft", () => changeDirection(-1, 0));
-    bindAction("snakeRight", () => changeDirection(1, 0));
+    canvas.addEventListener("touchstart", touchStartHandler, {
+      passive: true
+    });
+
+    canvas.addEventListener("touchend", touchEndHandler, {
+      passive: true
+    });
+
+    canvas.addEventListener("contextmenu", event => {
+      event.preventDefault();
+    });
 
     function draw() {
       ctx.fillStyle = "#242238";
       ctx.fillRect(0, 0, 320, 320);
 
+      // Grid
+      ctx.strokeStyle = "rgba(255,255,255,.035)";
+      ctx.lineWidth = 1;
+
+      for (let i = 0; i <= cells; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * size, 0);
+        ctx.lineTo(i * size, 320);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(0, i * size);
+        ctx.lineTo(320, i * size);
+        ctx.stroke();
+      }
+
       if (food) {
+        ctx.shadowColor = "#ff8b68";
+        ctx.shadowBlur = 12;
         ctx.fillStyle = "#ff8b68";
-        ctx.fillRect(food.x * size, food.y * size, size - 2, size - 2);
+        ctx.beginPath();
+        ctx.arc(
+          food.x * size + size / 2,
+          food.y * size + size / 2,
+          6,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+        ctx.shadowBlur = 0;
       }
 
       snake.forEach((part, index) => {
-        ctx.fillStyle = index === 0 ? "#c9ef9a" : "#8fcf79";
-        ctx.fillRect(part.x * size, part.y * size, size - 2, size - 2);
+        const inset = index === 0 ? 1 : 2;
+
+        ctx.fillStyle = index === 0 ? "#d9ffa7" : "#8fcf79";
+        ctx.shadowColor = index === 0 ? "#c9ef9a" : "transparent";
+        ctx.shadowBlur = index === 0 ? 8 : 0;
+
+        ctx.beginPath();
+        ctx.roundRect(
+          part.x * size + inset,
+          part.y * size + inset,
+          size - inset * 2,
+          size - inset * 2,
+          5
+        );
+        ctx.fill();
       });
+
+      ctx.shadowBlur = 0;
     }
 
     function endGame() {
@@ -398,6 +744,8 @@
 
       running = false;
       clearInterval(interval);
+
+      animateStage("zuno-game-shake");
 
       message(`Game Over! Du hast ${score} Punkte erreicht.`);
 
@@ -440,10 +788,28 @@
       if (eating) {
         score++;
         food = randomFood();
+
         info(`Punkte: ${score}`);
+        createParticles(
+          canvas,
+          head.x * size + size / 2,
+          head.y * size + size / 2,
+          "#c9ef9a",
+          12
+        );
 
         if (!food) {
-          endGame();
+          running = false;
+          clearInterval(interval);
+
+          message("Perfekt! Du hast das ganze Feld gefüllt! 🏆");
+          animateStage("zuno-game-success");
+
+          actions(`
+            <button id="snakeAgain">Nochmal spielen · 50 XP</button>
+          `);
+
+          bindAction("snakeAgain", () => startGame("snake"));
           return;
         }
       } else {
@@ -453,15 +819,29 @@
       draw();
     }
 
+    function begin() {
+      if (!canvas.isConnected) return;
+
+      running = true;
+      interval = setInterval(tick, 125);
+      draw();
+    }
+
     info("Punkte: 0");
     draw();
 
-    interval = setInterval(tick, 125);
+    countdownCleanup = startCountdown(begin);
 
     activeCleanup = () => {
       running = false;
       clearInterval(interval);
+
+      if (countdownCleanup) countdownCleanup();
+
       window.removeEventListener("keydown", keyHandler);
+
+      canvas.removeEventListener("touchstart", touchStartHandler);
+      canvas.removeEventListener("touchend", touchEndHandler);
     };
   }
 
@@ -481,6 +861,7 @@
         font-size:1.5rem;
         font-weight:900;
         cursor:pointer;
+        transition:background .2s, transform .2s;
       ">Warte auf GRÜN ...</button>
     `;
 
@@ -499,7 +880,10 @@
 
       ready = true;
       startTime = performance.now();
+
       button.style.background = "#9be17f";
+      button.style.transform = "scale(1.025)";
+      button.classList.add("zuno-reaction-ready");
       button.textContent = "JETZT KLICKEN!";
     }, 1200 + Math.random() * 2800);
 
@@ -512,8 +896,14 @@
 
         button.textContent = "Zu früh! Versuch es nochmal.";
         button.style.background = "#ffd8d5";
+        button.style.transform = "scale(.98)";
 
-        actions(`<button id="reactionAgain">Nochmal · 50 XP</button>`);
+        animateStage("zuno-game-shake");
+
+        actions(`
+          <button id="reactionAgain">Nochmal · 50 XP</button>
+        `);
+
         bindAction("reactionAgain", () => startGame("reaction"));
         return;
       }
@@ -522,8 +912,10 @@
 
       const reaction = Math.round(performance.now() - startTime);
 
+      button.classList.remove("zuno-reaction-ready");
       button.textContent = `${reaction} ms`;
       button.style.background = "#c9ef9a";
+      button.style.transform = "scale(1.04)";
 
       info(`Deine Zeit: ${reaction} ms`);
 
@@ -535,7 +927,12 @@
             : "Da geht noch was!"
       );
 
-      actions(`<button id="reactionAgain">Nochmal · 50 XP</button>`);
+      animateStage("zuno-game-success");
+
+      actions(`
+        <button id="reactionAgain">Nochmal · 50 XP</button>
+      `);
+
       bindAction("reactionAgain", () => startGame("reaction"));
     });
 
@@ -564,7 +961,9 @@
     let moves = 0;
     let timeout = null;
 
-    stage().innerHTML = `<div class="zuno-memory-grid" id="memoryGrid"></div>`;
+    stage().innerHTML = `
+      <div class="zuno-memory-grid" id="memoryGrid"></div>
+    `;
 
     const grid = document.getElementById("memoryGrid");
 
@@ -607,6 +1006,14 @@
           first.disabled = true;
           second.disabled = true;
 
+          createParticles(
+            canvasForMemory(),
+            second.offsetLeft + second.offsetWidth / 2,
+            second.offsetTop + second.offsetHeight / 2,
+            "#c9ef9a",
+            8
+          );
+
           first = null;
           locked = false;
           matches++;
@@ -615,8 +1022,12 @@
 
           if (matches === 8) {
             message(`Geschafft! Du hast ${moves} Züge gebraucht.`);
+            animateStage("zuno-game-success");
 
-            actions(`<button id="memoryAgain">Nochmal · 50 XP</button>`);
+            actions(`
+              <button id="memoryAgain">Nochmal · 50 XP</button>
+            `);
+
             bindAction("memoryAgain", () => startGame("memory"));
           }
         } else {
@@ -640,6 +1051,20 @@
 
       grid.appendChild(button);
     });
+
+    function canvasForMemory() {
+      // Ein unsichtbares Canvas für die Partikel-Effekte.
+      let canvas = document.getElementById("zunoMemoryParticles");
+
+      if (!canvas) {
+        canvas = document.createElement("canvas");
+        canvas.id = "zunoMemoryParticles";
+        canvas.width = 1;
+        canvas.height = 1;
+      }
+
+      return canvas;
+    }
 
     info("0 / 8 Paare · 0 Züge");
 
@@ -668,6 +1093,7 @@
     let score = 0;
     let running = true;
     let interval = null;
+    let frame = 0;
 
     function jump() {
       if (playerY >= 164) velocity = -10;
@@ -688,14 +1114,33 @@
       ctx.fillStyle = "#242238";
       ctx.fillRect(0, 0, 360, 220);
 
+      // Hintergrundbewegung
+      ctx.fillStyle = "rgba(255,255,255,.08)";
+
+      for (let i = 0; i < 6; i++) {
+        const x = ((i * 85 - frame * 1.2) % 420 + 420) % 420;
+
+        ctx.beginPath();
+        ctx.arc(x, 40 + (i % 3) * 18, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
       ctx.fillStyle = "#c9ef9a";
       ctx.fillRect(0, 190, 360, 4);
 
-      ctx.fillStyle = "#8fcf79";
+      // Spieler
+      ctx.shadowColor = "#c9ef9a";
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = "#c9ef9a";
       ctx.fillRect(42, playerY, 28, 28);
+      ctx.shadowBlur = 0;
 
+      // Hindernis
+      ctx.shadowColor = "#ff8b68";
+      ctx.shadowBlur = 9;
       ctx.fillStyle = "#ff8b68";
       ctx.fillRect(obstacleX, 166, 22, 24);
+      ctx.shadowBlur = 0;
 
       ctx.fillStyle = "white";
       ctx.font = "16px sans-serif";
@@ -708,14 +1153,21 @@
       running = false;
       clearInterval(interval);
 
+      animateStage("zuno-game-shake");
+
       message(`Game Over! Score: ${score}`);
 
-      actions(`<button id="runnerAgain">Nochmal · 50 XP</button>`);
+      actions(`
+        <button id="runnerAgain">Nochmal · 50 XP</button>
+      `);
+
       bindAction("runnerAgain", () => startGame("runner"));
     }
 
     function tick() {
       if (!running) return;
+
+      frame++;
 
       velocity += .55;
       playerY += velocity;
@@ -793,9 +1245,9 @@
     ];
 
     const coins = [
-      { x: 120, y: 140, taken: false },
-      { x: 230, y: 100, taken: false },
-      { x: 320, y: 185, taken: false }
+      { x: 120, y: 140, taken: false, phase: 0 },
+      { x: 230, y: 100, taken: false, phase: 1 },
+      { x: 320, y: 185, taken: false, phase: 2 }
     ];
 
     const hazards = [
@@ -808,6 +1260,7 @@
     let score = 0;
     let running = true;
     let interval = null;
+    let frame = 0;
 
     function jump() {
       if (player.grounded) {
@@ -852,50 +1305,85 @@
       ctx.fillStyle = "#242238";
       ctx.fillRect(0, 0, 360, 240);
 
-      ctx.fillStyle = "#8fcf79";
+      // Kleine Sterne
+      ctx.fillStyle = "rgba(255,255,255,.55)";
 
+      for (let i = 0; i < 14; i++) {
+        const x = (i * 31 + frame * .12) % 360;
+        const y = (i * 17) % 100;
+
+        ctx.fillRect(x, y, 2, 2);
+      }
+
+      // Plattformen
       platforms.forEach(platform => {
+        ctx.fillStyle = "#8fcf79";
         ctx.fillRect(platform.x, platform.y, platform.w, platform.h);
+
+        ctx.fillStyle = "#c9ef9a";
+        ctx.fillRect(platform.x, platform.y, platform.w, 3);
       });
 
-      ctx.fillStyle = "#ffcf57";
-
+      // Münzen
       coins.forEach(coin => {
-        if (!coin.taken) {
-          ctx.beginPath();
-          ctx.arc(coin.x, coin.y, 7, 0, Math.PI * 2);
-          ctx.fill();
-        }
+        if (coin.taken) return;
+
+        const bob = REDUCED_MOTION
+          ? 0
+          : Math.sin(frame * .12 + coin.phase) * 3;
+
+        ctx.shadowColor = "#ffcf57";
+        ctx.shadowBlur = 12;
+        ctx.fillStyle = "#ffcf57";
+
+        ctx.beginPath();
+        ctx.arc(coin.x, coin.y + bob, 7, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
       });
 
-      ctx.fillStyle = "#ff8b68";
-
+      // Hindernisse
       hazards.forEach(hazard => {
+        ctx.fillStyle = "#ff8b68";
         ctx.fillRect(hazard.x, hazard.y, hazard.w, hazard.h);
       });
 
+      // Spieler
+      ctx.shadowColor = "#c9ef9a";
+      ctx.shadowBlur = 10;
       ctx.fillStyle = "#c9ef9a";
       ctx.fillRect(player.x, player.y, player.width, player.height);
+      ctx.shadowBlur = 0;
 
       ctx.fillStyle = "white";
       ctx.font = "14px sans-serif";
       ctx.fillText(`Münzen: ${score} / 3`, 12, 22);
     }
 
-    function endGame(text) {
+    function endGame(text, success = false) {
       if (!running) return;
 
       running = false;
       clearInterval(interval);
 
+      animateStage(
+        success ? "zuno-game-success" : "zuno-game-shake"
+      );
+
       message(text);
 
-      actions(`<button id="adventureAgain">Nochmal · 50 XP</button>`);
+      actions(`
+        <button id="adventureAgain">Nochmal · 50 XP</button>
+      `);
+
       bindAction("adventureAgain", () => startGame("adventure"));
     }
 
     function tick() {
       if (!running) return;
+
+      frame++;
 
       const previousBottom = player.y + player.height;
 
@@ -946,7 +1434,16 @@
         ) {
           coin.taken = true;
           score++;
+
           info(`Münzen: ${score} / 3`);
+
+          createParticles(
+            canvas,
+            coin.x,
+            coin.y,
+            "#ffcf57",
+            12
+          );
         }
       });
 
@@ -963,7 +1460,7 @@
       }
 
       if (score === 3) {
-        endGame("Level geschafft! Alle Münzen gesammelt! 🏆");
+        endGame("Level geschafft! Alle Münzen gesammelt! 🏆", true);
         return;
       }
 
@@ -1006,6 +1503,7 @@
   ========================================= */
 
   function initialize() {
+    injectGameStyles();
     createArcade();
 
     const originalUpdateDashboard = window.updateDashboard;
