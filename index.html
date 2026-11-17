@@ -98,7 +98,7 @@
       "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
 
     const moduleBase = "./";
-    const version = "?v=9";
+    const version = "?v=10";
 
     const status = document.getElementById("status");
 
@@ -162,9 +162,11 @@
 
       /* AUTOMATISCHES BEENDEN DER LETZTEN FRAGE */
       const answerPattern =
-        /      if \(isCorrect\) \{[\s\S]*?\n      \}\n    \}\n\n    function recordSchoolAnswer/;
+        /      updateDashboard\(\);\n\n      if \(isCorrect\) \{[\s\S]*?\n      \}\n    \}\n\n    function recordSchoolAnswer/;
 
-      const fixedAnswerFlow = `      const isLastQuestion =
+      const fixedAnswerFlow = `      updateDashboard();
+
+      const isLastQuestion =
         state.index === state.session.length - 1;
 
       if (isLastQuestion) {
