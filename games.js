@@ -1,3 +1,4 @@
+
 /* =========================================
    ZUNO ARCADE
    Enhanced Games Edition
@@ -8,47 +9,65 @@
 
   const COST = 50;
   const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const HIGH_SCORE_KEY = "zunoArcadeHighscores";
 
   const games = [
-    {
-      id: "snake",
-      title: "Snake",
-      icon: "🐍",
-      description: "Sammle Punkte und werde immer länger.",
-      unlock: 0
-    },
-    {
-      id: "reaction",
-      title: "Reaction Rush",
-      icon: "⚡",
-      description: "Wie schnell kannst du reagieren?",
-      unlock: 0
-    },
-    {
-      id: "memory",
-      title: "Memory",
-      icon: "🧠",
-      description: "Finde alle passenden Kartenpaare.",
-      unlock: 0
-    },
-    {
-      id: "runner",
-      title: "Endless Runner",
-      icon: "🏃",
-      description: "Springe über Hindernisse und halte durch.",
-      unlock: 3
-    },
-    {
-      id: "adventure",
-      title: "Mini Adventure",
-      icon: "🗺️",
-      description: "Erkunde Level, sammle Münzen und weiche Hindernissen aus.",
-      unlock: 5
-    }
+    { id: "snake", title: "Snake", icon: "🐍", description: "Sammle Punkte und werde immer länger.", unlock: 0 },
+    { id: "reaction", title: "Reaction Rush", icon: "⚡", description: "Wie schnell kannst du reagieren?", unlock: 0 },
+    { id: "memory", title: "Memory", icon: "🧠", description: "Finde alle passenden Kartenpaare.", unlock: 0 },
+    { id: "runner", title: "Endless Runner", icon: "🏃", description: "Springe über Hindernisse und halte durch.", unlock: 3 },
+    { id: "adventure", title: "Mini Adventure", icon: "🗺️", description: "Erkunde Level, sammle Münzen und weiche Hindernissen aus.", unlock: 5 }
   ];
 
   let overlay = null;
   let activeCleanup = null;
+
+  /* =========================================
+     HIGHSCORES
+  ========================================= */
+
+  function getHighscores() {
+    try {
+      return JSON.parse(localStorage.getItem(HIGH_SCORE_KEY)) || {};
+    } catch {
+      return {};
+    }
+  }
+
+  function getHighscore(id) {
+    return getHighscores()[id] ?? null;
+  }
+
+  function saveHighscore(id, value, lowerIsBetter = false) {
+    const scores = getHighscores();
+    const previous = scores[id];
+
+    const isNewRecord =
+      previous === undefined ||
+      (lowerIsBetter ? value < previous : value > previous);
+
+    if (isNewRecord) {
+      scores[id] = value;
+
+      try {
+        localStorage.setItem(HIGH_SCORE_KEY, JSON.stringify(scores));
+      } catch (error) {
+        console.warn("ZUNO: Highscore konnte nicht gespeichert werden.", error);
+      }
+    }
+
+    return isNewRecord;
+  }
+
+  function highscoreLabel(id) {
+    const score = getHighscore(id);
+
+    if (score === null) return "Noch kein Rekord";
+    if (id === "reaction") return `Bestzeit: ${score} ms`;
+    if (id === "memory") return `Rekord: ${score} Züge`;
+
+    return `Rekord: ${score} Punkte`;
+  }
 
   /* =========================================
      STYLES
@@ -61,9 +80,18 @@
     style.id = "zunoEnhancedGameStyles";
 
     style.textContent = `
+      .zuno-game-overlay {
+        overscroll-behavior: contain;
+      }
+
+      .zuno-game-window {
+        overscroll-behavior: contain;
+      }
+
       .zuno-game-stage {
         position: relative;
         overflow: hidden;
+        overscroll-behavior: contain;
       }
 
       .zuno-game-stage canvas {
@@ -73,6 +101,21 @@
         margin: 0 auto;
         border-radius: 14px;
         touch-action: none;
+      }
+
+      /* Snake: feste Touch-Fläche */
+      .zuno-snake-stage {
+        touch-action: none !important;
+        overscroll-behavior: none !important;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+      }
+
+      .zuno-snake-stage canvas {
+        touch-action: none !important;
+        -webkit-user-select: none;
+        user-select: none;
       }
 
       .zuno-countdown {
@@ -127,52 +170,200 @@
         font-weight: 800;
       }
 
+      .zuno-game-record {
+        color: #c9ef9a;
+        font-weight: 900;
+        animation: zunoRecordPop .5s ease both;
+      }
+
+      @keyframes zunoRecordPop {
+        0% { transform: scale(.7); opacity: 0; }
+        65% { transform: scale(1.12); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+
+      /* MEMORY */
+
       .zuno-memory-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 9px;
         max-width: 340px;
         margin: 0 auto;
-        perspective: 800px;
+        perspective: 1000px;
       }
 
       .zuno-memory-card {
+        position: relative;
         aspect-ratio: 1;
+        padding: 0;
         border: 1px solid rgba(255,255,255,.12);
         border-radius: 12px;
-        background: #39344f;
+        background: transparent;
         color: white;
         font-size: clamp(1.3rem, 6vw, 2rem);
         font-weight: 900;
         cursor: pointer;
-        transition: transform .25s ease, background .25s ease;
         transform-style: preserve-3d;
+        transition: transform .45s cubic-bezier(.2,.8,.2,1);
       }
 
-      .zuno-memory-card.revealed {
+      .zuno-memory-card::before,
+      .zuno-memory-card::after {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: inherit;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+      }
+
+      .zuno-memory-card::before {
+        content: "?";
+        background: #39344f;
+        color: white;
+      }
+
+      .zuno-memory-card::after {
+        content: attr(data-symbol);
         background: #c9ef9a;
         color: #242238;
         transform: rotateY(180deg);
       }
 
+      .zuno-memory-card.revealed {
+        transform: rotateY(180deg);
+      }
+
       .zuno-memory-card.matched {
+        transform: rotateY(180deg) scale(.92);
+        opacity: .82;
+        animation: zunoMemoryMatch .45s ease both;
+      }
+
+      @keyframes zunoMemoryMatch {
+        0% { transform: rotateY(180deg) scale(1); }
+        45% { transform: rotateY(180deg) scale(1.12); }
+        100% { transform: rotateY(180deg) scale(.92); }
+      }
+
+      .zuno-memory-card.matched::after {
         background: #8fcf79;
-        color: #172313;
-        transform: scale(.94);
-        opacity: .8;
+        box-shadow:
+          inset 0 0 0 2px rgba(255,255,255,.3),
+          0 0 18px rgba(155,225,127,.45);
       }
 
       .zuno-memory-card:disabled {
         cursor: default;
       }
 
-      .zuno-reaction-ready {
-        animation: zunoReactionPulse .65s ease-in-out infinite alternate;
+      /* REACTION RUSH */
+
+      .zuno-reaction-button {
+        position: relative;
+        width: 100%;
+        min-height: 220px;
+        overflow: hidden;
+        border-radius: 18px;
+        border: 0;
+        background: #39344f;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 900;
+        cursor: pointer;
+        transition: background .25s, transform .25s, box-shadow .25s;
+      }
+
+      .zuno-reaction-button.waiting {
+        background: #514966;
+      }
+
+      .zuno-reaction-button.ready {
+        background: #9be17f;
+        color: #172313;
+        transform: scale(1.025);
+        box-shadow:
+          0 0 0 5px rgba(155,225,127,.15),
+          0 0 45px rgba(155,225,127,.7);
+        animation: zunoReactionPulse .55s ease-in-out infinite alternate;
+      }
+
+      .zuno-reaction-button.too-early {
+        background: #ffaaa3;
+        color: #421c22;
+        animation: zunoReactionWrong .35s ease;
+      }
+
+      .zuno-reaction-button.result {
+        background: #c9ef9a;
+        color: #172313;
+        animation: zunoReactionResult .45s ease;
       }
 
       @keyframes zunoReactionPulse {
-        from { box-shadow: 0 0 0 rgba(155,225,127,0); }
-        to { box-shadow: 0 0 35px rgba(155,225,127,.65); }
+        from { box-shadow: 0 0 12px rgba(155,225,127,.3); }
+        to { box-shadow: 0 0 45px rgba(155,225,127,.8); }
+      }
+
+      @keyframes zunoReactionWrong {
+        0%,100% { transform: translateX(0); }
+        25% { transform: translateX(-8px); }
+        50% { transform: translateX(8px); }
+        75% { transform: translateX(-4px); }
+      }
+
+      @keyframes zunoReactionResult {
+        0% { transform: scale(.92); }
+        65% { transform: scale(1.06); }
+        100% { transform: scale(1); }
+      }
+
+      .zuno-reaction-count {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(4rem, 18vw, 6rem);
+        font-weight: 1000;
+        color: white;
+        background: rgba(20,18,38,.5);
+        pointer-events: none;
+        animation: zunoCountdownIn .4s ease both;
+      }
+
+      .zuno-reaction-count.go {
+        color: #c9ef9a;
+      }
+
+      .zuno-stage-particles {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .zuno-stage-particle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #c9ef9a;
+        animation: zunoMemoryParticle .75s ease-out forwards;
+      }
+
+      @keyframes zunoMemoryParticle {
+        from {
+          opacity: 1;
+          transform: translate(0,0) scale(1);
+        }
+        to {
+          opacity: 0;
+          transform: translate(var(--particle-x),var(--particle-y)) scale(.1);
+        }
       }
 
       .zuno-game-stage button:focus-visible,
@@ -185,11 +376,12 @@
         .zuno-countdown,
         .zuno-game-stage.zuno-game-shake,
         .zuno-game-stage.zuno-game-success,
-        .zuno-reaction-ready {
+        .zuno-reaction-button,
+        .zuno-memory-card,
+        .zuno-memory-card.matched,
+        .zuno-stage-particle,
+        .zuno-game-record {
           animation: none !important;
-        }
-
-        .zuno-memory-card {
           transition: none !important;
         }
       }
@@ -230,13 +422,36 @@
     void element.offsetWidth;
     element.classList.add(className);
 
-    setTimeout(() => {
-      element.classList.remove(className);
-    }, 600);
+    setTimeout(() => element.classList.remove(className), 600);
+  }
+
+  function showStageParticles(x, y, amount = 14) {
+    const element = stage();
+    if (!element || REDUCED_MOTION) return;
+
+    const layer = document.createElement("div");
+    layer.className = "zuno-stage-particles";
+    element.appendChild(layer);
+
+    const rect = element.getBoundingClientRect();
+
+    for (let i = 0; i < amount; i++) {
+      const particle = document.createElement("span");
+      particle.className = "zuno-stage-particle";
+
+      particle.style.left = `${x - rect.left}px`;
+      particle.style.top = `${y - rect.top}px`;
+      particle.style.setProperty("--particle-x", `${randomBetween(-65,65)}px`);
+      particle.style.setProperty("--particle-y", `${randomBetween(-65,65)}px`);
+
+      layer.appendChild(particle);
+    }
+
+    setTimeout(() => layer.remove(), 850);
   }
 
   function createParticles(canvas, x, y, color, amount = 10) {
-    if (REDUCED_MOTION) return;
+    if (REDUCED_MOTION || !canvas || !canvas.isConnected) return;
 
     const ctx = canvas.getContext("2d");
     const particles = [];
@@ -257,6 +472,8 @@
     function animate() {
       if (!canvas.isConnected || frame++ > 24) return;
 
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       particles.forEach(particle => {
         particle.x += particle.vx;
         particle.y += particle.vy;
@@ -265,22 +482,25 @@
         ctx.globalAlpha = Math.max(0, particle.life);
         ctx.fillStyle = color;
         ctx.beginPath();
-        ctx.arc(
-          particle.x,
-          particle.y,
-          particle.size,
-          0,
-          Math.PI * 2
-        );
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fill();
       });
 
       ctx.globalAlpha = 1;
-
       requestAnimationFrame(animate);
     }
 
     requestAnimationFrame(animate);
+  }
+
+  function updateRecordMessage(isRecord) {
+    if (!isRecord) return;
+
+    const element = document.getElementById("zunoGameMessage");
+    if (!element) return;
+
+    element.textContent += " 🏆 Neuer Rekord!";
+    element.classList.add("zuno-game-record");
   }
 
   /* =========================================
@@ -289,7 +509,6 @@
 
   function createArcade() {
     const arcadePage = document.getElementById("arcadePage");
-
     if (!arcadePage) return;
 
     let arcade = document.getElementById("zunoArcade");
@@ -323,7 +542,6 @@
 
   function renderGameCards() {
     const grid = document.getElementById("zunoGameGrid");
-
     if (!grid) return;
 
     grid.innerHTML = games.map(game => {
@@ -334,42 +552,28 @@
           <div class="zuno-game-icon">${game.icon}</div>
           <h3>${game.title}</h3>
           <p>${game.description}</p>
-
+          <span class="zuno-game-lock">
+            ${unlocked
+              ? (game.unlock === 0
+                ? "Immer verfügbar"
+                : `${game.unlock}-Tage-Streak erreicht`)
+              : `🔒 Ab ${game.unlock}-Tage-Streak`}
+          </span>
+          <p class="zuno-game-highscore">${highscoreLabel(game.id)}</p>
           ${
             unlocked
-              ? `
-                <span class="zuno-game-lock">
-                  ${game.unlock === 0
-                    ? "Immer verfügbar"
-                    : `${game.unlock}-Tage-Streak erreicht`}
-                </span>
-
-                <button type="button" data-game="${game.id}">
-                  Spielen · ${COST} XP
-                </button>
-              `
-              : `
-                <span class="zuno-game-lock">
-                  🔒 Ab ${game.unlock}-Tage-Streak
-                </span>
-
-                <button type="button" disabled>
-                  Noch gesperrt
-                </button>
-              `
+              ? `<button type="button" data-game="${game.id}">Spielen · ${COST} XP</button>`
+              : `<button type="button" disabled>Noch gesperrt</button>`
           }
         </article>
       `;
     }).join("");
 
     grid.querySelectorAll("[data-game]").forEach(button => {
-      button.addEventListener("click", () => {
-        openGame(button.dataset.game);
-      });
+      button.addEventListener("click", () => openGame(button.dataset.game));
     });
 
     const xp = document.getElementById("zunoArcadeXP");
-
     if (xp) xp.textContent = getXP();
   }
 
@@ -407,14 +611,7 @@
       <div class="zuno-game-window">
         <div class="zuno-game-top">
           <h2>${game.icon} ${game.title}</h2>
-
-          <button
-            class="zuno-game-close"
-            type="button"
-            aria-label="Spiel schließen"
-          >
-            ✕
-          </button>
+          <button class="zuno-game-close" type="button" aria-label="Spiel schließen">✕</button>
         </div>
 
         <div class="zuno-game-stage" id="zunoGameStage">
@@ -422,17 +619,14 @@
             <h2>Bereit?</h2>
             <p>${game.description}</p>
             <p><strong>${COST} XP</strong> pro Spielrunde</p>
+            <p>${highscoreLabel(game.id)}</p>
           </div>
         </div>
 
         <div class="zuno-game-info" id="zunoGameInfo"></div>
-
         <div class="zuno-game-actions" id="zunoGameActions">
-          <button type="button" id="zunoStartGame">
-            Spiel starten · ${COST} XP
-          </button>
+          <button type="button" id="zunoStartGame">Spiel starten · ${COST} XP</button>
         </div>
-
         <p class="zuno-game-message" id="zunoGameMessage"></p>
       </div>
     `;
@@ -451,9 +645,7 @@
 
   function openGame(id) {
     const game = games.find(item => item.id === id);
-
     if (!game || !isUnlocked(game)) return;
-
     createOverlay(game);
   }
 
@@ -493,7 +685,6 @@
     const element = document.createElement("div");
     element.className = "zuno-countdown";
     element.textContent = count;
-
     stage().appendChild(element);
 
     function next() {
@@ -514,7 +705,6 @@
 
         timeout = setTimeout(() => {
           element.remove();
-
           if (!stopped) onFinish();
         }, 500);
       }
@@ -535,7 +725,6 @@
 
   function startGame(id) {
     const game = games.find(item => item.id === id);
-
     if (!game || !isUnlocked(game)) return;
 
     if (
@@ -567,14 +756,14 @@
   ========================================= */
 
   function startSnake() {
+    stage().classList.add("zuno-snake-stage");
+
     stage().innerHTML = `
       <canvas id="zunoSnakeCanvas" width="320" height="320"
         aria-label="Snake-Spiel"></canvas>
       <p class="small">Wische in die gewünschte Richtung.</p>
     `;
 
-    // Keine Pfeilbuttons mehr. Desktop nutzt die Tastatur,
-    // Touchgeräte nutzen Wischgesten.
     actions("");
 
     const canvas = document.getElementById("zunoSnakeCanvas");
@@ -591,8 +780,7 @@
 
     let direction = { x: 1, y: 0 };
     let nextDirection = { ...direction };
-    let food = randomFood();
-
+    let food = null;
     let score = 0;
     let running = false;
     let interval = null;
@@ -610,10 +798,12 @@
         }
       }
 
-      if (!available.length) return null;
-
-      return available[Math.floor(Math.random() * available.length)];
+      return available.length
+        ? available[Math.floor(Math.random() * available.length)]
+        : null;
     }
+
+    food = randomFood();
 
     function changeDirection(x, y) {
       if (x === -direction.x && y === -direction.y) return;
@@ -649,44 +839,52 @@
       };
     }
 
+    function touchMoveHandler(event) {
+      // Verhindert Scrollen und Verschieben beim Wischen.
+      if (running) event.preventDefault();
+    }
+
     function touchEndHandler(event) {
       if (!running || !touchStart || !event.changedTouches.length) return;
 
       const touch = event.changedTouches[0];
-
       const dx = touch.clientX - touchStart.x;
       const dy = touch.clientY - touchStart.y;
 
       touchStart = null;
 
-      if (Math.max(Math.abs(dx), Math.abs(dy)) < 18) return;
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
 
-      if (Math.abs(dx) > Math.abs(dy)) {
+      // Kleine und uneindeutige diagonale Wischer ignorieren.
+      const MIN_SWIPE = 24;
+      const AXIS_RATIO = 1.35;
+
+      if (Math.max(absX, absY) < MIN_SWIPE) return;
+
+      if (absX >= absY * AXIS_RATIO) {
         changeDirection(dx > 0 ? 1 : -1, 0);
-      } else {
+      } else if (absY >= absX * AXIS_RATIO) {
         changeDirection(0, dy > 0 ? 1 : -1);
       }
     }
 
     window.addEventListener("keydown", keyHandler);
 
-    canvas.addEventListener("touchstart", touchStartHandler, {
-      passive: true
-    });
+    canvas.addEventListener("touchstart", touchStartHandler, { passive: true });
+    canvas.addEventListener("touchmove", touchMoveHandler, { passive: false });
+    canvas.addEventListener("touchend", touchEndHandler, { passive: true });
 
-    canvas.addEventListener("touchend", touchEndHandler, {
-      passive: true
-    });
+    const preventGesture = event => event.preventDefault();
 
-    canvas.addEventListener("contextmenu", event => {
-      event.preventDefault();
-    });
+    canvas.addEventListener("gesturestart", preventGesture);
+    canvas.addEventListener("gesturechange", preventGesture);
+    canvas.addEventListener("gestureend", preventGesture);
 
     function draw() {
       ctx.fillStyle = "#242238";
       ctx.fillRect(0, 0, 320, 320);
 
-      // Grid
       ctx.strokeStyle = "rgba(255,255,255,.035)";
       ctx.lineWidth = 1;
 
@@ -745,14 +943,13 @@
       running = false;
       clearInterval(interval);
 
+      const isRecord = saveHighscore("snake", score);
+
       animateStage("zuno-game-shake");
-
       message(`Game Over! Du hast ${score} Punkte erreicht.`);
+      updateRecordMessage(isRecord);
 
-      actions(`
-        <button id="snakeAgain">Nochmal spielen · 50 XP</button>
-      `);
-
+      actions(`<button id="snakeAgain">Nochmal spielen · 50 XP</button>`);
       bindAction("snakeAgain", () => startGame("snake"));
     }
 
@@ -790,6 +987,7 @@
         food = randomFood();
 
         info(`Punkte: ${score}`);
+
         createParticles(
           canvas,
           head.x * size + size / 2,
@@ -802,13 +1000,13 @@
           running = false;
           clearInterval(interval);
 
+          const isRecord = saveHighscore("snake", score);
+
           message("Perfekt! Du hast das ganze Feld gefüllt! 🏆");
+          updateRecordMessage(isRecord);
           animateStage("zuno-game-success");
 
-          actions(`
-            <button id="snakeAgain">Nochmal spielen · 50 XP</button>
-          `);
-
+          actions(`<button id="snakeAgain">Nochmal spielen · 50 XP</button>`);
           bindAction("snakeAgain", () => startGame("snake"));
           return;
         }
@@ -841,7 +1039,14 @@
       window.removeEventListener("keydown", keyHandler);
 
       canvas.removeEventListener("touchstart", touchStartHandler);
+      canvas.removeEventListener("touchmove", touchMoveHandler);
       canvas.removeEventListener("touchend", touchEndHandler);
+
+      canvas.removeEventListener("gesturestart", preventGesture);
+      canvas.removeEventListener("gesturechange", preventGesture);
+      canvas.removeEventListener("gestureend", preventGesture);
+
+      stage()?.classList.remove("zuno-snake-stage");
     };
   }
 
@@ -851,18 +1056,9 @@
 
   function startReaction() {
     stage().innerHTML = `
-      <button id="reactionButton" style="
-        width:100%;
-        min-height:220px;
-        border-radius:18px;
-        border:0;
-        background:#d8d4e8;
-        color:#302b43;
-        font-size:1.5rem;
-        font-weight:900;
-        cursor:pointer;
-        transition:background .2s, transform .2s;
-      ">Warte auf GRÜN ...</button>
+      <button id="reactionButton" class="zuno-reaction-button">
+        Bereit?
+      </button>
     `;
 
     actions("");
@@ -872,50 +1068,79 @@
 
     let finished = false;
     let ready = false;
-    let timeout = null;
     let startTime = 0;
+    let randomTimeout = null;
+    let countdownTimeout = null;
+    let countdownValue = 3;
 
-    timeout = setTimeout(() => {
+    button.classList.add("waiting");
+
+    function showCountdown() {
       if (finished) return;
 
-      ready = true;
-      startTime = performance.now();
+      button.textContent = "Mach dich bereit ...";
 
-      button.style.background = "#9be17f";
-      button.style.transform = "scale(1.025)";
-      button.classList.add("zuno-reaction-ready");
-      button.textContent = "JETZT KLICKEN!";
-    }, 1200 + Math.random() * 2800);
+      const count = document.createElement("span");
+      count.className = "zuno-reaction-count";
+      count.textContent = countdownValue;
+      button.appendChild(count);
+
+      countdownTimeout = setTimeout(() => {
+        if (finished) return;
+
+        count.remove();
+
+        if (countdownValue > 1) {
+          countdownValue--;
+          showCountdown();
+        } else {
+          button.textContent = "Warte auf GRÜN ...";
+
+          randomTimeout = setTimeout(() => {
+            if (finished) return;
+
+            ready = true;
+            startTime = performance.now();
+
+            button.classList.remove("waiting");
+            button.classList.add("ready");
+            button.textContent = "JETZT KLICKEN!";
+          }, 1000 + Math.random() * 3000);
+        }
+      }, 850);
+    }
+
+    function showAgain() {
+      actions(`<button id="reactionAgain">Nochmal · 50 XP</button>`);
+      bindAction("reactionAgain", () => startGame("reaction"));
+    }
 
     button.addEventListener("click", () => {
       if (finished) return;
 
       if (!ready) {
         finished = true;
-        clearTimeout(timeout);
+        clearTimeout(randomTimeout);
+        clearTimeout(countdownTimeout);
 
-        button.textContent = "Zu früh! Versuch es nochmal.";
-        button.style.background = "#ffd8d5";
-        button.style.transform = "scale(.98)";
+        button.classList.remove("waiting");
+        button.classList.add("too-early");
+        button.textContent = "Zu früh!";
 
         animateStage("zuno-game-shake");
-
-        actions(`
-          <button id="reactionAgain">Nochmal · 50 XP</button>
-        `);
-
-        bindAction("reactionAgain", () => startGame("reaction"));
+        message("Du musst auf das grüne Signal warten.");
+        showAgain();
         return;
       }
 
       finished = true;
 
       const reaction = Math.round(performance.now() - startTime);
+      const isRecord = saveHighscore("reaction", reaction, true);
 
-      button.classList.remove("zuno-reaction-ready");
+      button.classList.remove("ready");
+      button.classList.add("result");
       button.textContent = `${reaction} ms`;
-      button.style.background = "#c9ef9a";
-      button.style.transform = "scale(1.04)";
 
       info(`Deine Zeit: ${reaction} ms`);
 
@@ -927,18 +1152,24 @@
             : "Da geht noch was!"
       );
 
+      updateRecordMessage(isRecord);
       animateStage("zuno-game-success");
 
-      actions(`
-        <button id="reactionAgain">Nochmal · 50 XP</button>
-      `);
+      const rect = button.getBoundingClientRect();
+      showStageParticles(
+        rect.left + rect.width / 2,
+        rect.top + rect.height / 2
+      );
 
-      bindAction("reactionAgain", () => startGame("reaction"));
+      showAgain();
     });
+
+    showCountdown();
 
     activeCleanup = () => {
       finished = true;
-      clearTimeout(timeout);
+      clearTimeout(randomTimeout);
+      clearTimeout(countdownTimeout);
     };
   }
 
@@ -967,11 +1198,23 @@
 
     const grid = document.getElementById("memoryGrid");
 
+    function makeMatchParticles(button) {
+      if (REDUCED_MOTION) return;
+
+      const rect = button.getBoundingClientRect();
+
+      showStageParticles(
+        rect.left + rect.width / 2,
+        rect.top + rect.height / 2,
+        12
+      );
+    }
+
     cards.forEach(symbol => {
       const button = document.createElement("button");
 
       button.className = "zuno-memory-card";
-      button.textContent = "?";
+      button.textContent = "";
       button.dataset.symbol = symbol;
       button.setAttribute("aria-label", "Verdeckte Karte");
 
@@ -982,7 +1225,6 @@
           button.classList.contains("revealed")
         ) return;
 
-        button.textContent = symbol;
         button.classList.add("revealed");
         button.setAttribute("aria-label", symbol);
 
@@ -1000,19 +1242,11 @@
           first.classList.add("matched");
           second.classList.add("matched");
 
-          first.classList.remove("revealed");
-          second.classList.remove("revealed");
-
           first.disabled = true;
           second.disabled = true;
 
-          createParticles(
-            canvasForMemory(),
-            second.offsetLeft + second.offsetWidth / 2,
-            second.offsetTop + second.offsetHeight / 2,
-            "#c9ef9a",
-            8
-          );
+          makeMatchParticles(first);
+          makeMatchParticles(second);
 
           first = null;
           locked = false;
@@ -1021,22 +1255,19 @@
           info(`${matches} / 8 Paare · ${moves} Züge`);
 
           if (matches === 8) {
+            const isRecord = saveHighscore("memory", moves, true);
+
             message(`Geschafft! Du hast ${moves} Züge gebraucht.`);
+            updateRecordMessage(isRecord);
             animateStage("zuno-game-success");
 
-            actions(`
-              <button id="memoryAgain">Nochmal · 50 XP</button>
-            `);
-
+            actions(`<button id="memoryAgain">Nochmal · 50 XP</button>`);
             bindAction("memoryAgain", () => startGame("memory"));
           }
         } else {
           const previous = first;
 
           timeout = setTimeout(() => {
-            previous.textContent = "?";
-            second.textContent = "?";
-
             previous.classList.remove("revealed");
             second.classList.remove("revealed");
 
@@ -1045,26 +1276,12 @@
 
             first = null;
             locked = false;
-          }, 750);
+          }, 850);
         }
       });
 
       grid.appendChild(button);
     });
-
-    function canvasForMemory() {
-      // Ein unsichtbares Canvas für die Partikel-Effekte.
-      let canvas = document.getElementById("zunoMemoryParticles");
-
-      if (!canvas) {
-        canvas = document.createElement("canvas");
-        canvas.id = "zunoMemoryParticles";
-        canvas.width = 1;
-        canvas.height = 1;
-      }
-
-      return canvas;
-    }
 
     info("0 / 8 Paare · 0 Züge");
 
@@ -1114,12 +1331,10 @@
       ctx.fillStyle = "#242238";
       ctx.fillRect(0, 0, 360, 220);
 
-      // Hintergrundbewegung
       ctx.fillStyle = "rgba(255,255,255,.08)";
 
       for (let i = 0; i < 6; i++) {
         const x = ((i * 85 - frame * 1.2) % 420 + 420) % 420;
-
         ctx.beginPath();
         ctx.arc(x, 40 + (i % 3) * 18, 2, 0, Math.PI * 2);
         ctx.fill();
@@ -1128,14 +1343,12 @@
       ctx.fillStyle = "#c9ef9a";
       ctx.fillRect(0, 190, 360, 4);
 
-      // Spieler
       ctx.shadowColor = "#c9ef9a";
       ctx.shadowBlur = 10;
       ctx.fillStyle = "#c9ef9a";
       ctx.fillRect(42, playerY, 28, 28);
       ctx.shadowBlur = 0;
 
-      // Hindernis
       ctx.shadowColor = "#ff8b68";
       ctx.shadowBlur = 9;
       ctx.fillStyle = "#ff8b68";
@@ -1153,14 +1366,13 @@
       running = false;
       clearInterval(interval);
 
+      const isRecord = saveHighscore("runner", score);
+
       animateStage("zuno-game-shake");
-
       message(`Game Over! Score: ${score}`);
+      updateRecordMessage(isRecord);
 
-      actions(`
-        <button id="runnerAgain">Nochmal · 50 XP</button>
-      `);
-
+      actions(`<button id="runnerAgain">Nochmal · 50 XP</button>`);
       bindAction("runnerAgain", () => startGame("runner"));
     }
 
@@ -1305,17 +1517,14 @@
       ctx.fillStyle = "#242238";
       ctx.fillRect(0, 0, 360, 240);
 
-      // Kleine Sterne
       ctx.fillStyle = "rgba(255,255,255,.55)";
 
       for (let i = 0; i < 14; i++) {
         const x = (i * 31 + frame * .12) % 360;
         const y = (i * 17) % 100;
-
         ctx.fillRect(x, y, 2, 2);
       }
 
-      // Plattformen
       platforms.forEach(platform => {
         ctx.fillStyle = "#8fcf79";
         ctx.fillRect(platform.x, platform.y, platform.w, platform.h);
@@ -1324,7 +1533,6 @@
         ctx.fillRect(platform.x, platform.y, platform.w, 3);
       });
 
-      // Münzen
       coins.forEach(coin => {
         if (coin.taken) return;
 
@@ -1343,13 +1551,11 @@
         ctx.shadowBlur = 0;
       });
 
-      // Hindernisse
       hazards.forEach(hazard => {
         ctx.fillStyle = "#ff8b68";
         ctx.fillRect(hazard.x, hazard.y, hazard.w, hazard.h);
       });
 
-      // Spieler
       ctx.shadowColor = "#c9ef9a";
       ctx.shadowBlur = 10;
       ctx.fillStyle = "#c9ef9a";
@@ -1367,16 +1573,13 @@
       running = false;
       clearInterval(interval);
 
-      animateStage(
-        success ? "zuno-game-success" : "zuno-game-shake"
-      );
+      const isRecord = saveHighscore("adventure", score);
 
+      animateStage(success ? "zuno-game-success" : "zuno-game-shake");
       message(text);
+      updateRecordMessage(isRecord);
 
-      actions(`
-        <button id="adventureAgain">Nochmal · 50 XP</button>
-      `);
-
+      actions(`<button id="adventureAgain">Nochmal · 50 XP</button>`);
       bindAction("adventureAgain", () => startGame("adventure"));
     }
 
@@ -1436,14 +1639,7 @@
           score++;
 
           info(`Münzen: ${score} / 3`);
-
-          createParticles(
-            canvas,
-            coin.x,
-            coin.y,
-            "#ffcf57",
-            12
-          );
+          createParticles(canvas, coin.x, coin.y, "#ffcf57", 12);
         }
       });
 
@@ -1486,16 +1682,13 @@
 
   window.showCorrectAnimation = function() {
     const target = document.querySelector(".word-card");
-
     if (!target) return;
 
     target.classList.remove("zuno-correct");
     void target.offsetWidth;
     target.classList.add("zuno-correct");
 
-    setTimeout(() => {
-      target.classList.remove("zuno-correct");
-    }, 600);
+    setTimeout(() => target.classList.remove("zuno-correct"), 600);
   };
 
   /* =========================================
@@ -1514,9 +1707,7 @@
     ) {
       const wrappedUpdateDashboard = function(...args) {
         const result = originalUpdateDashboard.apply(this, args);
-
         renderGameCards();
-
         return result;
       };
 
