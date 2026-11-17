@@ -1,14 +1,21 @@
 
 /* =========================================
    ZUNO AI
-   Answer Checker + Synonym Feedback
-   Version 2.1
+   Answer Checker + Shared Synonym Feedback
+   Version 2.2
 ========================================= */
 
 (() => {
   "use strict";
 
   const STORAGE_KEY = "zuno_ai_pending_synonyms_v1";
+
+  const SUPABASE_URL = "https://nmowzwrxcbvvzodmxlao.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_tMDQZ8FJgjtCbTHMxBvGEw_3Cuwymj-";
+  const SUPABASE_TABLE = "synonym_suggestions";
+
+  const approvedSynonyms = new Map();
+  const approvedTranslations = new Map();
 
   /* =========================================
      1. NORMALIZATION
@@ -255,8 +262,6 @@
     let phrase = normalize(word);
 
     phrase = phrase.replace(/^to\s+/, "");
-
-    // Convert usage notes into usable phrase parts.
     phrase = phrase.replace(/\s*\(\s*(for|to|in|from|at|on)\s*\)/g, " $1");
     phrase = phrase.replace(/\s*\(\+\s*-ing\)/g, "");
 
@@ -264,7 +269,6 @@
 
     if (!phrase) return unique(result);
 
-    // Handle "to be ..." phrases.
     if (phrase.startsWith("be ")) {
       const remainder = phrase.slice(3);
 
@@ -290,7 +294,122 @@
   }
 
   /* =========================================
-     5. SYNONYM LOOKUP
+     5. SUPABASE HELPERS
+  ========================================= */
+
+  function supabaseHeaders(extra = {}) {
+    return {
+      "apikey": SUPABASE_KEY,
+      "Authorization": "Bearer " + SUPABASE_KEY,
+      ...extra
+    };
+  }
+
+  async function uploadSuggestion(suggestion) {
+    const payload = {
+      word: suggestion.word,
+      translation: suggestion.translation,
+      answer: suggestion.answer,
+      language: suggestion.language,
+      mode: suggestion.mode,
+      word_key: suggestion.wordKey,
+      unit_key: suggestion.unitKey,
+      word_id: suggestion.wordId,
+      created_at: suggestion.createdAt,
+      status: "pending"
+    };
+
+    const response = await fetch(
+      SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE,
+      {
+        method: "POST",
+        headers: supabaseHeaders({
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        }),
+        body: JSON.stringify(payload)
+      }
+    );
+
+    if (!response.ok) {
+      const message = await response.text();
+      throw new Error("Supabase upload failed: " + message);
+    }
+
+    return true;
+  }
+
+  async function fetchApprovedSuggestions() {
+    const url = new URL(
+      SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE
+    );
+
+    url.searchParams.set(
+      "select",
+      "word,answer,language,mode,status"
+    );
+
+    url.searchParams.set("status", "eq.approved");
+    url.searchParams.set("limit", "1000");
+
+    try {
+      const response = await fetch(url.toString(), {
+        method: "GET",
+        headers: supabaseHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      const rows = await response.json();
+
+      approvedSynonyms.clear();
+      approvedTranslations.clear();
+
+      rows.forEach(item => {
+        if (!item.word || !item.answer) return;
+
+        const key = normalize(item.word);
+        const answer = String(item.answer).trim();
+
+        if (item.mode === "reverse") {
+          if (!approvedSynonyms.has(key)) {
+            approvedSynonyms.set(key, []);
+          }
+
+          approvedSynonyms.get(key).push(answer);
+        }
+
+        if (item.mode === "input") {
+          if (!approvedTranslations.has(key)) {
+            approvedTranslations.set(key, []);
+          }
+
+          approvedTranslations.get(key).push(answer);
+        }
+      });
+
+      console.log(
+        "ZUNO: Approved shared suggestions loaded:",
+        rows.length
+      );
+
+      updateSuggestionPanel();
+
+      return rows.length;
+    } catch (error) {
+      console.warn(
+        "ZUNO: Could not load shared suggestions:",
+        error
+      );
+
+      return 0;
+    }
+  }
+
+  /* =========================================
+     6. SYNONYM LOOKUP
   ========================================= */
 
   function getSynonyms(word) {
@@ -300,6 +419,8 @@
       .filter(([name]) => normalize(name) === key)
       .flatMap(([, values]) => values);
 
+    const shared = approvedSynonyms.get(key) || [];
+
     let legacy = [];
 
     try {
@@ -308,7 +429,7 @@
       }
     } catch (_) {}
 
-    return [...new Set([...modern, ...legacy])];
+    return [...new Set([...modern, ...shared, ...legacy])];
   }
 
   function acceptedEnglishAnswers(word) {
@@ -321,7 +442,7 @@
   }
 
   /* =========================================
-     6. ENGLISH ANSWER CHECKING
+     7. ENGLISH ANSWER CHECKING
   ========================================= */
 
   function checkEnglishAnswer(answer, word) {
@@ -334,14 +455,13 @@
   }
 
   /* =========================================
-     7. GERMAN TRANSLATION CHECKING
+     8. GERMAN TRANSLATION CHECKING
   ========================================= */
 
   function germanVariants(value) {
     const raw = String(value ?? "").trim();
     const variants = [raw];
 
-    // Neuseeländer/-in -> Neuseeländer / Neuseeländerin
     const genderMatch = raw.match(/^(.+?)\/-in$/i);
 
     if (genderMatch) {
@@ -367,16 +487,20 @@
     const approved =
       translationData[normalize(word.word)] || [];
 
+    const shared =
+      approvedTranslations.get(normalize(word.word)) || [];
+
     const candidates = [
       ...original,
-      ...approved
+      ...approved,
+      ...shared
     ].flatMap(germanVariants);
 
     return unique(candidates).includes(submitted);
   }
 
   /* =========================================
-     8. SUGGESTION STORAGE
+     9. LOCAL SUGGESTION STORAGE
   ========================================= */
 
   function getPendingSuggestions() {
@@ -405,12 +529,13 @@
     ].join("|");
   }
 
-  function addSuggestion(answer, word, mode) {
+  async function addSuggestion(answer, word, mode) {
     const submitted = String(answer ?? "").trim();
 
     if (!submitted || !word || !word.word) {
       return {
         success: false,
+        uploaded: false,
         message: "Der Vorschlag konnte nicht gespeichert werden."
       };
     }
@@ -427,11 +552,12 @@
     if (duplicate) {
       return {
         success: false,
-        message: "Dieser Vorschlag wurde bereits gespeichert."
+        uploaded: false,
+        message: "Dieser Vorschlag wurde bereits auf diesem Gerät gespeichert."
       };
     }
 
-    suggestions.push({
+    const suggestion = {
       id: "zuno-" + Date.now() + "-" +
         Math.random().toString(36).slice(2, 8),
       word: String(word.word),
@@ -440,23 +566,46 @@
       language: word.language || "en",
       mode,
       wordKey,
-      unitKey: word.unitKey || null,
-      wordId: word.id || null,
+      unitKey: word.unitKey == null ? null : String(word.unitKey),
+      wordId: word.id == null ? null : String(word.id),
       createdAt: new Date().toISOString(),
-      status: "pending"
-    });
+      status: "pending",
+      uploaded: false
+    };
 
+    // Always save locally first.
+    suggestions.push(suggestion);
     savePendingSuggestions(suggestions);
     updateSuggestionPanel();
 
-    return {
-      success: true,
-      message: "Vorschlag gespeichert!"
-    };
+    // Then try to upload to Supabase.
+    try {
+      await uploadSuggestion(suggestion);
+
+      suggestion.uploaded = true;
+      savePendingSuggestions(suggestions);
+      updateSuggestionPanel();
+
+      return {
+        success: true,
+        uploaded: true,
+        message: "Vorschlag gespeichert und an ZUNO gesendet!"
+      };
+    } catch (error) {
+      console.error(error);
+
+      return {
+        success: true,
+        uploaded: false,
+        message:
+          "Lokal gespeichert, aber Upload fehlgeschlagen. " +
+          "Der Vorschlag bleibt auf diesem Gerät erhalten."
+      };
+    }
   }
 
   /* =========================================
-     9. EXPORT AND CLEAR
+     10. EXPORT AND CLEAR
   ========================================= */
 
   function exportSuggestions() {
@@ -469,7 +618,7 @@
 
     const data = {
       app: "ZUNO",
-      exportVersion: 1,
+      exportVersion: 2,
       exportedAt: new Date().toISOString(),
       totalSuggestions: suggestions.length,
       suggestions
@@ -502,18 +651,18 @@
     }
 
     if (!confirm(
-      "Möchtest du wirklich alle Vorschläge löschen? " +
+      "Möchtest du wirklich alle lokalen Vorschläge löschen? " +
       "Exportiere sie vorher, wenn du sie behalten möchtest."
     )) return;
 
     localStorage.removeItem(STORAGE_KEY);
     updateSuggestionPanel();
 
-    alert("Die Vorschlagsliste wurde geleert.");
+    alert("Die lokalen Vorschläge wurden geleert.");
   }
 
   /* =========================================
-     10. SUGGESTION PANEL
+     11. SUGGESTION PANEL
   ========================================= */
 
   function escapeHTML(value) {
@@ -529,6 +678,7 @@
   function updateSuggestionPanel() {
     const count = document.getElementById("zunoSuggestionCount");
     const list = document.getElementById("zunoSuggestionList");
+    const syncStatus = document.getElementById("zunoSyncStatus");
 
     if (!count || !list) return;
 
@@ -536,9 +686,18 @@
 
     count.textContent = suggestions.length;
 
+    if (syncStatus) {
+      const uploaded = suggestions.filter(item => item.uploaded).length;
+      const notUploaded = suggestions.length - uploaded;
+
+      syncStatus.textContent = suggestions.length
+        ? `${uploaded} online · ${notUploaded} nur lokal`
+        : "Noch keine lokalen Vorschläge";
+    }
+
     if (!suggestions.length) {
       list.innerHTML =
-        '<p style="color:#777;margin:0;">Noch keine Vorschläge gesammelt.</p>';
+        '<p style="color:#777;margin:0;">Noch keine lokalen Vorschläge gesammelt.</p>';
       return;
     }
 
@@ -560,6 +719,7 @@
             ${item.mode === "reverse"
               ? "Englisches Synonym"
               : "Deutsche Übersetzung"}
+            · ${item.uploaded ? "☁️ Online eingereicht" : "📱 Nur lokal"}
           </div>
         </div>
       `)
@@ -618,6 +778,10 @@
 
       <div id="zunoSuggestionList" style="margin-top:16px;"></div>
 
+      <p id="zunoSyncStatus" style="margin:12px 0 0;color:#777;font-size:12px;">
+        Synchronisierung wird vorbereitet ...
+      </p>
+
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
         <button type="button" id="zunoExportSuggestions"
           style="border:0;border-radius:12px;padding:12px 16px;
@@ -633,7 +797,8 @@
       </div>
 
       <p style="margin:12px 0 0;color:#888;font-size:12px;">
-        Vorschläge bleiben auf diesem Gerät gespeichert.
+        Online eingereichte Vorschläge werden in Supabase gesammelt.
+        Freigegebene Vorschläge stehen allen Nutzern zur Verfügung.
       </p>
     `;
 
@@ -651,7 +816,7 @@
   }
 
   /* =========================================
-     11. CHALLENGE BUTTON
+     12. CHALLENGE BUTTON
   ========================================= */
 
   function addChallengeButton(answer, word, mode) {
@@ -679,7 +844,7 @@
       cursor:pointer;
     `;
 
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       const description = mode === "reverse"
         ? "als englisches Synonym"
         : "als deutsche Übersetzung";
@@ -690,26 +855,36 @@
         "Der Vorschlag wird nicht automatisch akzeptiert."
       )) return;
 
-      const result = addSuggestion(answer, word, mode);
+      button.disabled = true;
+      button.textContent = "⏳ Wird gespeichert ...";
+
+      const result = await addSuggestion(answer, word, mode);
 
       if (!result.success) {
+        button.disabled = false;
+        button.textContent = "🤔 Ich hatte Recht";
         alert(result.message);
         return;
       }
 
-      button.textContent = "✓ Vorschlag gespeichert";
-      button.disabled = true;
-      button.style.background = "#eaf7e8";
-      button.style.color = "#397c38";
+      if (result.uploaded) {
+        button.textContent = "✓ An ZUNO gesendet";
+        button.style.background = "#eaf7e8";
+        button.style.color = "#397c38";
+      } else {
+        button.textContent = "✓ Lokal gespeichert";
+        button.style.background = "#fff4df";
+        button.style.color = "#94651c";
+      }
 
-      alert("Dein Vorschlag wurde gespeichert!");
+      alert(result.message);
     });
 
     feedback.appendChild(button);
   }
 
   /* =========================================
-     12. CONNECT ANSWER CHECKER
+     13. CONNECT ANSWER CHECKER
   ========================================= */
 
   const previousChecker = window.answerMatches;
@@ -722,7 +897,6 @@
         ? state.currentMode
         : "";
 
-    // English typed answers use the stricter ZUNO checker.
     if (word.language === "en" && mode === "reverse") {
       return checkEnglishAnswer(answer, word);
     }
@@ -731,7 +905,6 @@
       return checkGermanTranslation(answer, word);
     }
 
-    // Keep original behavior for multiple choice and other languages.
     if (typeof previousChecker === "function") {
       return previousChecker.apply(this, arguments);
     }
@@ -740,7 +913,7 @@
   };
 
   /* =========================================
-     13. CONNECT FEEDBACK
+     14. CONNECT FEEDBACK
   ========================================= */
 
   const previousCheckAnswer = window.checkAnswer;
@@ -775,11 +948,11 @@
   }
 
   /* =========================================
-     14. PUBLIC INTERFACE
+     15. PUBLIC INTERFACE
   ========================================= */
 
   window.ZUNOAI = {
-    version: "2.1",
+    version: "2.2",
     normalize,
     checkEnglishAnswer,
     checkGermanTranslation,
@@ -788,14 +961,17 @@
     addSuggestion,
     exportSuggestions,
     clearSuggestions,
-    updateSuggestionPanel
+    updateSuggestionPanel,
+    fetchApprovedSuggestions
   };
 
   /* =========================================
-     15. INITIALIZE
+     16. INITIALIZE
   ========================================= */
 
   createSuggestionPanel();
 
-  console.log("ZUNO AI v2.1 loaded.");
+  fetchApprovedSuggestions();
+
+  console.log("ZUNO AI v2.2 loaded.");
 })();
