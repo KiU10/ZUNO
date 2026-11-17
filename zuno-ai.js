@@ -1,8 +1,7 @@
-
 /* =========================================
    ZUNO AI
    Answer Checker + Shared Synonym Feedback
-   Version 2.2
+   Version 3.0
 ========================================= */
 
 (() => {
@@ -48,17 +47,20 @@
   const synonymData = {
     "to be short of sth": [
       "to lack something",
-      "not have enough of something"
+      "not have enough of something",
+      "to have too little of something"
     ],
 
     "to manage (to do sth)": [
       "to succeed in doing something",
-      "to be able to do something"
+      "to be able to do something",
+      "to find a way to do something"
     ],
 
     "to apply (for)": [
       "to make an application",
-      "to submit an application"
+      "to submit an application",
+      "to ask for"
     ],
 
     "to bump into sb": [
@@ -69,12 +71,14 @@
 
     "to learn by heart": [
       "to memorize",
-      "to memorise"
+      "to memorise",
+      "to learn something from memory"
     ],
 
     "to make progress": [
       "to improve",
-      "to get better"
+      "to get better",
+      "to develop"
     ],
 
     "to be stuck": [
@@ -85,69 +89,84 @@
 
     "to communicate": [
       "to exchange information",
-      "to get a message across"
+      "to get a message across",
+      "to share information"
     ],
 
     "to immigrate": [
       "to move to another country",
-      "to come to live in a country"
+      "to come to live in a country",
+      "to settle in another country"
     ],
 
     "to emigrate": [
       "to leave your own country to live elsewhere",
-      "to move away from your country"
+      "to move away from your country",
+      "to leave one's homeland"
     ],
 
     "to succeed (in)": [
       "to be successful",
-      "to achieve your goal"
+      "to achieve your goal",
+      "to manage"
     ],
 
     "to prevent": [
       "to stop something from happening",
-      "to keep something from happening"
+      "to keep something from happening",
+      "to avoid"
     ],
 
     "to assist": [
       "to help",
-      "to give someone a hand"
+      "to give someone a hand",
+      "to support"
     ],
 
     "to overhear": [
       "to hear something accidentally",
-      "to hear without intending to"
+      "to hear without intending to",
+      "to accidentally hear"
     ],
 
     "to respect": [
       "to show respect for",
-      "to value"
+      "to value",
+      "to treat someone with respect"
     ],
 
     "to distract": [
       "to take somebody's attention away",
-      "to divert someone's attention"
+      "to divert someone's attention",
+      "to disturb"
     ],
 
     "to glow": [
       "to shine softly",
-      "to give off light"
+      "to give off light",
+      "to shine"
     ],
 
     "to sigh": [
-      "to breathe out deeply"
+      "to breathe out deeply",
+      "to let out a deep breath"
     ],
 
     "to sting": [
-      "to cause a sharp pain"
+      "to cause a sharp pain",
+      "to hurt with a sharp pain"
     ],
 
     "community": [
-      "a group of people living in the same area"
+      "a group of people living in the same area",
+      "people in a particular area"
     ],
 
     "ancestor": [
       "a person you are descended from",
-      "a family member from long ago"
+      "a family member from long ago",
+      "a forefather",
+      "a foremother"
     ],
 
     "perhaps": [
@@ -162,22 +181,135 @@
   };
 
   /* =========================================
-     3. APPROVED GERMAN TRANSLATIONS
+     3. GERMAN TRANSLATION ALTERNATIVES
   ========================================= */
 
   const translationData = {
-    "opportunity": [
+    opportunity: [
       "Chance",
       "Möglichkeit",
       "Gelegenheit"
     ],
 
-    "actual": [
-      "wirklich"
+    actual: [
+      "wirklich",
+      "tatsächlich",
+      "eigentlich"
     ],
 
-    "remain": [
-      "verbleiben"
+    remain: [
+      "verbleiben",
+      "übrig bleiben",
+      "bleiben"
+    ],
+
+    achieve: [
+      "erreichen",
+      "erzielen",
+      "schaffen"
+    ],
+
+    "to settle": [
+      "sich niederlassen",
+      "sich ansiedeln"
+    ],
+
+    "to overhear": [
+      "mithören",
+      "zufällig hören",
+      "mitbekommen"
+    ],
+
+    "to immigrate": [
+      "einwandern"
+    ],
+
+    "to emigrate": [
+      "auswandern"
+    ],
+
+    "to communicate": [
+      "kommunizieren",
+      "sich verständigen"
+    ],
+
+    "to prevent": [
+      "verhindern",
+      "vermeiden"
+    ],
+
+    "to assist": [
+      "helfen",
+      "unterstützen"
+    ],
+
+    "to respect": [
+      "respektieren",
+      "achten"
+    ],
+
+    "to distract": [
+      "ablenken",
+      "stören"
+    ],
+
+    "to glow": [
+      "leuchten",
+      "glühen"
+    ],
+
+    "to sigh": [
+      "seufzen"
+    ],
+
+    "to sting": [
+      "stechen"
+    ],
+
+    "to succeed (in)": [
+      "es schaffen",
+      "erfolgreich sein",
+      "gelingen"
+    ],
+
+    "to manage (to do sth)": [
+      "es schaffen",
+      "bewältigen"
+    ],
+
+    "to bump into sb": [
+      "zufällig treffen",
+      "begegnen"
+    ],
+
+    "to apply (for)": [
+      "sich bewerben",
+      "beantragen"
+    ],
+
+    "to make progress": [
+      "Fortschritte machen",
+      "vorankommen"
+    ],
+
+    "to be short of sth": [
+      "nicht genug haben",
+      "fehlen"
+    ],
+
+    "to be stuck": [
+      "feststecken",
+      "festsitzen",
+      "nicht weiterkommen"
+    ],
+
+    "to learn by heart": [
+      "auswendig lernen"
+    ],
+
+    "to head (for/to)": [
+      "sich auf den Weg machen",
+      "steuern auf"
     ]
   };
 
@@ -212,7 +344,34 @@
     become: ["become", "becomes", "became", "becoming"],
     find: ["find", "finds", "found", "finding"],
     feel: ["feel", "feels", "felt", "feeling"],
-    teach: ["teach", "teaches", "taught", "teaching"]
+    teach: ["teach", "teaches", "taught", "teaching"],
+    shine: ["shine", "shines", "shone", "shining"],
+    bring: ["bring", "brings", "brought", "bringing"],
+    buy: ["buy", "buys", "bought", "buying"],
+    think: ["think", "thinks", "thought", "thinking"],
+    fight: ["fight", "fights", "fought", "fighting"],
+    stand: ["stand", "stands", "stood", "standing"],
+    sit: ["sit", "sits", "sat", "sitting"],
+    hold: ["hold", "holds", "held", "holding"],
+    tell: ["tell", "tells", "told", "telling"],
+    win: ["win", "wins", "won", "winning"],
+    lose: ["lose", "loses", "lost", "losing"],
+    send: ["send", "sends", "sent", "sending"],
+    build: ["build", "builds", "built", "building"],
+    break: ["break", "breaks", "broke", "broken", "breaking"],
+    choose: ["choose", "chooses", "chose", "chosen", "choosing"],
+    drive: ["drive", "drives", "drove", "driven", "driving"],
+    eat: ["eat", "eats", "ate", "eaten", "eating"],
+    fall: ["fall", "falls", "fell", "fallen", "falling"],
+    fly: ["fly", "flies", "flew", "flown", "flying"],
+    grow: ["grow", "grows", "grew", "grown", "growing"],
+    hear: ["hear", "hears", "heard", "hearing"],
+    hide: ["hide", "hides", "hid", "hidden", "hiding"],
+    hold: ["hold", "holds", "held", "holding"],
+    pay: ["pay", "pays", "paid", "paying"],
+    sell: ["sell", "sells", "sold", "selling"],
+    swim: ["swim", "swims", "swam", "swum", "swimming"],
+    wear: ["wear", "wears", "wore", "worn", "wearing"]
   };
 
   function regularVerbForms(verb) {
@@ -243,11 +402,7 @@
         /^[^aeiou]*[aeiou][^aeiouwxy]$/.test(verb)
       ) {
         const doubled = verb + verb.slice(-1);
-
-        forms.push(
-          doubled + "ed",
-          doubled + "ing"
-        );
+        forms.push(doubled + "ed", doubled + "ing");
       }
     }
 
@@ -280,7 +435,6 @@
     }
 
     const match = phrase.match(/^([a-z']+)(.*)$/);
-
     if (!match) return unique(result);
 
     const verb = match[1];
@@ -294,13 +448,13 @@
   }
 
   /* =========================================
-     5. SUPABASE HELPERS
+     5. SUPABASE
   ========================================= */
 
   function supabaseHeaders(extra = {}) {
     return {
-      "apikey": SUPABASE_KEY,
-      "Authorization": "Bearer " + SUPABASE_KEY,
+      apikey: SUPABASE_KEY,
+      Authorization: "Bearer " + SUPABASE_KEY,
       ...extra
     };
   }
@@ -325,15 +479,14 @@
         method: "POST",
         headers: supabaseHeaders({
           "Content-Type": "application/json",
-          "Prefer": "return=minimal"
+          Prefer: "return=minimal"
         }),
         body: JSON.stringify(payload)
       }
     );
 
     if (!response.ok) {
-      const message = await response.text();
-      throw new Error("Supabase upload failed: " + message);
+      throw new Error(await response.text());
     }
 
     return true;
@@ -344,11 +497,7 @@
       SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE
     );
 
-    url.searchParams.set(
-      "select",
-      "word,answer,language,mode,status"
-    );
-
+    url.searchParams.set("select", "word,answer,language,mode,status");
     url.searchParams.set("status", "eq.approved");
     url.searchParams.set("limit", "1000");
 
@@ -358,9 +507,7 @@
         headers: supabaseHeaders()
       });
 
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
+      if (!response.ok) throw new Error(await response.text());
 
       const rows = await response.json();
 
@@ -373,37 +520,25 @@
         const key = normalize(item.word);
         const answer = String(item.answer).trim();
 
-        if (item.mode === "reverse") {
-          if (!approvedSynonyms.has(key)) {
-            approvedSynonyms.set(key, []);
-          }
+        const target = item.mode === "reverse"
+          ? approvedSynonyms
+          : item.mode === "input"
+            ? approvedTranslations
+            : null;
 
-          approvedSynonyms.get(key).push(answer);
-        }
+        if (!target) return;
 
-        if (item.mode === "input") {
-          if (!approvedTranslations.has(key)) {
-            approvedTranslations.set(key, []);
-          }
-
-          approvedTranslations.get(key).push(answer);
-        }
+        if (!target.has(key)) target.set(key, []);
+        target.get(key).push(answer);
       });
-
-      console.log(
-        "ZUNO: Approved shared suggestions loaded:",
-        rows.length
-      );
 
       updateSuggestionPanel();
 
+      console.log("ZUNO AI: Approved suggestions loaded:", rows.length);
       return rows.length;
-    } catch (error) {
-      console.warn(
-        "ZUNO: Could not load shared suggestions:",
-        error
-      );
 
+    } catch (error) {
+      console.warn("ZUNO AI: Shared suggestions unavailable:", error);
       return 0;
     }
   }
@@ -425,7 +560,13 @@
 
     try {
       if (typeof zunoAnswerAlternatives !== "undefined") {
-        legacy = zunoAnswerAlternatives[String(word).toLowerCase()] || [];
+        const legacyMap = zunoAnswerAlternatives || {};
+
+        const matchingKey = Object.keys(legacyMap).find(
+          name => normalize(name) === key
+        );
+
+        if (matchingKey) legacy = legacyMap[matchingKey];
       }
     } catch (_) {}
 
@@ -474,6 +615,20 @@
     return unique(variants);
   }
 
+  function getTranslationAlternatives(word) {
+    const key = normalize(word.word);
+
+    const modernKey = Object.keys(translationData).find(
+      name => normalize(name) === key
+    );
+
+    const modern = modernKey ? translationData[modernKey] : [];
+
+    const shared = approvedTranslations.get(key) || [];
+
+    return [...modern, ...shared];
+  }
+
   function checkGermanTranslation(answer, word) {
     if (!answer || !word || !word.word) return false;
 
@@ -484,16 +639,9 @@
       .split(";")
       .map(item => item.trim());
 
-    const approved =
-      translationData[normalize(word.word)] || [];
-
-    const shared =
-      approvedTranslations.get(normalize(word.word)) || [];
-
     const candidates = [
       ...original,
-      ...approved,
-      ...shared
+      ...getTranslationAlternatives(word)
     ].flatMap(germanVariants);
 
     return unique(candidates).includes(submitted);
@@ -510,7 +658,7 @@
 
       return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
-      console.error("ZUNO suggestions:", error);
+      console.error("ZUNO AI suggestions:", error);
       return [];
     }
   }
@@ -573,12 +721,10 @@
       uploaded: false
     };
 
-    // Always save locally first.
     suggestions.push(suggestion);
     savePendingSuggestions(suggestions);
     updateSuggestionPanel();
 
-    // Then try to upload to Supabase.
     try {
       await uploadSuggestion(suggestion);
 
@@ -591,14 +737,15 @@
         uploaded: true,
         message: "Vorschlag gespeichert und an ZUNO gesendet!"
       };
+
     } catch (error) {
-      console.error(error);
+      console.error("ZUNO AI upload:", error);
 
       return {
         success: true,
         uploaded: false,
         message:
-          "Lokal gespeichert, aber Upload fehlgeschlagen. " +
+          "Lokal gespeichert, aber der Upload ist fehlgeschlagen. " +
           "Der Vorschlag bleibt auf diesem Gerät erhalten."
       };
     }
@@ -618,7 +765,7 @@
 
     const data = {
       app: "ZUNO",
-      exportVersion: 2,
+      exportVersion: 3,
       exportedAt: new Date().toISOString(),
       totalSuggestions: suggestions.length,
       suggestions
@@ -691,13 +838,13 @@
       const notUploaded = suggestions.length - uploaded;
 
       syncStatus.textContent = suggestions.length
-        ? `${uploaded} online · ${notUploaded} nur lokal`
+        ? uploaded + " online · " + notUploaded + " nur lokal"
         : "Noch keine lokalen Vorschläge";
     }
 
     if (!suggestions.length) {
       list.innerHTML =
-        '<p style="color:#777;margin:0;">Noch keine lokalen Vorschläge gesammelt.</p>';
+        '<p style="color:#777;margin:0;">Noch keine Vorschläge gesammelt.</p>';
       return;
     }
 
@@ -735,9 +882,9 @@
   }
 
   function createSuggestionPanel() {
-    const dashboard = document.getElementById("dashboard");
+    const container = document.getElementById("zunoAIAdminPanel");
 
-    if (!dashboard) return;
+    if (!container) return;
 
     if (document.getElementById("zunoSuggestionPanel")) {
       updateSuggestionPanel();
@@ -748,29 +895,42 @@
 
     panel.id = "zunoSuggestionPanel";
     panel.style.cssText = `
-      margin-top:24px;
-      padding:20px;
-      background:white;
-      border:1px solid #e9e6f4;
-      border-radius:20px;
-      box-shadow:0 6px 20px rgba(30,25,60,.04);
+      padding:16px 0 0;
     `;
 
     panel.innerHTML = `
-      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:12px;
+        flex-wrap:wrap;
+      ">
         <div>
-          <div style="font-size:12px;font-weight:800;color:#7d69e8;letter-spacing:.08em;">
-            ZUNO AI
-          </div>
-          <h2 style="margin:5px 0;">🧠 Synonym-Vorschläge</h2>
+          <div style="
+            font-size:12px;
+            font-weight:800;
+            color:#7d69e8;
+            letter-spacing:.08em;
+          ">ZUNO AI</div>
+
+          <h3 style="margin:5px 0;">Synonym-Vorschläge</h3>
+
           <p style="margin:0;color:#777;font-size:14px;">
-            Vorschläge werden erst nach einer Prüfung übernommen.
+            Neue Antworten werden gesammelt und müssen geprüft werden.
           </p>
         </div>
+
         <div style="
-          min-width:54px;height:54px;display:grid;place-items:center;
-          border-radius:16px;background:#f0edff;color:#6552c8;
-          font-size:22px;font-weight:900;
+          min-width:54px;
+          height:54px;
+          display:grid;
+          place-items:center;
+          border-radius:16px;
+          background:#f0edff;
+          color:#6552c8;
+          font-size:22px;
+          font-weight:900;
         ">
           <span id="zunoSuggestionCount">0</span>
         </div>
@@ -778,31 +938,52 @@
 
       <div id="zunoSuggestionList" style="margin-top:16px;"></div>
 
-      <p id="zunoSyncStatus" style="margin:12px 0 0;color:#777;font-size:12px;">
-        Synchronisierung wird vorbereitet ...
-      </p>
+      <p id="zunoSyncStatus" style="
+        margin:12px 0 0;
+        color:#777;
+        font-size:12px;
+      ">Synchronisierung wird vorbereitet ...</p>
 
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
-        <button type="button" id="zunoExportSuggestions"
-          style="border:0;border-radius:12px;padding:12px 16px;
-          background:#7d69e8;color:white;font-weight:800;">
-          ↓ Vorschläge exportieren
-        </button>
+      <div style="
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-top:18px;
+      ">
+        <button
+          type="button"
+          id="zunoExportSuggestions"
+          style="
+            border:0;
+            border-radius:12px;
+            padding:12px 16px;
+            background:#7d69e8;
+            color:white;
+            font-weight:800;
+          "
+        >↓ Vorschläge exportieren</button>
 
-        <button type="button" id="zunoClearSuggestions"
-          style="border:1px solid #e5e2ed;border-radius:12px;
-          padding:12px 16px;background:white;color:#777;font-weight:700;">
-          Liste leeren
-        </button>
+        <button
+          type="button"
+          id="zunoClearSuggestions"
+          style="
+            border:1px solid #e5e2ed;
+            border-radius:12px;
+            padding:12px 16px;
+            background:white;
+            color:#777;
+            font-weight:700;
+          "
+        >Liste leeren</button>
       </div>
 
       <p style="margin:12px 0 0;color:#888;font-size:12px;">
         Online eingereichte Vorschläge werden in Supabase gesammelt.
-        Freigegebene Vorschläge stehen allen Nutzern zur Verfügung.
+        Freigegebene Vorschläge können allen Nutzern zur Verfügung stehen.
       </p>
     `;
 
-    dashboard.appendChild(panel);
+    container.appendChild(panel);
 
     document
       .getElementById("zunoExportSuggestions")
@@ -850,8 +1031,8 @@
         : "als deutsche Übersetzung";
 
       if (!confirm(
-        `Soll "${answer}" für "${word.word}" ${description} ` +
-        "zur Prüfung vorgeschlagen werden?\n\n" +
+        'Soll "' + answer + '" für "' + word.word + '" ' +
+        description + " zur Prüfung vorgeschlagen werden?\n\n" +
         "Der Vorschlag wird nicht automatisch akzeptiert."
       )) return;
 
@@ -867,15 +1048,12 @@
         return;
       }
 
-      if (result.uploaded) {
-        button.textContent = "✓ An ZUNO gesendet";
-        button.style.background = "#eaf7e8";
-        button.style.color = "#397c38";
-      } else {
-        button.textContent = "✓ Lokal gespeichert";
-        button.style.background = "#fff4df";
-        button.style.color = "#94651c";
-      }
+      button.textContent = result.uploaded
+        ? "✓ An ZUNO gesendet"
+        : "✓ Lokal gespeichert";
+
+      button.style.background = result.uploaded ? "#eaf7e8" : "#fff4df";
+      button.style.color = result.uploaded ? "#397c38" : "#94651c";
 
       alert(result.message);
     });
@@ -952,7 +1130,7 @@
   ========================================= */
 
   window.ZUNOAI = {
-    version: "2.2",
+    version: "3.0",
     normalize,
     checkEnglishAnswer,
     checkGermanTranslation,
@@ -962,7 +1140,9 @@
     exportSuggestions,
     clearSuggestions,
     updateSuggestionPanel,
-    fetchApprovedSuggestions
+    fetchApprovedSuggestions,
+    acceptedEnglishAnswers,
+    getTranslationAlternatives
   };
 
   /* =========================================
@@ -970,8 +1150,7 @@
   ========================================= */
 
   createSuggestionPanel();
-
   fetchApprovedSuggestions();
 
-  console.log("ZUNO AI v2.2 loaded.");
+  console.log("ZUNO AI v3.0 loaded.");
 })();
