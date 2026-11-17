@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="de">
 <head>
@@ -98,8 +97,7 @@
       "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
 
     const moduleBase = "./";
-    const version = "?v=10";
-
+    const version = "?v=11";
     const status = document.getElementById("status");
 
     async function fetchText(url) {
@@ -116,8 +114,6 @@
       status.textContent = "Lade deine bisherigen Lerninhalte ...";
 
       const previousLoader = await fetchText(oldLoader);
-
-      /* VOKABEL-PATCH SICHER AUSLESEN */
       const startMarker = "const patch = String.raw";
       const patchStart = previousLoader.indexOf(startMarker);
 
@@ -127,21 +123,15 @@
 
       const contentStart = patchStart + startMarker.length;
       const openingBacktick = previousLoader.indexOf("`", contentStart);
-
-      if (openingBacktick === -1) {
-        throw new Error("Der Anfang des Vokabel-Patches fehlt.");
-      }
-
       const tryMarker = "\n    try {";
       const tryPosition = previousLoader.indexOf(tryMarker, openingBacktick);
-
-      if (tryPosition === -1) {
-        throw new Error("Das Ende des alten Loaders wurde nicht gefunden.");
-      }
-
       const closingBacktick = previousLoader.lastIndexOf("`;", tryPosition);
 
-      if (closingBacktick === -1 || closingBacktick <= openingBacktick) {
+      if (
+        openingBacktick === -1 ||
+        tryPosition === -1 ||
+        closingBacktick <= openingBacktick
+      ) {
         throw new Error("Der Vokabel-Patch konnte nicht vollständig gelesen werden.");
       }
 
@@ -205,7 +195,7 @@
 
       page = page.replace(answerPattern, fixedAnswerFlow);
 
-      /* XP-BUTTON ANKLICKBAR MACHEN */
+      /* XP-BUTTON */
       const oldXPButton =
         '<span class="pill">⚡ <span id="headerXP">0</span> XP</span>';
 
@@ -220,102 +210,143 @@
 
       page = page.replace(oldXPButton, newXPButton);
 
-      /* XP- UND ARCADE-SEITE */
+      /* NEUE SEITEN */
       const newPages = `
-        <section id="xpPage" class="hidden zuno-xp-page">
-          <button class="secondary-btn" type="button" onclick="showDashboard()">
-            ← Zurück
-          </button>
-
-          <div class="zuno-xp-hero">
-            <div class="zuno-xp-copy">
-              <span class="zuno-eyebrow">DEIN FORTSCHRITT</span>
-              <h1>Deine XP.</h1>
-              <p>
-                Lerne neue Wörter, sammle Erfahrung und schalte
-                neue Möglichkeiten frei.
-              </p>
-            </div>
-
-            <img
-              class="zuno-xp-mascot"
-              src="IMG_2563.png"
-              alt="ZUNO Maskottchen"
-              onerror="this.style.display='none'"
-            >
+        <section id="xpPage" class="hidden zuno-page">
+          <div class="zuno-page-heading">
+            <span class="zuno-eyebrow">DEIN FORTSCHRITT</span>
+            <h1>Deine XP.</h1>
+            <p>Verdiene Erfahrung, bleib aktiv und schalte neue Dinge frei.</p>
           </div>
 
           <div class="zuno-xp-balance">
             <span class="zuno-xp-symbol">⚡</span>
             <div>
-              <span class="zuno-xp-label">Dein aktueller Kontostand</span>
+              <span class="zuno-xp-label">Dein Kontostand</span>
               <strong><span id="zunoXPBalance">0</span> XP</strong>
             </div>
           </div>
 
-          <div class="zuno-xp-info-grid">
-            <article class="zuno-xp-info-card">
-              <span class="zuno-info-icon">📚</span>
+          <div class="zuno-info-grid">
+            <article class="zuno-info-card">
+              <span>📚</span>
               <h3>XP verdienen</h3>
-              <p>
-                Beantworte Vokabelfragen richtig und sammle
-                <strong>10 XP</strong> pro richtiger Antwort.
-              </p>
+              <p>Für jede richtige Antwort erhältst du 10 XP.</p>
             </article>
-
-            <article class="zuno-xp-info-card">
-              <span class="zuno-info-icon">🎮</span>
+            <article class="zuno-info-card">
+              <span>🎮</span>
               <h3>XP ausgeben</h3>
-              <p>
-                Eine neue Spielrunde kostet
-                <strong>50 XP</strong>. Spiele selbst geben keine XP zurück.
-              </p>
+              <p>Eine neue Spielrunde kostet 50 XP.</p>
             </article>
           </div>
 
-          <div class="zuno-xp-streak">
-            <span>🔥</span>
-            <div>
-              <strong><span id="zunoXPStreak">0</span>-Tage-Streak</strong>
-              <p>Bleib täglich dran, um weitere Spiele freizuschalten.</p>
-            </div>
+          <div class="zuno-streak-card">
+            🔥 <strong><span id="zunoXPStreak">0</span>-Tage-Streak</strong>
+            <p>Bleib täglich dran, um weitere Spiele freizuschalten.</p>
           </div>
 
-          <button
-            class="zuno-arcade-cta"
-            type="button"
-            onclick="showArcadePage()"
-          >
-            <span class="zuno-arcade-cta-icon">🎮</span>
-            <span>
-              <strong>Zur ZUNO Arcade</strong>
-              <small>Entdecke alle verfügbaren Spiele</small>
-            </span>
-            <span class="zuno-cta-arrow">→</span>
+          <button class="zuno-wide-button" onclick="showArcadePage()">
+            🎮 Zur ZUNO Arcade <span>→</span>
           </button>
         </section>
 
-        <section id="arcadePage" class="hidden zuno-arcade-page">
-          <button class="secondary-btn" type="button" onclick="showXPPage()">
-            ← Zurück zu deinen XP
-          </button>
-
+        <section id="arcadePage" class="hidden zuno-page">
+          <div class="zuno-page-heading">
+            <span class="zuno-eyebrow">ZEIT FÜR EINE RUNDE?</span>
+            <h1>🎮 ZUNO Arcade</h1>
+            <p>Gib deine verdienten XP für Spielrunden aus.</p>
+          </div>
           <div id="zunoArcade">
-            <div class="zuno-arcade-heading">
-              <div>
-                <span class="zuno-eyebrow">ZEIT FÜR EINE RUNDE?</span>
-                <h1>🎮 ZUNO Arcade</h1>
-                <p class="zuno-arcade-subtitle">
-                  Gib deine verdienten XP für Spielrunden aus.
-                </p>
-              </div>
+            <div class="zuno-game-grid" id="zunoGameGrid"></div>
+          </div>
+        </section>
 
-              <span class="pill zuno-arcade-xp">
-                ⚡ <span id="zunoArcadeXP">0</span> XP
-              </span>
+        <section id="learningPage" class="hidden zuno-page">
+          <div class="zuno-page-heading">
+            <span class="zuno-eyebrow">DEIN TRAINING</span>
+            <h1>Lernen.</h1>
+            <p>Wähle, wie du heute üben möchtest.</p>
+          </div>
+
+          <div class="zuno-info-grid">
+            <article class="zuno-info-card">
+              <span>🌍</span>
+              <h3>Allgemein üben</h3>
+              <p>Trainiere deinen Wortschatz nach Sprache und Niveau.</p>
+              <button class="zuno-card-button" onclick="showGeneralSettings()">
+                Allgemein üben
+              </button>
+            </article>
+
+            <article class="zuno-info-card">
+              <span>📚</span>
+              <h3>Schulvokabeln</h3>
+              <p>Übe deine Vokabeln aus den einzelnen Units.</p>
+              <button class="zuno-card-button" onclick="showUnitSettings()">
+                Units öffnen
+              </button>
+            </article>
+          </div>
+        </section>
+
+        <section id="shopPage" class="hidden zuno-page">
+          <div class="zuno-page-heading">
+            <span class="zuno-eyebrow">ZUNO EXTRAS</span>
+            <h1>Der Shop.</h1>
+            <p>Gib deine XP aus und gestalte dein ZUNO-Erlebnis.</p>
+          </div>
+
+          <div class="zuno-shop-balance">
+            ⚡ <strong><span id="zunoShopXP">0</span> XP</strong>
+          </div>
+
+          <div id="zunoCosmeticGrid" class="zuno-cosmetic-grid"></div>
+
+          <p class="zuno-shop-note">
+            Deine gekauften Cosmetics bleiben auf diesem Gerät gespeichert.
+          </p>
+        </section>
+
+        <section id="adminPage" class="hidden zuno-page">
+          <div class="zuno-page-heading">
+            <span class="zuno-eyebrow">ZUNO CONTROL CENTER</span>
+            <h1>Admin.</h1>
+            <p>Verwalte Vorschläge und teste Funktionen der App.</p>
+          </div>
+
+          <div class="zuno-admin-card">
+            <h2>🔥 Streak-Test</h2>
+            <p>
+              Der ursprüngliche Streak wird beim ersten Test gespeichert.
+              Mit Reset stellst du ihn wieder her.
+            </p>
+
+            <div class="zuno-admin-actions">
+              <button class="zuno-admin-button" onclick="zunoTestStreak()">
+                +1 Streak
+              </button>
+              <button class="zuno-admin-button secondary" onclick="zunoResetTestStreak()">
+                Reset Streak
+              </button>
             </div>
 
-            <div class="zuno-game-grid" id="zunoGameGrid"></div>
+            <p id="zunoStreakTestStatus" class="zuno-admin-status">
+              Aktueller Streak: wird geladen ...
+            </p>
+          </div>
+
+          <div class="zuno-admin-card">
+            <h2>🧠 ZUNO AI</h2>
+            <p>Synonym-Vorschläge und Antwortalternativen prüfen.</p>
+            <div id="zunoAIAdminPanel"></div>
+          </div>
+
+          <div class="zuno-admin-card">
+            <h2>🧪 System</h2>
+            <p>Diese Seite ist für Tests und die Verwaltung der App gedacht.</p>
+            <button class="zuno-admin-button secondary" onclick="showDashboard()">
+              Zurück zum Menü
+            </button>
           </div>
         </section>
       `;
@@ -331,7 +362,7 @@
         "['dashboard', 'settings', 'unitSettings', 'exercise', 'result', 'statsPage']";
 
       const newPageList =
-        "['dashboard', 'settings', 'unitSettings', 'exercise', 'result', 'statsPage', 'xpPage', 'arcadePage']";
+        "['dashboard', 'settings', 'unitSettings', 'exercise', 'result', 'statsPage', 'xpPage', 'arcadePage', 'learningPage', 'shopPage', 'adminPage']";
 
       if (!page.includes(oldPageList)) {
         throw new Error("Die Seitennavigation der App wurde nicht gefunden.");
@@ -339,14 +370,377 @@
 
       page = page.replace(oldPageList, newPageList);
 
-      /* CSS-DATEIEN LADEN */
-      const styles =
-        '<link rel="stylesheet" href="' + moduleBase + "games.css" + version + '">' +
-        '<link rel="stylesheet" href="' + moduleBase + "animations.css" + version + '">';
+      /* SIDEBAR + SHOP + ADMIN STYLES */
+      const styles = `
+        <link rel="stylesheet" href="${moduleBase}games.css${version}">
+        <link rel="stylesheet" href="${moduleBase}animations.css${version}">
+
+        <style>
+          :root {
+            --zuno-purple: #7d69e8;
+            --zuno-dark: #20212a;
+            --zuno-muted: #777b8b;
+            --zuno-line: #eceaf3;
+          }
+
+          body { padding-left: 250px; }
+
+          #zunoSidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 100;
+            width: 230px;
+            padding: 26px 16px;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border-right: 1px solid var(--zuno-line);
+          }
+
+          .zuno-sidebar-logo {
+            padding: 0 12px 28px;
+            color: #6351c7;
+            font-size: 29px;
+            font-weight: 950;
+            letter-spacing: -.09em;
+          }
+
+          .zuno-nav-label {
+            padding: 0 12px;
+            margin: 8px 0 10px;
+            color: #a1a2ad;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: .14em;
+          }
+
+          .zuno-nav {
+            display: grid;
+            gap: 6px;
+          }
+
+          .zuno-nav button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 13px;
+            background: transparent;
+            color: #676b7a;
+            font-size: 14px;
+            font-weight: 750;
+            text-align: left;
+          }
+
+          .zuno-nav button:hover,
+          .zuno-nav button.active {
+            background: #f0edff;
+            color: #6351c7;
+          }
+
+          .zuno-nav-icon {
+            width: 23px;
+            text-align: center;
+            font-size: 17px;
+          }
+
+          .zuno-sidebar-bottom {
+            margin-top: auto;
+            padding: 14px 12px 0;
+            color: #a0a1ac;
+            font-size: 11px;
+          }
+
+          body > header {
+            padding-left: 34px;
+          }
+
+          body > main {
+            max-width: 1120px;
+            margin: 28px auto 72px;
+            padding: 0 28px;
+          }
+
+          .zuno-page {
+            min-height: 60vh;
+            padding-bottom: 50px;
+          }
+
+          .zuno-page-heading {
+            margin: 10px 0 25px;
+          }
+
+          .zuno-page-heading h1 {
+            margin: 8px 0;
+          }
+
+          .zuno-page-heading p {
+            max-width: 620px;
+          }
+
+          .zuno-eyebrow {
+            color: #7d69e8;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: .14em;
+          }
+
+          .zuno-xp-balance {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 24px;
+            margin: 20px 0;
+            border-radius: 22px;
+            background: linear-gradient(135deg,#7d69e8,#6351c7);
+            color: white;
+          }
+
+          .zuno-xp-symbol { font-size: 38px; }
+          .zuno-xp-label { display:block; opacity:.8; font-size:12px; }
+          .zuno-xp-balance strong { font-size:30px; }
+
+          .zuno-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2,minmax(0,1fr));
+            gap: 16px;
+            margin: 20px 0;
+          }
+
+          .zuno-info-card,
+          .zuno-admin-card {
+            padding: 22px;
+            border: 1px solid var(--zuno-line);
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 8px 24px #20212a08;
+          }
+
+          .zuno-info-card > span { font-size: 26px; }
+          .zuno-info-card h3 { margin: 10px 0 6px; }
+          .zuno-info-card p { font-size: 14px; }
+
+          .zuno-streak-card {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 18px;
+            background: #fff7e9;
+          }
+
+          .zuno-streak-card p { margin: 5px 0 0 28px; font-size: 13px; }
+
+          .zuno-wide-button,
+          .zuno-card-button {
+            padding: 13px 17px;
+            border-radius: 13px;
+            background: #7d69e8;
+            color: white;
+            font-weight: 800;
+          }
+
+          .zuno-wide-button {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 20px;
+            padding: 17px 20px;
+          }
+
+          .zuno-card-button { margin-top: 8px; }
+
+          .zuno-shop-balance {
+            display: inline-flex;
+            padding: 12px 17px;
+            margin-bottom: 20px;
+            border-radius: 14px;
+            background: #f0edff;
+            color: #6351c7;
+            font-weight: 900;
+          }
+
+          .zuno-cosmetic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
+            gap: 16px;
+          }
+
+          .zuno-cosmetic {
+            padding: 20px;
+            border: 1px solid var(--zuno-line);
+            border-radius: 19px;
+            background: white;
+          }
+
+          .zuno-cosmetic.owned {
+            border-color: #c9ef9a;
+            background: #fbfff6;
+          }
+
+          .zuno-cosmetic-visual {
+            display: grid;
+            place-items: center;
+            height: 100px;
+            margin-bottom: 14px;
+            border-radius: 15px;
+            background: #f3f0ff;
+            font-size: 42px;
+          }
+
+          .zuno-cosmetic.legendary .zuno-cosmetic-visual {
+            background: linear-gradient(135deg,#282044,#6950a9);
+          }
+
+          .zuno-cosmetic h3 { margin: 0 0 5px; }
+          .zuno-cosmetic p { min-height: 40px; font-size: 13px; }
+
+          .zuno-cosmetic button {
+            width: 100%;
+            padding: 11px;
+            border-radius: 11px;
+            background: #7d69e8;
+            color: white;
+            font-weight: 800;
+          }
+
+          .zuno-cosmetic button:disabled {
+            background: #e8e6ef;
+            color: #777;
+          }
+
+          .zuno-cosmetic.legendary {
+            border: 1px solid #a98bea;
+            box-shadow: 0 8px 25px #8d6bd51c;
+          }
+
+          .zuno-shop-note {
+            margin-top: 18px;
+            font-size: 12px;
+          }
+
+          .zuno-admin-card { margin: 18px 0; }
+          .zuno-admin-card h2 { margin-bottom: 8px; }
+
+          .zuno-admin-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+          }
+
+          .zuno-admin-button {
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: #7d69e8;
+            color: white;
+            font-weight: 800;
+          }
+
+          .zuno-admin-button.secondary {
+            background: #f0edff;
+            color: #6351c7;
+          }
+
+          .zuno-admin-status {
+            margin: 14px 0 0;
+            font-size: 13px;
+          }
+
+          .zuno-xp-trigger {
+            border: 0;
+            cursor: pointer;
+          }
+
+          @media (max-width: 760px) {
+            body { padding-left: 0; padding-bottom: 74px; }
+
+            #zunoSidebar {
+              inset: auto 0 0 0;
+              width: 100%;
+              height: 68px;
+              padding: 6px 5px;
+              border-right: 0;
+              border-top: 1px solid var(--zuno-line);
+              display: block;
+              background: rgba(255,255,255,.97);
+              backdrop-filter: blur(12px);
+            }
+
+            .zuno-sidebar-logo,
+            .zuno-nav-label,
+            .zuno-sidebar-bottom { display: none; }
+
+            .zuno-nav {
+              height: 100%;
+              display: grid;
+              grid-template-columns: repeat(6,minmax(0,1fr));
+              gap: 2px;
+            }
+
+            .zuno-nav button {
+              min-width: 0;
+              height: 100%;
+              padding: 5px 1px;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              gap: 3px;
+              border-radius: 10px;
+              font-size: 9px;
+            }
+
+            .zuno-nav-icon {
+              width: auto;
+              font-size: 18px;
+            }
+
+            body > header { padding: 13px 15px; }
+            body > main { padding: 0 15px; margin-top: 20px; }
+            .zuno-info-grid { grid-template-columns: 1fr; }
+          }
+
+          @media (max-width: 390px) {
+            .zuno-nav button { font-size: 8px; }
+            .zuno-nav-icon { font-size: 16px; }
+          }
+        </style>
+      `;
 
       page = page.replace("</head>", styles + "</head>");
 
-      /* SCRIPTS LADEN */
+      /* SIDEBAR HTML */
+      const sidebar = `
+        <aside id="zunoSidebar">
+          <div class="zuno-sidebar-logo">ZUNO.</div>
+          <div class="zuno-nav-label">WORKSPACE</div>
+
+          <nav class="zuno-nav" aria-label="Hauptnavigation">
+            <button type="button" onclick="zunoNavigate('menu')" data-zuno-nav="menu">
+              <span class="zuno-nav-icon">⌂</span><span>Menü</span>
+            </button>
+            <button type="button" onclick="zunoNavigate('learning')" data-zuno-nav="learning">
+              <span class="zuno-nav-icon">📚</span><span>Lernen</span>
+            </button>
+            <button type="button" onclick="zunoNavigate('stats')" data-zuno-nav="stats">
+              <span class="zuno-nav-icon">▥</span><span>Stats</span>
+            </button>
+            <button type="button" onclick="zunoNavigate('arcade')" data-zuno-nav="arcade">
+              <span class="zuno-nav-icon">🎮</span><span>Arcade</span>
+            </button>
+            <button type="button" onclick="zunoNavigate('shop')" data-zuno-nav="shop">
+              <span class="zuno-nav-icon">✦</span><span>Shop</span>
+            </button>
+            <button type="button" onclick="zunoNavigate('admin')" data-zuno-nav="admin">
+              <span class="zuno-nav-icon">⚙</span><span>Admin</span>
+            </button>
+          </nav>
+
+          <div class="zuno-sidebar-bottom">ZUNO · Learn something new.</div>
+        </aside>
+      `;
+
+      page = page.replace("<body>", "<body>\n" + sidebar);
+
+      /* SPEECH OUTPUT */
       const speechFixScript = `
         <script>
         (function() {
@@ -408,9 +802,305 @@
         <\/script>
       `;
 
+      /* NAVIGATION, SHOP UND ADMIN LOGIK */
+      const appEnhancements = `
+        <script>
+        (() => {
+          "use strict";
+
+          const ADMIN_PASSWORD = "iLoveKiU";
+          const COSMETICS_KEY = "zuno_cosmetics_v1";
+          const STREAK_SNAPSHOT_KEY = "zuno_admin_streak_snapshot_v1";
+
+          let adminUnlocked = false;
+
+          const cosmetics = [
+            {
+              id: "mint",
+              name: "Mint Glow",
+              description: "Ein frischer grüner Look.",
+              icon: "🌿",
+              price: 350
+            },
+            {
+              id: "sunset",
+              name: "Sunset Aura",
+              description: "Warme Farben für dein Profil.",
+              icon: "🌅",
+              price: 600
+            },
+            {
+              id: "ocean",
+              name: "Ocean Wave",
+              description: "Ein ruhiger Look in Meeresfarben.",
+              icon: "🌊",
+              price: 850
+            },
+            {
+              id: "royal",
+              name: "Royal Spark",
+              description: "Ein besonderer violetter Style.",
+              icon: "💎",
+              price: 1200
+            },
+            {
+              id: "galaxy",
+              name: "GALAXY LEGEND",
+              description: "Das seltenste Cosmetic im ZUNO-Shop.",
+              icon: "🌌",
+              price: 2500,
+              legendary: true
+            }
+          ];
+
+          function getCosmeticData() {
+            try {
+              const data = JSON.parse(localStorage.getItem(COSMETICS_KEY) || "{}");
+              return {
+                owned: Array.isArray(data.owned) ? data.owned : [],
+                equipped: data.equipped || null
+              };
+            } catch (_) {
+              return { owned: [], equipped: null };
+            }
+          }
+
+          function saveCosmeticData(data) {
+            localStorage.setItem(COSMETICS_KEY, JSON.stringify(data));
+          }
+
+          function refreshXPDisplays() {
+            const xp = Number(state.xp) || 0;
+
+            [
+              "zunoXPBalance",
+              "zunoArcadeXP",
+              "zunoShopXP"
+            ].forEach(id => {
+              const element = document.getElementById(id);
+              if (element) element.textContent = xp;
+            });
+
+            const streak = Number(state.streak) || 0;
+            const streakElement = document.getElementById("zunoXPStreak");
+
+            if (streakElement) streakElement.textContent = streak;
+          }
+
+          function renderCosmetics() {
+            const grid = document.getElementById("zunoCosmeticGrid");
+            if (!grid) return;
+
+            const data = getCosmeticData();
+
+            grid.innerHTML = cosmetics.map(item => {
+              const owned = data.owned.includes(item.id);
+              const equipped = data.equipped === item.id;
+
+              let buttonText = "⚡ " + item.price.toLocaleString("de-DE") + " XP";
+              let disabled = false;
+
+              if (equipped) {
+                buttonText = "✓ Ausgerüstet";
+                disabled = true;
+              } else if (owned) {
+                buttonText = "Ausrüsten";
+              } else if (state.xp < item.price) {
+                buttonText = "Zu wenig XP";
+                disabled = true;
+              } else {
+                buttonText = "Kaufen · " + item.price.toLocaleString("de-DE") + " XP";
+              }
+
+              return \`
+                <article class="zuno-cosmetic \${owned ? "owned" : ""} \${item.legendary ? "legendary" : ""}">
+                  <div class="zuno-cosmetic-visual">\${item.icon}</div>
+                  <h3>\${item.name}</h3>
+                  <p>\${item.description}</p>
+                  <button
+                    type="button"
+                    data-cosmetic-id="\${item.id}"
+                    \${disabled ? "disabled" : ""}
+                  >\${buttonText}</button>
+                </article>
+              \`;
+            }).join("");
+
+            grid.querySelectorAll("[data-cosmetic-id]").forEach(button => {
+              button.addEventListener("click", () => {
+                buyOrEquipCosmetic(button.dataset.cosmeticId);
+              });
+            });
+
+            refreshXPDisplays();
+          }
+
+          function buyOrEquipCosmetic(id) {
+            const item = cosmetics.find(cosmetic => cosmetic.id === id);
+            if (!item) return;
+
+            const data = getCosmeticData();
+
+            if (data.owned.includes(id)) {
+              data.equipped = id;
+              saveCosmeticData(data);
+              renderCosmetics();
+              return;
+            }
+
+            if (state.xp < item.price) {
+              alert("Du hast noch nicht genug XP für dieses Cosmetic.");
+              return;
+            }
+
+            if (!confirm(item.name + " für " + item.price + " XP kaufen?")) {
+              return;
+            }
+
+            state.xp -= item.price;
+            data.owned.push(id);
+            data.equipped = id;
+
+            saveState();
+            saveCosmeticData(data);
+
+            if (typeof updateDashboard === "function") {
+              updateDashboard();
+            }
+
+            renderCosmetics();
+          }
+
+          function updateStreakStatus() {
+            const status = document.getElementById("zunoStreakTestStatus");
+            if (!status) return;
+
+            status.textContent = "Aktueller Streak: " + state.streak + " Tage";
+          }
+
+          window.zunoTestStreak = function() {
+            let snapshot = localStorage.getItem(STREAK_SNAPSHOT_KEY);
+
+            if (snapshot === null) {
+              snapshot = String(Number(state.streak) || 0);
+              localStorage.setItem(STREAK_SNAPSHOT_KEY, snapshot);
+            }
+
+            state.streak = (Number(state.streak) || 0) + 1;
+            saveState();
+            refreshXPDisplays();
+            updateStreakStatus();
+          };
+
+          window.zunoResetTestStreak = function() {
+            const snapshot = localStorage.getItem(STREAK_SNAPSHOT_KEY);
+
+            if (snapshot === null) {
+              alert("Es gibt keinen gespeicherten Test-Streak.");
+              return;
+            }
+
+            state.streak = Math.max(0, Number(snapshot) || 0);
+            saveState();
+            localStorage.removeItem(STREAK_SNAPSHOT_KEY);
+
+            refreshXPDisplays();
+            updateStreakStatus();
+
+            alert("Dein ursprünglicher Streak wurde wiederhergestellt.");
+          };
+
+          window.zunoNavigate = function(destination) {
+            document.querySelectorAll("[data-zuno-nav]").forEach(button => {
+              button.classList.toggle(
+                "active",
+                button.dataset.zunoNav === destination
+              );
+            });
+
+            switch (destination) {
+              case "menu":
+                showDashboard();
+                break;
+
+              case "learning":
+                showOnly("learningPage");
+                break;
+
+              case "stats":
+                showStats();
+                break;
+
+              case "arcade":
+                showArcadePage();
+                break;
+
+              case "shop":
+                showShopPage();
+                break;
+
+              case "admin":
+                showAdminPage();
+                break;
+            }
+          };
+
+          window.showXPPage = function() {
+            showOnly("xpPage");
+            refreshXPDisplays();
+          };
+
+          window.showArcadePage = function() {
+            showOnly("arcadePage");
+            refreshXPDisplays();
+
+            if (typeof renderArcade === "function") {
+              renderArcade();
+            }
+          };
+
+          window.showShopPage = function() {
+            showOnly("shopPage");
+            renderCosmetics();
+          };
+
+          window.showAdminPage = function() {
+            if (!adminUnlocked) {
+              const entered = prompt("Admin-Passwort:");
+
+              if (entered !== ADMIN_PASSWORD) {
+                if (entered !== null) alert("Falsches Passwort.");
+                return;
+              }
+
+              adminUnlocked = true;
+            }
+
+            showOnly("adminPage");
+            updateStreakStatus();
+
+            if (window.ZUNOAI && typeof ZUNOAI.updateSuggestionPanel === "function") {
+              ZUNOAI.updateSuggestionPanel();
+            }
+          };
+
+          document.addEventListener("DOMContentLoaded", () => {
+            renderCosmetics();
+            refreshXPDisplays();
+          });
+
+          window.addEventListener("load", () => {
+            renderCosmetics();
+            refreshXPDisplays();
+          });
+        })();
+        <\/script>
+      `;
+
       const scripts =
         "<script>\n" + patch + "\n<\/script>" +
         speechFixScript +
+        appEnhancements +
         '<script src="' + moduleBase + "zuno-ai.js" + version + '"><\/script>' +
         '<script src="' + moduleBase + "zuno-examples.js" + version + '"><\/script>' +
         '<script src="' + moduleBase + "progress.js" + version + '"><\/script>' +
