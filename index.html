@@ -14,9 +14,7 @@
       background: #f7f7fa;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -100,7 +98,7 @@
       "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
 
     const moduleBase = "./";
-    const version = "?v=6";
+    const version = "?v=7";
 
     const status = document.getElementById("status");
 
@@ -119,9 +117,13 @@
 
       const previousLoader = await fetchText(oldLoader);
 
+      /*
+       * VOKABEL-PATCH SICHER AUSLESEN
+       *
+       * Der alte Loader beendet den String mit `;.
+       * Der vorherige Code hat dieses Backtick übersehen.
+       */
       const startMarker = "const patch = String.raw";
-      const endMarker = "\n    ;\n\n    try {";
-
       const patchStart = previousLoader.indexOf(startMarker);
 
       if (patchStart === -1) {
@@ -129,13 +131,30 @@
       }
 
       const contentStart = patchStart + startMarker.length;
-      const patchEnd = previousLoader.indexOf(endMarker, contentStart);
+      const openingBacktick = previousLoader.indexOf("`", contentStart);
 
-      if (patchEnd === -1) {
+      if (openingBacktick === -1) {
+        throw new Error("Der Anfang des Vokabel-Patches fehlt.");
+      }
+
+      const tryMarker = "\n    try {";
+      const tryPosition = previousLoader.indexOf(tryMarker, openingBacktick);
+
+      if (tryPosition === -1) {
+        throw new Error("Das Ende des alten Loaders wurde nicht gefunden.");
+      }
+
+      const closingBacktick = previousLoader.lastIndexOf("`;", tryPosition);
+
+      if (closingBacktick === -1 || closingBacktick <= openingBacktick) {
         throw new Error("Der Vokabel-Patch konnte nicht vollständig gelesen werden.");
       }
 
-      let patch = previousLoader.slice(contentStart, patchEnd);
+      let patch = previousLoader.slice(
+        openingBacktick + 1,
+        closingBacktick
+      );
+
       patch = patch.replace(/<\/script/gi, "<\\/script");
 
       status.textContent = "Verbinde mit der ZUNO-App ...";
@@ -146,56 +165,6 @@
         throw new Error("Die geladene ZUNO-Datei ist unvollständig.");
       }
 
-      /* VORLESEFUNKTION KORRIGIEREN */
-      const speechPattern =
-        /    function speakCurrentWord\(\) \{[\s\S]*?\n    \}\n\n    function updateGreeting\(\)/;
-
-      const fixedSpeechFunction = `    function speakCurrentWord() {
-      if (!('speechSynthesis' in window)) {
-        alert('Die Audiofunktion wird in diesem Browser nicht unterstützt.');
-        return;
-      }
-
-      const word = state.session[state.index];
-      if (!word) return;
-
-      const isReverse = state.currentMode === 'reverse';
-
-      // Es wird immer das sichtbare Wort vorgelesen.
-      const text = isReverse ? word.translation : word.word;
-
-      // Reverse zeigt Deutsch, die anderen Modi die Zielsprache.
-      const speechLanguage = isReverse ? 'de' : word.language;
-
-      const languageCode =
-        speechLanguage === 'fr' ? 'fr-FR' :
-        speechLanguage === 'de' ? 'de-DE' : 'en-US';
-
-      window.speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = languageCode;
-      utterance.rate = 0.88;
-      utterance.pitch = 1.0;
-
-      const voices = window.speechSynthesis.getVoices();
-      const preferred = voices.find((voice) =>
-        voice.lang.toLowerCase().startsWith(speechLanguage)
-      );
-
-      if (preferred) utterance.voice = preferred;
-
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function updateGreeting()`;
-
-      if (!speechPattern.test(page)) {
-        throw new Error("Die Vorlesefunktion wurde in der Original-App nicht gefunden.");
-      }
-
-      page = page.replace(speechPattern, fixedSpeechFunction);
-
       /* AUTOMATISCHES BEENDEN DER LETZTEN FRAGE */
       const answerPattern =
         /      if \(isCorrect\) \{[\s\S]*?\n      \}\n    \}\n\n    function recordSchoolAnswer/;
@@ -204,7 +173,6 @@
         state.index === state.session.length - 1;
 
       if (isLastQuestion) {
-        // Letzte Frage: Feedback anzeigen und danach automatisch beenden.
         document.getElementById('nextButton').classList.add('hidden');
 
         window.setTimeout(() => {
@@ -218,7 +186,6 @@
         }, 1500);
 
       } else if (isCorrect) {
-        // Richtige Antworten führen wie bisher automatisch weiter.
         document.getElementById('nextButton').classList.add('hidden');
 
         window.setTimeout(() => {
@@ -228,7 +195,6 @@
         }, 1500);
 
       } else {
-        // Falsche Antworten benötigen weiterhin einen Klick auf Weiter.
         document.getElementById('nextButton').classList.remove('hidden');
         document.getElementById('nextButton').focus();
       }
@@ -383,9 +349,91 @@
 
       page = page.replace("</head>", styles + "</head>");
 
-      /* JAVASCRIPT-DATEIEN IN DER RICHTIGEN REIHENFOLGE LADEN */
+      /*
+       * SCRIPTS LADEN
+       *
+       * Reihenfolge:
+       * 1. Alter Vokabel-Patch
+       * 2. Vorlesefunktion als letzte Überschreibung
+       * 3. ZUNO AI
+       * 4. Fortschritt
+       * 5. Spiele
+       */
+      const speechFixScript = `
+        <script>
+        (function() {
+          window.speakCurrentWord = function() {
+            if (
+              !('speechSynthesis' in window) ||
+              typeof SpeechSynthesisUtterance === 'undefined'
+            ) {
+              const feedback = document.getElementById('feedbackArea');
+              if (feedback) {
+                feedback.innerHTML =
+                  '<div class="feedback bad" role="status">' +
+                  'Die Sprachausgabe wird von diesem Browser nicht unterstützt.' +
+                  '</div>';
+              }
+              return;
+            }
+
+            const word = state.session[state.index];
+            if (!word) return;
+
+            /*
+             * Normal / Choice:
+             * Das englische oder französische Wort wird angezeigt.
+             *
+             * Reverse:
+             * Die deutsche Übersetzung wird angezeigt.
+             */
+            const isReverse = state.currentMode === 'reverse';
+            const text = isReverse ? word.translation : word.word;
+
+            const languageCode = isReverse
+              ? 'de-DE'
+              : word.language === 'fr'
+                ? 'fr-FR'
+                : 'en-AU';
+
+            try {
+              window.speechSynthesis.cancel();
+
+              const utterance = new SpeechSynthesisUtterance(text);
+              utterance.lang = languageCode;
+              utterance.rate = 0.88;
+              utterance.pitch = 1;
+
+              const voices = window.speechSynthesis.getVoices();
+              const prefix = languageCode.slice(0, 2).toLowerCase();
+
+              const matching = voices.filter(voice =>
+                voice.lang &&
+                voice.lang.toLowerCase().startsWith(prefix)
+              );
+
+              const preferred =
+                matching.find(voice =>
+                  voice.lang.toLowerCase() === languageCode.toLowerCase()
+                ) || matching[0];
+
+              if (preferred) {
+                utterance.voice = preferred;
+              }
+
+              window.speechSynthesis.speak(utterance);
+
+            } catch (error) {
+              console.error('ZUNO speech error:', error);
+            }
+          };
+        })();
+        <\/script>
+      `;
+
       const scripts =
         "<script>\n" + patch + "\n<\/script>" +
+        speechFixScript +
         '<script src="' + moduleBase + "zuno-ai.js" + version + '"><\/script>' +
         '<script src="' + moduleBase + "progress.js" + version + '"><\/script>' +
         '<script src="' + moduleBase + "games.js" + version + '"><\/script>';
