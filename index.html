@@ -97,7 +97,7 @@
       "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
 
     const moduleBase = "./";
-    const version = "?v=11";
+    const version = "?v=12";
     const status = document.getElementById("status");
 
     async function fetchText(url) {
@@ -122,10 +122,18 @@
       }
 
       const contentStart = patchStart + startMarker.length;
-      const openingBacktick = previousLoader.indexOf("", contentStart);
+
+      /* PATCH KORREKT AUSLESEN */
+      const openingBacktick = previousLoader.indexOf("`", contentStart);
       const tryMarker = "\n    try {";
-      const tryPosition = previousLoader.indexOf(tryMarker, openingBacktick);
-      const closingBacktick = previousLoader.lastIndexOf(";", tryPosition);
+      const tryPosition = previousLoader.indexOf(
+        tryMarker,
+        openingBacktick + 1
+      );
+      const closingBacktick = previousLoader.lastIndexOf(
+        "`",
+        tryPosition
+      );
 
       if (
         openingBacktick === -1 ||
@@ -887,6 +895,7 @@
             if (streakElement) streakElement.textContent = streak;
           }
 
+          /* COSMETICS RENDERN */
           function renderCosmetics() {
             const grid = document.getElementById("zunoCosmeticGrid");
             if (!grid) return;
@@ -912,18 +921,22 @@
                 buttonText = "Kaufen · " + item.price.toLocaleString("de-DE") + " XP";
               }
 
-              return \
-                <article class="zuno-cosmetic \${owned ? "owned" : ""} \${item.legendary ? "legendary" : ""}">
-                  <div class="zuno-cosmetic-visual">\${item.icon}</div>
-                  <h3>\${item.name}</h3>
-                  <p>\${item.description}</p>
-                  <button
-                    type="button"
-                    data-cosmetic-id="\${item.id}"
-                    \${disabled ? "disabled" : ""}
-                  >\${buttonText}</button>
-                </article>
-              \;
+              const classes = [
+                "zuno-cosmetic",
+                owned ? "owned" : "",
+                item.legendary ? "legendary" : ""
+              ].filter(Boolean).join(" ");
+
+              return (
+                '<article class="' + classes + '">' +
+                  '<div class="zuno-cosmetic-visual">' + item.icon + '</div>' +
+                  '<h3>' + item.name + '</h3>' +
+                  '<p>' + item.description + '</p>' +
+                  '<button type="button" data-cosmetic-id="' + item.id + '"' +
+                    (disabled ? ' disabled' : '') +
+                  '>' + buttonText + '</button>' +
+                '</article>'
+              );
             }).join("");
 
             grid.querySelectorAll("[data-cosmetic-id]").forEach(button => {
