@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="de">
 <head>
@@ -97,7 +98,7 @@
       "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
 
     const moduleBase = "./";
-    const version = "?v=12";
+    const version = "?v=13";
     const status = document.getElementById("status");
 
     async function fetchText(url) {
@@ -113,6 +114,7 @@
     try {
       status.textContent = "Lade deine bisherigen Lerninhalte ...";
 
+      /* BISHERIGEN ZUNO-PATCH LADEN */
       const previousLoader = await fetchText(oldLoader);
       const startMarker = "const patch = String.raw";
       const patchStart = previousLoader.indexOf(startMarker);
@@ -122,14 +124,14 @@
       }
 
       const contentStart = patchStart + startMarker.length;
-
-      /* PATCH KORREKT AUSLESEN */
       const openingBacktick = previousLoader.indexOf("`", contentStart);
       const tryMarker = "\n    try {";
+
       const tryPosition = previousLoader.indexOf(
         tryMarker,
         openingBacktick + 1
       );
+
       const closingBacktick = previousLoader.lastIndexOf(
         "`",
         tryPosition
@@ -140,7 +142,7 @@
         tryPosition === -1 ||
         closingBacktick <= openingBacktick
       ) {
-        throw new Error("Der Vokabel-Patch konnte nicht vollständig gelesen werden.");
+        throw new Error("Der bisherige Vokabel-Patch konnte nicht gelesen werden.");
       }
 
       let patch = previousLoader.slice(
@@ -158,7 +160,7 @@
         throw new Error("Die geladene ZUNO-Datei ist unvollständig.");
       }
 
-      /* AUTOMATISCHES BEENDEN DER LETZTEN FRAGE */
+      /* LETZTE FRAGE AUTOMATISCH ABSCHLIESSEN */
       const answerPattern =
         /      updateDashboard\(\);\n\n      if \(isCorrect\) \{[\s\S]*?\n      \}\n    \}\n\n    function recordSchoolAnswer/;
 
@@ -213,12 +215,25 @@
         '⚡ <span id="headerXP">0</span> XP</button>';
 
       if (!page.includes(oldXPButton)) {
-        throw new Error("Der XP-Button in der Original-App wurde nicht gefunden.");
+        throw new Error("Der XP-Button wurde in der Original-App nicht gefunden.");
       }
 
       page = page.replace(oldXPButton, newXPButton);
 
-      /* NEUE SEITEN */
+      /* DASHBOARD: LERNKARTEN ENTFERNEN */
+      const dashboardCardsPattern =
+        /      <h2>Was möchtest du üben\?<\/h2>\s*<div class="card-grid">[\s\S]*?<\/div>\s*<\/section>/;
+
+      if (!dashboardCardsPattern.test(page)) {
+        throw new Error("Der alte Lernbereich auf dem Dashboard wurde nicht gefunden.");
+      }
+
+      page = page.replace(
+        dashboardCardsPattern,
+        "    </section>"
+      );
+
+      /* SEITEN FÜR DIE NEUE NAVIGATION */
       const newPages = `
         <section id="xpPage" class="hidden zuno-page">
           <div class="zuno-page-heading">
@@ -241,6 +256,7 @@
               <h3>XP verdienen</h3>
               <p>Für jede richtige Antwort erhältst du 10 XP.</p>
             </article>
+
             <article class="zuno-info-card">
               <span>🎮</span>
               <h3>XP ausgeben</h3>
@@ -250,7 +266,7 @@
 
           <div class="zuno-streak-card">
             🔥 <strong><span id="zunoXPStreak">0</span>-Tage-Streak</strong>
-            <p>Bleib täglich dran, um weitere Spiele freizuschalten.</p>
+            <p>Bleib täglich dran, um deinen Fortschritt aufzubauen.</p>
           </div>
 
           <button class="zuno-wide-button" onclick="showArcadePage()">
@@ -262,8 +278,9 @@
           <div class="zuno-page-heading">
             <span class="zuno-eyebrow">ZEIT FÜR EINE RUNDE?</span>
             <h1>🎮 ZUNO Arcade</h1>
-            <p>Gib deine verdienten XP für Spielrunden aus.</p>
+            <p>Spiele kleine Games und sammle XP.</p>
           </div>
+
           <div id="zunoArcade">
             <div class="zuno-game-grid" id="zunoGameGrid"></div>
           </div>
@@ -273,46 +290,123 @@
           <div class="zuno-page-heading">
             <span class="zuno-eyebrow">DEIN TRAINING</span>
             <h1>Lernen.</h1>
-            <p>Wähle, wie du heute üben möchtest.</p>
+            <p>Wähle eine Sprache, um loszulegen.</p>
+          </div>
+
+          <div class="zuno-language-grid">
+            <button class="zuno-language-card" onclick="zunoChooseLanguage('en')">
+              <span class="zuno-language-flag">🇬🇧</span>
+              <span class="zuno-language-name">Englisch</span>
+              <span class="zuno-language-description">English vocabulary</span>
+              <span class="zuno-language-arrow">→</span>
+            </button>
+
+            <button class="zuno-language-card" onclick="zunoChooseLanguage('fr')">
+              <span class="zuno-language-flag">🇫🇷</span>
+              <span class="zuno-language-name">Französisch</span>
+              <span class="zuno-language-description">Vocabulaire français</span>
+              <span class="zuno-language-arrow">→</span>
+            </button>
+          </div>
+        </section>
+
+        <section id="englishLearningPage" class="hidden zuno-page">
+          <button class="zuno-back-button" onclick="zunoNavigate('learning')">
+            ← Sprachauswahl
+          </button>
+
+          <div class="zuno-page-heading">
+            <span class="zuno-eyebrow">ENGLISH</span>
+            <h1>Englisch.</h1>
+            <p>Wie möchtest du deinen Wortschatz trainieren?</p>
           </div>
 
           <div class="zuno-info-grid">
             <article class="zuno-info-card">
               <span>🌍</span>
               <h3>Allgemein üben</h3>
-              <p>Trainiere deinen Wortschatz nach Sprache und Niveau.</p>
-              <button class="zuno-card-button" onclick="showGeneralSettings()">
+              <p>Trainiere deinen allgemeinen englischen Wortschatz.</p>
+              <button class="zuno-card-button" onclick="zunoStartGeneral('en')">
                 Allgemein üben
               </button>
             </article>
 
             <article class="zuno-info-card">
               <span>📚</span>
-              <h3>Schulvokabeln</h3>
-              <p>Übe deine Vokabeln aus den einzelnen Units.</p>
-              <button class="zuno-card-button" onclick="showUnitSettings()">
+              <h3>Nach Units üben</h3>
+              <p>Übe die Vokabeln aus deinem Englischbuch.</p>
+              <button class="zuno-card-button" onclick="zunoStartUnits('en')">
                 Units öffnen
               </button>
             </article>
           </div>
         </section>
 
-        <section id="shopPage" class="hidden zuno-page">
+        <section id="frenchLearningPage" class="hidden zuno-page">
+          <button class="zuno-back-button" onclick="zunoNavigate('learning')">
+            ← Sprachauswahl
+          </button>
+
           <div class="zuno-page-heading">
-            <span class="zuno-eyebrow">ZUNO EXTRAS</span>
-            <h1>Der Shop.</h1>
-            <p>Gib deine XP aus und gestalte dein ZUNO-Erlebnis.</p>
+            <span class="zuno-eyebrow">FRANÇAIS</span>
+            <h1>Französisch.</h1>
+            <p>Comment veux-tu t'entraîner aujourd'hui?</p>
           </div>
 
-          <div class="zuno-shop-balance">
-            ⚡ <strong><span id="zunoShopXP">0</span> XP</strong>
+          <div class="zuno-info-grid">
+            <article class="zuno-info-card">
+              <span>🌍</span>
+              <h3>Allgemein üben</h3>
+              <p>Trainiere deinen allgemeinen französischen Wortschatz.</p>
+              <button class="zuno-card-button" onclick="zunoStartGeneral('fr')">
+                Allgemein üben
+              </button>
+            </article>
+
+            <article class="zuno-info-card">
+              <span>📚</span>
+              <h3>Nach Unités üben</h3>
+              <p>Übe die Vokabeln aus deinem Französischbuch.</p>
+              <button class="zuno-card-button" onclick="zunoStartUnits('fr')">
+                Unités öffnen
+              </button>
+            </article>
+          </div>
+        </section>
+
+        <section id="frenchUnitSettings" class="hidden zuno-page">
+          <button class="zuno-back-button" onclick="zunoNavigate('french')">
+            ← Französisch
+          </button>
+
+          <div class="zuno-page-heading">
+            <span class="zuno-eyebrow">FRANÇAIS · VOCABULAIRE SCOLAIRE</span>
+            <h1>Nach Unités üben.</h1>
+            <p>Wähle eine Unité und anschließend einen Atelier-Bereich.</p>
           </div>
 
-          <div id="zunoCosmeticGrid" class="zuno-cosmetic-grid"></div>
+          <div class="zuno-selection-panel">
+            <label for="zunoFrenchUnit">Unité</label>
+            <select id="zunoFrenchUnit">
+              <option value="unite1">Unité 1 · De l'ouest à l'est dans le Grand Est</option>
+              <option value="unite2">Unité 2 · France - Allemagne: quelle histoire!</option>
+            </select>
 
-          <p class="zuno-shop-note">
-            Deine gekauften Cosmetics bleiben auf diesem Gerät gespeichert.
-          </p>
+            <label for="zunoFrenchAtelier">Atelier / Bereich</label>
+            <select id="zunoFrenchAtelier">
+              <option value="all">Alle Bereiche</option>
+              <option value="rappelles">Tu te rappelles?</option>
+              <option value="atelierA">Atelier A</option>
+              <option value="atelierB">Atelier B</option>
+              <option value="atelierC">Atelier C</option>
+              <option value="atelierD">Atelier D</option>
+              <option value="dico">Mon dico personnel</option>
+            </select>
+
+            <button class="zuno-card-button" onclick="startFrenchUnit()">
+              Training starten
+            </button>
+          </div>
         </section>
 
         <section id="adminPage" class="hidden zuno-page">
@@ -333,6 +427,7 @@
               <button class="zuno-admin-button" onclick="zunoTestStreak()">
                 +1 Streak
               </button>
+
               <button class="zuno-admin-button secondary" onclick="zunoResetTestStreak()">
                 Reset Streak
               </button>
@@ -365,12 +460,12 @@
 
       page = page.replace("</main>", newPages + "</main>");
 
-      /* NEUE SEITEN IN showOnly AUFNEHMEN */
+      /* NEUE SEITEN IN DIE SEITENNAVIGATION AUFNEHMEN */
       const oldPageList =
         "['dashboard', 'settings', 'unitSettings', 'exercise', 'result', 'statsPage']";
 
       const newPageList =
-        "['dashboard', 'settings', 'unitSettings', 'exercise', 'result', 'statsPage', 'xpPage', 'arcadePage', 'learningPage', 'shopPage', 'adminPage']";
+        "['dashboard', 'settings', 'unitSettings', 'exercise', 'result', 'statsPage', 'xpPage', 'arcadePage', 'learningPage', 'englishLearningPage', 'frenchLearningPage', 'frenchUnitSettings', 'adminPage']";
 
       if (!page.includes(oldPageList)) {
         throw new Error("Die Seitennavigation der App wurde nicht gefunden.");
@@ -378,7 +473,17 @@
 
       page = page.replace(oldPageList, newPageList);
 
-      /* SIDEBAR + SHOP + ADMIN STYLES */
+      /* ALLGEMEINE SPRACHAUSWAHL AUSBLENDEN */
+      const languageSettingsPattern =
+        /        <label for="generalLanguage"[\s\S]*?<\/select>\s*/;
+
+      if (!languageSettingsPattern.test(page)) {
+        throw new Error("Die Sprachauswahl in den allgemeinen Einstellungen wurde nicht gefunden.");
+      }
+
+      page = page.replace(languageSettingsPattern, "");
+
+      /* NEUE STYLES */
       const styles = `
         <link rel="stylesheet" href="${moduleBase}games.css${version}">
         <link rel="stylesheet" href="${moduleBase}animations.css${version}">
@@ -460,9 +565,7 @@
             font-size: 11px;
           }
 
-          body > header {
-            padding-left: 34px;
-          }
+          body > header { padding-left: 34px; }
 
           body > main {
             max-width: 1120px;
@@ -475,17 +578,9 @@
             padding-bottom: 50px;
           }
 
-          .zuno-page-heading {
-            margin: 10px 0 25px;
-          }
-
-          .zuno-page-heading h1 {
-            margin: 8px 0;
-          }
-
-          .zuno-page-heading p {
-            max-width: 620px;
-          }
+          .zuno-page-heading { margin: 10px 0 25px; }
+          .zuno-page-heading h1 { margin: 8px 0; }
+          .zuno-page-heading p { max-width: 620px; }
 
           .zuno-eyebrow {
             color: #7d69e8;
@@ -536,7 +631,10 @@
             background: #fff7e9;
           }
 
-          .zuno-streak-card p { margin: 5px 0 0 28px; font-size: 13px; }
+          .zuno-streak-card p {
+            margin: 5px 0 0 28px;
+            font-size: 13px;
+          }
 
           .zuno-wide-button,
           .zuno-card-button {
@@ -545,6 +643,7 @@
             background: #7d69e8;
             color: white;
             font-weight: 800;
+            cursor: pointer;
           }
 
           .zuno-wide-button {
@@ -557,73 +656,93 @@
 
           .zuno-card-button { margin-top: 8px; }
 
-          .zuno-shop-balance {
-            display: inline-flex;
-            padding: 12px 17px;
-            margin-bottom: 20px;
-            border-radius: 14px;
-            background: #f0edff;
-            color: #6351c7;
-            font-weight: 900;
-          }
-
-          .zuno-cosmetic-grid {
+          .zuno-language-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
-            gap: 16px;
+            grid-template-columns: repeat(2,minmax(0,1fr));
+            gap: 18px;
+            margin-top: 25px;
           }
 
-          .zuno-cosmetic {
-            padding: 20px;
+          .zuno-language-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-height: 190px;
+            padding: 25px;
             border: 1px solid var(--zuno-line);
-            border-radius: 19px;
+            border-radius: 22px;
+            background: white;
+            text-align: left;
+            cursor: pointer;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+          }
+
+          .zuno-language-card:hover {
+            transform: translateY(-3px);
+            border-color: #c9bfff;
+            box-shadow: 0 14px 30px #6351c71a;
+          }
+
+          .zuno-language-flag { font-size: 35px; }
+          .zuno-language-name {
+            margin-top: 17px;
+            font-size: 21px;
+            font-weight: 850;
+            color: var(--zuno-dark);
+          }
+
+          .zuno-language-description {
+            margin-top: 5px;
+            color: var(--zuno-muted);
+            font-size: 13px;
+          }
+
+          .zuno-language-arrow {
+            position: absolute;
+            right: 23px;
+            bottom: 23px;
+            color: #7d69e8;
+            font-size: 22px;
+          }
+
+          .zuno-back-button {
+            margin: 0 0 20px;
+            padding: 9px 0;
+            background: transparent;
+            color: #6d7283;
+            font-weight: 750;
+            cursor: pointer;
+          }
+
+          .zuno-selection-panel {
+            max-width: 650px;
+            padding: 24px;
+            border: 1px solid var(--zuno-line);
+            border-radius: 20px;
             background: white;
           }
 
-          .zuno-cosmetic.owned {
-            border-color: #c9ef9a;
-            background: #fbfff6;
-          }
-
-          .zuno-cosmetic-visual {
-            display: grid;
-            place-items: center;
-            height: 100px;
-            margin-bottom: 14px;
-            border-radius: 15px;
-            background: #f3f0ff;
-            font-size: 42px;
-          }
-
-          .zuno-cosmetic.legendary .zuno-cosmetic-visual {
-            background: linear-gradient(135deg,#282044,#6950a9);
-          }
-
-          .zuno-cosmetic h3 { margin: 0 0 5px; }
-          .zuno-cosmetic p { min-height: 40px; font-size: 13px; }
-
-          .zuno-cosmetic button {
-            width: 100%;
-            padding: 11px;
-            border-radius: 11px;
-            background: #7d69e8;
-            color: white;
+          .zuno-selection-panel label {
+            display: block;
+            margin: 15px 0 8px;
+            font-size: 13px;
             font-weight: 800;
           }
 
-          .zuno-cosmetic button:disabled {
-            background: #e8e6ef;
-            color: #777;
+          .zuno-selection-panel select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid var(--zuno-line);
+            border-radius: 11px;
+            background: #fff;
+            color: var(--zuno-dark);
+            font: inherit;
           }
 
-          .zuno-cosmetic.legendary {
-            border: 1px solid #a98bea;
-            box-shadow: 0 8px 25px #8d6bd51c;
-          }
-
-          .zuno-shop-note {
-            margin-top: 18px;
-            font-size: 12px;
+          .zuno-selection-panel button {
+            width: 100%;
+            margin-top: 20px;
           }
 
           .zuno-admin-card { margin: 18px 0; }
@@ -641,6 +760,7 @@
             background: #7d69e8;
             color: white;
             font-weight: 800;
+            cursor: pointer;
           }
 
           .zuno-admin-button.secondary {
@@ -680,7 +800,7 @@
             .zuno-nav {
               height: 100%;
               display: grid;
-              grid-template-columns: repeat(6,minmax(0,1fr));
+              grid-template-columns: repeat(5,minmax(0,1fr));
               gap: 2px;
             }
 
@@ -703,7 +823,8 @@
 
             body > header { padding: 13px 15px; }
             body > main { padding: 0 15px; margin-top: 20px; }
-            .zuno-info-grid { grid-template-columns: 1fr; }
+            .zuno-info-grid,
+            .zuno-language-grid { grid-template-columns: 1fr; }
           }
 
           @media (max-width: 390px) {
@@ -715,7 +836,7 @@
 
       page = page.replace("</head>", styles + "</head>");
 
-      /* SIDEBAR HTML */
+      /* SIDEBAR */
       const sidebar = `
         <aside id="zunoSidebar">
           <div class="zuno-sidebar-logo">ZUNO.</div>
@@ -725,18 +846,19 @@
             <button type="button" onclick="zunoNavigate('menu')" data-zuno-nav="menu">
               <span class="zuno-nav-icon">⌂</span><span>Menü</span>
             </button>
+
             <button type="button" onclick="zunoNavigate('learning')" data-zuno-nav="learning">
               <span class="zuno-nav-icon">📚</span><span>Lernen</span>
             </button>
+
             <button type="button" onclick="zunoNavigate('stats')" data-zuno-nav="stats">
               <span class="zuno-nav-icon">▥</span><span>Stats</span>
             </button>
+
             <button type="button" onclick="zunoNavigate('arcade')" data-zuno-nav="arcade">
               <span class="zuno-nav-icon">🎮</span><span>Arcade</span>
             </button>
-            <button type="button" onclick="zunoNavigate('shop')" data-zuno-nav="shop">
-              <span class="zuno-nav-icon">✦</span><span>Shop</span>
-            </button>
+
             <button type="button" onclick="zunoNavigate('admin')" data-zuno-nav="admin">
               <span class="zuno-nav-icon">⚙</span><span>Admin</span>
             </button>
@@ -748,7 +870,7 @@
 
       page = page.replace("<body>", "<body>\n" + sidebar);
 
-      /* SPEECH OUTPUT */
+      /* SPRACHAUSGABE */
       const speechFixScript = `
         <script>
         (function() {
@@ -758,12 +880,14 @@
               typeof SpeechSynthesisUtterance === 'undefined'
             ) {
               const feedback = document.getElementById('feedbackArea');
+
               if (feedback) {
                 feedback.innerHTML =
                   '<div class="feedback bad" role="status">' +
                   'Die Sprachausgabe wird von diesem Browser nicht unterstützt.' +
                   '</div>';
               }
+
               return;
             }
 
@@ -810,178 +934,28 @@
         <\/script>
       `;
 
-      /* NAVIGATION, SHOP UND ADMIN LOGIK */
+      /* NAVIGATION, XP UND ADMIN */
       const appEnhancements = `
         <script>
         (() => {
           "use strict";
 
           const ADMIN_PASSWORD = "iLoveKiU";
-          const COSMETICS_KEY = "zuno_cosmetics_v1";
           const STREAK_SNAPSHOT_KEY = "zuno_admin_streak_snapshot_v1";
 
           let adminUnlocked = false;
-
-          const cosmetics = [
-            {
-              id: "mint",
-              name: "Mint Glow",
-              description: "Ein frischer grüner Look.",
-              icon: "🌿",
-              price: 350
-            },
-            {
-              id: "sunset",
-              name: "Sunset Aura",
-              description: "Warme Farben für dein Profil.",
-              icon: "🌅",
-              price: 600
-            },
-            {
-              id: "ocean",
-              name: "Ocean Wave",
-              description: "Ein ruhiger Look in Meeresfarben.",
-              icon: "🌊",
-              price: 850
-            },
-            {
-              id: "royal",
-              name: "Royal Spark",
-              description: "Ein besonderer violetter Style.",
-              icon: "💎",
-              price: 1200
-            },
-            {
-              id: "galaxy",
-              name: "GALAXY LEGEND",
-              description: "Das seltenste Cosmetic im ZUNO-Shop.",
-              icon: "🌌",
-              price: 2500,
-              legendary: true
-            }
-          ];
-
-          function getCosmeticData() {
-            try {
-              const data = JSON.parse(localStorage.getItem(COSMETICS_KEY) || "{}");
-              return {
-                owned: Array.isArray(data.owned) ? data.owned : [],
-                equipped: data.equipped || null
-              };
-            } catch (_) {
-              return { owned: [], equipped: null };
-            }
-          }
-
-          function saveCosmeticData(data) {
-            localStorage.setItem(COSMETICS_KEY, JSON.stringify(data));
-          }
+          let selectedLanguage = "en";
 
           function refreshXPDisplays() {
             const xp = Number(state.xp) || 0;
 
-            [
-              "zunoXPBalance",
-              "zunoArcadeXP",
-              "zunoShopXP"
-            ].forEach(id => {
-              const element = document.getElementById(id);
-              if (element) element.textContent = xp;
-            });
+            const balance = document.getElementById("zunoXPBalance");
+            if (balance) balance.textContent = xp;
 
             const streak = Number(state.streak) || 0;
             const streakElement = document.getElementById("zunoXPStreak");
 
             if (streakElement) streakElement.textContent = streak;
-          }
-
-          /* COSMETICS RENDERN */
-          function renderCosmetics() {
-            const grid = document.getElementById("zunoCosmeticGrid");
-            if (!grid) return;
-
-            const data = getCosmeticData();
-
-            grid.innerHTML = cosmetics.map(item => {
-              const owned = data.owned.includes(item.id);
-              const equipped = data.equipped === item.id;
-
-              let buttonText = "⚡ " + item.price.toLocaleString("de-DE") + " XP";
-              let disabled = false;
-
-              if (equipped) {
-                buttonText = "✓ Ausgerüstet";
-                disabled = true;
-              } else if (owned) {
-                buttonText = "Ausrüsten";
-              } else if (state.xp < item.price) {
-                buttonText = "Zu wenig XP";
-                disabled = true;
-              } else {
-                buttonText = "Kaufen · " + item.price.toLocaleString("de-DE") + " XP";
-              }
-
-              const classes = [
-                "zuno-cosmetic",
-                owned ? "owned" : "",
-                item.legendary ? "legendary" : ""
-              ].filter(Boolean).join(" ");
-
-              return (
-                '<article class="' + classes + '">' +
-                  '<div class="zuno-cosmetic-visual">' + item.icon + '</div>' +
-                  '<h3>' + item.name + '</h3>' +
-                  '<p>' + item.description + '</p>' +
-                  '<button type="button" data-cosmetic-id="' + item.id + '"' +
-                    (disabled ? ' disabled' : '') +
-                  '>' + buttonText + '</button>' +
-                '</article>'
-              );
-            }).join("");
-
-            grid.querySelectorAll("[data-cosmetic-id]").forEach(button => {
-              button.addEventListener("click", () => {
-                buyOrEquipCosmetic(button.dataset.cosmeticId);
-              });
-            });
-
-            refreshXPDisplays();
-          }
-
-          function buyOrEquipCosmetic(id) {
-            const item = cosmetics.find(cosmetic => cosmetic.id === id);
-            if (!item) return;
-
-            const data = getCosmeticData();
-
-            if (data.owned.includes(id)) {
-              data.equipped = id;
-              saveCosmeticData(data);
-              renderCosmetics();
-              return;
-            }
-
-            if (state.xp < item.price) {
-              alert("Du hast noch nicht genug XP für dieses Cosmetic.");
-              return;
-            }
-
-            if (!confirm(item.name + " für " + item.price + " XP kaufen?")) {
-              return;
-            }
-
-            state.xp -= item.price;
-            data.owned.push(id);
-            data.equipped = id;
-
-            saveState();
-            saveCosmeticData(data);
-
-            if (typeof updateDashboard === "function") {
-              updateDashboard();
-            }
-
-            renderCosmetics();
           }
 
           function updateStreakStatus() {
@@ -1023,13 +997,17 @@
             alert("Dein ursprünglicher Streak wurde wiederhergestellt.");
           };
 
-          window.zunoNavigate = function(destination) {
+          function setActiveNavigation(destination) {
             document.querySelectorAll("[data-zuno-nav]").forEach(button => {
               button.classList.toggle(
                 "active",
                 button.dataset.zunoNav === destination
               );
             });
+          }
+
+          window.zunoNavigate = function(destination) {
+            setActiveNavigation(destination);
 
             switch (destination) {
               case "menu":
@@ -1048,14 +1026,60 @@
                 showArcadePage();
                 break;
 
-              case "shop":
-                showShopPage();
-                break;
-
               case "admin":
                 showAdminPage();
                 break;
+
+              case "french":
+                showOnly("frenchLearningPage");
+                break;
             }
+          };
+
+          window.zunoChooseLanguage = function(language) {
+            selectedLanguage = language;
+
+            if (language === "fr") {
+              showOnly("frenchLearningPage");
+            } else {
+              showOnly("englishLearningPage");
+            }
+          };
+
+          window.zunoStartGeneral = function(language) {
+            selectedLanguage = language;
+
+            const languageSelect = document.getElementById("generalLanguage");
+
+            if (languageSelect) {
+              languageSelect.value = language;
+            }
+
+            state.sessionLanguage = language;
+            showGeneralSettings();
+          };
+
+          window.zunoStartUnits = function(language) {
+            selectedLanguage = language;
+
+            if (language === "fr") {
+              showOnly("frenchUnitSettings");
+              return;
+            }
+
+            showUnitSettings();
+          };
+
+          window.startFrenchUnit = function() {
+            const unit = document.getElementById("zunoFrenchUnit").value;
+            const atelier = document.getElementById("zunoFrenchAtelier").value;
+
+            if (window.ZUNOFrench && typeof window.ZUNOFrench.startUnit === "function") {
+              window.ZUNOFrench.startUnit(unit, atelier);
+              return;
+            }
+
+            alert("Die französischen Vokabeln werden im nächsten Schritt eingebunden.");
           };
 
           window.showXPPage = function() {
@@ -1070,11 +1094,6 @@
             if (typeof renderArcade === "function") {
               renderArcade();
             }
-          };
-
-          window.showShopPage = function() {
-            showOnly("shopPage");
-            renderCosmetics();
           };
 
           window.showAdminPage = function() {
@@ -1092,20 +1111,44 @@
             showOnly("adminPage");
             updateStreakStatus();
 
-            if (window.ZUNOAI && typeof ZUNOAI.updateSuggestionPanel === "function") {
-              ZUNOAI.updateSuggestionPanel();
+            if (
+              window.ZUNOAI &&
+              typeof window.ZUNOAI.updateSuggestionPanel === "function"
+            ) {
+              window.ZUNOAI.updateSuggestionPanel();
             }
           };
 
-          document.addEventListener("DOMContentLoaded", () => {
-            renderCosmetics();
-            refreshXPDisplays();
-          });
+          /* ENGLISCH UND FRANZÖSISCH AUSWAHL IN DEN EINSTELLUNGEN */
+          const originalShowGeneralSettings = window.showGeneralSettings;
 
-          window.addEventListener("load", () => {
-            renderCosmetics();
-            refreshXPDisplays();
-          });
+          window.showGeneralSettings = function() {
+            const languageSelect = document.getElementById("generalLanguage");
+
+            if (languageSelect) {
+              languageSelect.value = selectedLanguage;
+            }
+
+            if (typeof originalShowGeneralSettings === "function") {
+              originalShowGeneralSettings();
+            }
+          };
+
+          const originalShowUnitSettings = window.showUnitSettings;
+
+          window.showUnitSettings = function() {
+            if (selectedLanguage === "fr") {
+              showOnly("frenchUnitSettings");
+              return;
+            }
+
+            if (typeof originalShowUnitSettings === "function") {
+              originalShowUnitSettings();
+            }
+          };
+
+          document.addEventListener("DOMContentLoaded", refreshXPDisplays);
+          window.addEventListener("load", refreshXPDisplays);
         })();
         <\/script>
       `;
