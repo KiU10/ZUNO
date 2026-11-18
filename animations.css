@@ -1,56 +1,97 @@
+
 /* =========================================
    ZUNO ANIMATIONS
+   Smooth UI · Feedback · Arcade
 ========================================= */
 
-/* Richtige Antwort */
+/* =========================================
+   PAGE TRANSITIONS
+========================================= */
+
+.zuno-page:not(.hidden) {
+  animation: zunoPageIn .38s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes zunoPageIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   CORRECT ANSWERS
+========================================= */
 
 .word-card.zuno-correct {
-  animation: zunoCardBounce .55s ease;
+  animation: zunoCardBounce .55s cubic-bezier(.2, .8, .2, 1);
   box-shadow:
-    0 0 0 3px rgba(125, 210, 120, .35),
-    0 0 35px rgba(125, 210, 120, .45);
+    0 0 0 3px rgba(125, 210, 120, .28),
+    0 8px 30px rgba(125, 210, 120, .22);
 }
 
 .feedback.good {
-  animation: zunoSuccessPop .35s cubic-bezier(.2, 1.5, .5, 1);
+  animation: zunoSuccessPop .4s cubic-bezier(.2, 1.3, .4, 1);
+  transform-origin: center;
 }
 
 .option.correct {
-  animation: zunoCorrectOption .4s ease;
+  animation: zunoCorrectOption .42s cubic-bezier(.2, .8, .2, 1);
 }
 
 @keyframes zunoCardBounce {
-  0% { transform: scale(1); }
-  35% { transform: scale(1.025) translateY(-4px); }
-  65% { transform: scale(.99); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.025) translateY(-4px);
+  }
+  65% {
+    transform: scale(.99);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes zunoSuccessPop {
   0% {
     opacity: 0;
-    transform: scale(.85) translateY(8px);
+    transform: scale(.88) translateY(8px);
   }
-  70% {
+  65% {
     opacity: 1;
-    transform: scale(1.04);
+    transform: scale(1.045) translateY(-2px);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
   }
 }
 
 @keyframes zunoCorrectOption {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.035); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.035);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
-/* Streak */
+/* =========================================
+   STREAK
+========================================= */
 
 .zuno-streak-burst {
-  animation: zunoStreakBurst 1s ease;
+  animation: zunoStreakBurst .9s cubic-bezier(.2, .8, .2, 1);
+  transform-origin: center;
 }
 
 .zuno-streak-toast {
@@ -65,7 +106,8 @@
   color: #89501b;
   font-weight: 900;
   box-shadow: 0 8px 30px rgba(50, 40, 20, .15);
-  animation: zunoStreakBurst 1s ease;
+  animation: zunoStreakToastIn .55s cubic-bezier(.2, 1.2, .3, 1) both;
+  will-change: transform, opacity;
 }
 
 @keyframes zunoStreakBurst {
@@ -74,7 +116,7 @@
     filter: drop-shadow(0 0 0 transparent);
   }
   35% {
-    transform: scale(1.12);
+    transform: scale(1.13);
     filter: drop-shadow(0 0 12px #ff9b36);
   }
   65% {
@@ -87,78 +129,91 @@
   }
 }
 
-/* XP */
+/* Behält die horizontale Zentrierung während der Animation bei. */
+@keyframes zunoStreakToastIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-16px) scale(.9);
+  }
+  65% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(2px) scale(1.035);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+/* =========================================
+   XP FEEDBACK
+========================================= */
 
 .zuno-xp-pop {
-  animation: zunoXpPop .45s ease;
+  animation: zunoXpPop .5s cubic-bezier(.2, 1.3, .4, 1);
+  transform-origin: center;
 }
 
 @keyframes zunoXpPop {
-  0% { transform: scale(1); }
-  45% {
-    transform: scale(1.2);
-    color: #7d69e8;
+  0% {
+    transform: scale(1);
   }
-  100% { transform: scale(1); }
+  40% {
+    transform: scale(1.22);
+    color: #7d69e8;
+    text-shadow: 0 0 12px rgba(125, 105, 232, .35);
+  }
+  70% {
+    transform: scale(.96);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
-/* Arcade */
+/* =========================================
+   XP PAGE
+========================================= */
 
-.zuno-game-card {
+.zuno-xp-balance {
+  animation: zunoBalanceIn .55s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.zuno-info-card {
+  animation: zunoInfoIn .5s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.zuno-info-card:nth-child(2) {
+  animation-delay: .09s;
+}
+
+.zuno-streak-card {
+  animation: zunoInfoIn .5s cubic-bezier(.22, 1, .36, 1) .14s both;
+}
+
+.zuno-wide-button {
+  animation: zunoCtaIn .55s cubic-bezier(.22, 1, .36, 1) .18s both;
   transition:
     transform .2s ease,
     box-shadow .2s ease,
-    border-color .2s ease;
-}
-
-.zuno-game-card.locked {
-  filter: grayscale(.75);
-  opacity: .7;
-}
-
-.zuno-game-overlay {
-  animation: zunoOverlayIn .25s ease;
-}
-
-@keyframes zunoOverlayIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* XP-Seite */
-
-.zuno-xp-balance {
-  animation: zunoBalanceIn .45s ease both;
-}
-
-.zuno-xp-info-card {
-  animation: zunoInfoIn .45s ease both;
-}
-
-.zuno-xp-info-card:nth-child(2) {
-  animation-delay: .08s;
-}
-
-.zuno-arcade-cta {
-  animation: zunoCtaIn .5s ease both;
-  animation-delay: .12s;
+    background .2s ease;
 }
 
 @keyframes zunoBalanceIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(16px) scale(.985);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes zunoInfoIn {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(15px);
   }
   to {
     opacity: 1;
@@ -169,7 +224,7 @@
 @keyframes zunoCtaIn {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -177,7 +232,154 @@
   }
 }
 
-/* Reduced motion */
+/* =========================================
+   SHOP / COSMETICS
+========================================= */
+
+.zuno-cosmetic {
+  animation: zunoCosmeticIn .45s cubic-bezier(.22, 1, .36, 1) both;
+  transition:
+    transform .22s ease,
+    box-shadow .22s ease,
+    border-color .22s ease;
+}
+
+.zuno-cosmetic:nth-child(2) {
+  animation-delay: .05s;
+}
+
+.zuno-cosmetic:nth-child(3) {
+  animation-delay: .1s;
+}
+
+.zuno-cosmetic:nth-child(4) {
+  animation-delay: .15s;
+}
+
+.zuno-cosmetic:nth-child(5) {
+  animation-delay: .2s;
+}
+
+.zuno-cosmetic-visual {
+  transition:
+    transform .25s ease,
+    background .25s ease;
+}
+
+.zuno-cosmetic button {
+  transition:
+    transform .16s ease,
+    filter .16s ease,
+    background .16s ease;
+}
+
+@keyframes zunoCosmeticIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =========================================
+   ARCADE
+========================================= */
+
+.zuno-game-card {
+  transition:
+    transform .22s cubic-bezier(.2, .8, .2, 1),
+    box-shadow .22s ease,
+    border-color .22s ease,
+    filter .22s ease;
+}
+
+.zuno-game-card.locked {
+  filter: grayscale(.75);
+  opacity: .7;
+}
+
+.zuno-game-overlay {
+  animation: zunoOverlayIn .25s ease both;
+}
+
+@keyframes zunoOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* =========================================
+   BUTTON INTERACTIONS
+========================================= */
+
+.zuno-wide-button:active,
+.zuno-card-button:active,
+.zuno-admin-button:active,
+.zuno-cosmetic button:not(:disabled):active {
+  transform: scale(.97);
+}
+
+.zuno-wide-button:focus-visible,
+.zuno-card-button:focus-visible,
+.zuno-admin-button:focus-visible,
+.zuno-cosmetic button:focus-visible {
+  outline: 3px solid rgba(125, 105, 232, .35);
+  outline-offset: 3px;
+}
+
+/* =========================================
+   NAVIGATION
+========================================= */
+
+.zuno-nav button {
+  transition:
+    background .18s ease,
+    color .18s ease,
+    transform .18s ease;
+}
+
+.zuno-nav button:active {
+  transform: scale(.96);
+}
+
+/* =========================================
+   HOVER EFFECTS
+========================================= */
+
+@media (hover: hover) and (pointer: fine) {
+  .zuno-game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(32, 33, 42, .1);
+  }
+
+  .zuno-cosmetic:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(32, 33, 42, .08);
+  }
+
+  .zuno-cosmetic:hover .zuno-cosmetic-visual {
+    transform: scale(1.035);
+  }
+
+  .zuno-wide-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(125, 105, 232, .25);
+  }
+
+  .zuno-cosmetic button:not(:disabled):hover {
+    filter: brightness(1.08);
+  }
+}
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
 
 @media (prefers-reduced-motion: reduce) {
   *,
