@@ -156,6 +156,19 @@
 
       let page = await fetchText(source);
 
+      /* PATCH: JETZT LERNEN ZUR SPRACHAUSWAHL */
+      const oldLearningButton =
+        'onclick="showGeneralSettings()">Jetzt lernen</button>';
+
+      if (!page.includes(oldLearningButton)) {
+        throw new Error("Der Button 'Jetzt lernen' wurde nicht gefunden.");
+      }
+
+      page = page.replace(
+        oldLearningButton,
+        'onclick="zunoNavigate(\'learning\')">Jetzt lernen</button>'
+      );
+
       if (!page.includes("</body>") || !page.includes("</head>")) {
         throw new Error("Die geladene ZUNO-Datei ist unvollständig.");
       }
