@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="de">
 <head>
@@ -97,7 +98,7 @@
       "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
 
     const moduleBase = "./";
-    const version = "?v=11";
+    const version = "?v=12";
     const status = document.getElementById("status");
 
     async function fetchText(url) {
@@ -108,6 +109,16 @@
       }
 
       return response.text();
+    }
+
+    function requireMatch(regex, replacement, label) {
+      if (!regex.test(page)) {
+        throw new Error(
+          "XP Combo konnte nicht integriert werden: " + label
+        );
+      }
+
+      page = page.replace(regex, replacement);
     }
 
     try {
@@ -150,7 +161,10 @@
         throw new Error("Die geladene ZUNO-Datei ist unvollständig.");
       }
 
-      /* AUTOMATISCHES BEENDEN DER LETZTEN FRAGE */
+      /* =========================================
+         AUTOMATISCHES BEENDEN DER LETZTEN FRAGE
+      ========================================= */
+
       const answerPattern =
         /      updateDashboard\(\);\n\n      if \(isCorrect\) \{[\s\S]*?\n      \}\n    \}\n\n    function recordSchoolAnswer/;
 
@@ -195,7 +209,100 @@
 
       page = page.replace(answerPattern, fixedAnswerFlow);
 
-      /* XP-BUTTON */
+      /* =========================================
+         XP COMBO SYSTEM
+      ========================================= */
+
+      // 1. Combo und Session-XP im State ergänzen.
+      requireMatch(
+        /const state = \{\s*/,
+        match => match + `  combo: 0,
+  sessionXP: 0,
+`,
+        "State"
+      );
+
+      // 2. Combo und Session-XP bei jeder neuen Lektion zurücksetzen.
+      requireMatch(
+        /(function startSession\(words, isSchool, lang\) \{[\s\S]*?state\.correct = 0;\s*state\.wrong = 0;)/,
+        match => match + `
+      state.combo = 0;
+      state.sessionXP = 0;`,
+        "Lesson-Reset"
+      );
+
+      // 3. XP-Berechnung vorbereiten.
+      requireMatch(
+        /function checkAnswer\(answer, word\) \{/,
+        `function checkAnswer(answer, word) {
+      let earnedXP = 0;`,
+        "checkAnswer"
+      );
+
+      // 4. XP-Vergabe ersetzen.
+      requireMatch(
+        /state\.correct \+= 1;\s*state\.xp \+= 10;/,
+        `state.correct += 1;
+
+        state.combo = (Number(state.combo) || 0) + 1;
+
+        earnedXP = state.combo <= 5
+          ? 10
+          : 10 + (state.combo - 5);
+
+        state.sessionXP = (Number(state.sessionXP) || 0) + earnedXP;
+        state.xp = (Number(state.xp) || 0) + earnedXP;`,
+        "XP-Berechnung"
+      );
+
+      // 5. Falsche Antwort setzt die Combo zurück.
+      requireMatch(
+        /state\.wrong \+= 1;/,
+        `state.wrong += 1;
+        state.combo = 0;`,
+        "Combo-Reset"
+      );
+
+      // 6. Feedback zeigt die tatsächliche XP-Belohnung.
+      requireMatch(
+        /isCorrect \? '✓ Richtig! \+10 XP' :/,
+        `isCorrect
+          ? \`✓ Richtig! +\${earnedXP} XP · Combo \${state.combo}\`
+          :`,
+        "Antwort-Feedback"
+      );
+
+      // 7. Ergebnis-Seite zeigt die tatsächlich verdienten XP.
+      requireMatch(
+        /document\.getElementById\('resultXP'\)\.textContent\s*=\s*state\.correct\s*\*\s*10\s*;/,
+        `document.getElementById('resultXP').textContent =
+        Number(state.sessionXP) || 0;`,
+        "Session-XP"
+      );
+
+      // 8. Zusätzliche globale Anzeige für den Combo-Status.
+      // Keine zweite XP-Vergabe. Nur Anzeige.
+      const comboDisplay = `
+        <div id="zunoComboDisplay" class="zuno-combo-display" aria-live="polite">
+          <span class="zuno-combo-icon">⚡</span>
+          <span>
+            <strong>XP Combo</strong>
+            <small id="zunoComboText">0 richtige Antworten in Folge</small>
+          </span>
+          <strong id="zunoComboXP">10 XP</strong>
+        </div>
+      `;
+
+      if (!page.includes("</main>")) {
+        throw new Error("Der Hauptbereich der App wurde nicht gefunden.");
+      }
+
+      page = page.replace("</main>", comboDisplay + "</main>");
+
+      /* =========================================
+         XP-BUTTON
+      ========================================= */
+
       const oldXPButton =
         '<span class="pill">⚡ <span id="headerXP">0</span> XP</span>';
 
@@ -210,7 +317,10 @@
 
       page = page.replace(oldXPButton, newXPButton);
 
-      /* NEUE SEITEN */
+      /* =========================================
+         NEUE SEITEN
+      ========================================= */
+
       const newPages = `
         <section id="xpPage" class="hidden zuno-page">
           <div class="zuno-page-heading">
@@ -229,10 +339,15 @@
 
           <div class="zuno-info-grid">
             <article class="zuno-info-card">
-              <span>📚</span>
-              <h3>XP verdienen</h3>
-              <p>Für jede richtige Antwort erhältst du 10 XP.</p>
+              <span>⚡</span>
+              <h3>XP Combo</h3>
+              <p>
+                Die ersten fünf richtigen Antworten bringen jeweils 10 XP.
+                Ab der sechsten Antwort erhältst du für jede weitere richtige
+                Antwort 1 XP zusätzlich.
+              </p>
             </article>
+
             <article class="zuno-info-card">
               <span>🎮</span>
               <h3>XP ausgeben</h3>
@@ -351,13 +466,12 @@
         </section>
       `;
 
-      if (!page.includes("</main>")) {
-        throw new Error("Der Hauptbereich der App wurde nicht gefunden.");
-      }
-
       page = page.replace("</main>", newPages + "</main>");
 
-      /* NEUE SEITEN IN showOnly AUFNEHMEN */
+      /* =========================================
+         SEITENLISTE
+      ========================================= */
+
       const oldPageList =
         "['dashboard', 'settings', 'unitSettings', 'exercise', 'result', 'statsPage']";
 
@@ -370,7 +484,10 @@
 
       page = page.replace(oldPageList, newPageList);
 
-      /* SIDEBAR + SHOP + ADMIN STYLES */
+      /* =========================================
+         STYLES
+      ========================================= */
+
       const styles = `
         <link rel="stylesheet" href="${moduleBase}games.css${version}">
         <link rel="stylesheet" href="${moduleBase}animations.css${version}">
@@ -471,13 +588,8 @@
             margin: 10px 0 25px;
           }
 
-          .zuno-page-heading h1 {
-            margin: 8px 0;
-          }
-
-          .zuno-page-heading p {
-            max-width: 620px;
-          }
+          .zuno-page-heading h1 { margin: 8px 0; }
+          .zuno-page-heading p { max-width: 620px; }
 
           .zuno-eyebrow {
             color: #7d69e8;
@@ -528,7 +640,10 @@
             background: #fff7e9;
           }
 
-          .zuno-streak-card p { margin: 5px 0 0 28px; font-size: 13px; }
+          .zuno-streak-card p {
+            margin: 5px 0 0 28px;
+            font-size: 13px;
+          }
 
           .zuno-wide-button,
           .zuno-card-button {
@@ -650,6 +765,49 @@
             cursor: pointer;
           }
 
+          /* XP COMBO DISPLAY */
+
+          .zuno-combo-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: fit-content;
+            max-width: 100%;
+            margin: 14px auto;
+            padding: 11px 16px;
+            border: 1px solid #e9e3ff;
+            border-radius: 15px;
+            background: #fff;
+            box-shadow: 0 5px 18px #5140a10c;
+          }
+
+          .zuno-combo-icon {
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 11px;
+            background: #f0edff;
+            font-size: 19px;
+          }
+
+          .zuno-combo-display span:nth-child(2) {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+          }
+
+          .zuno-combo-display small {
+            color: #858596;
+            font-size: 11px;
+          }
+
+          #zunoComboXP {
+            margin-left: 12px;
+            color: #6351c7;
+            white-space: nowrap;
+          }
+
           @media (max-width: 760px) {
             body { padding-left: 0; padding-bottom: 74px; }
 
@@ -707,7 +865,10 @@
 
       page = page.replace("</head>", styles + "</head>");
 
-      /* SIDEBAR HTML */
+      /* =========================================
+         SIDEBAR
+      ========================================= */
+
       const sidebar = `
         <aside id="zunoSidebar">
           <div class="zuno-sidebar-logo">ZUNO.</div>
@@ -740,7 +901,83 @@
 
       page = page.replace("<body>", "<body>\n" + sidebar);
 
-      /* SPEECH OUTPUT */
+      /* =========================================
+         XP COMBO DISPLAY SCRIPT
+      ========================================= */
+
+      const comboScript = `
+        <script>
+        (() => {
+          "use strict";
+
+          function updateComboDisplay() {
+            if (typeof state === "undefined") return;
+
+            const combo = Number(state.combo) || 0;
+            const text = document.getElementById("zunoComboText");
+            const xp = document.getElementById("zunoComboXP");
+
+            if (!text || !xp) return;
+
+            text.textContent =
+              combo + (combo === 1
+                ? " richtige Antwort in Folge"
+                : " richtige Antworten in Folge");
+
+            const nextXP = combo < 5 ? 10 : 10 + (combo - 4);
+            xp.textContent = nextXP + " XP";
+          }
+
+          function installComboObserver() {
+            if (typeof window.checkAnswer !== "function") return;
+
+            const original = window.checkAnswer;
+
+            if (original._zunoComboWrapped) return;
+
+            const wrapped = function(...args) {
+              const result = original.apply(this, args);
+              updateComboDisplay();
+              return result;
+            };
+
+            wrapped._zunoComboWrapped = true;
+            window.checkAnswer = wrapped;
+          }
+
+          const originalStart = window.startSession;
+
+          if (typeof originalStart === "function" &&
+              !originalStart._zunoComboWrapped) {
+            const wrappedStart = function(...args) {
+              const result = originalStart.apply(this, args);
+              updateComboDisplay();
+              return result;
+            };
+
+            wrappedStart._zunoComboWrapped = true;
+            window.startSession = wrappedStart;
+          }
+
+          document.addEventListener("DOMContentLoaded", () => {
+            installComboObserver();
+            updateComboDisplay();
+          });
+
+          window.addEventListener("load", () => {
+            installComboObserver();
+            updateComboDisplay();
+          });
+
+          window.updateZUNOComboDisplay = updateComboDisplay;
+        })();
+        <\/script>
+      `;
+
+      /* =========================================
+         SPEECH OUTPUT
+      ========================================= */
+
       const speechFixScript = `
         <script>
         (function() {
@@ -802,7 +1039,10 @@
         <\/script>
       `;
 
-      /* NAVIGATION, SHOP UND ADMIN LOGIK */
+      /* =========================================
+         NAVIGATION, SHOP UND ADMIN
+      ========================================= */
+
       const appEnhancements = `
         <script>
         (() => {
@@ -1097,6 +1337,10 @@
         <\/script>
       `;
 
+      /* =========================================
+         SCRIPTS EINFÜGEN
+      ========================================= */
+
       const scripts =
         "<script>\n" + patch + "\n<\/script>" +
         speechFixScript +
@@ -1104,11 +1348,13 @@
         '<script src="' + moduleBase + "zuno-ai.js" + version + '"><\/script>' +
         '<script src="' + moduleBase + "zuno-examples.js" + version + '"><\/script>' +
         '<script src="' + moduleBase + "progress.js" + version + '"><\/script>' +
-        '<script src="' + moduleBase + "games.js" + version + '"><\/script>';
+        '<script src="' + moduleBase + "games.js" + version + '"><\/script>' +
+        comboScript;
 
       page = page.replace("</body>", scripts + "</body>");
 
       status.textContent = "ZUNO geladen. Starte App ...";
+
       document.open();
       document.write(page);
       document.close();
