@@ -1,7 +1,8 @@
+
 /* =========================================
    ZUNO AI
    Answer Checker + Shared Synonym Feedback
-   Version 3.0
+   Version 4.0
 ========================================= */
 
 (() => {
@@ -37,7 +38,35 @@
   }
 
   function unique(values) {
-    return [...new Set(values.map(normalize).filter(Boolean))];
+    return [...new Set(
+      values
+        .map(normalize)
+        .filter(Boolean)
+    )];
+  }
+
+  function getLanguage(word) {
+    return String(word?.language || "en").toLowerCase();
+  }
+
+  function scopedKey(language, word) {
+    return getLanguage({ language }) + "|" + normalize(word);
+  }
+
+  function getWordArray(word, properties) {
+    const result = [];
+
+    properties.forEach(property => {
+      const value = word?.[property];
+
+      if (Array.isArray(value)) {
+        result.push(...value);
+      } else if (typeof value === "string" && value.trim()) {
+        result.push(...value.split(";"));
+      }
+    });
+
+    return result;
   }
 
   /* =========================================
@@ -313,8 +342,25 @@
     ]
   };
 
+  /*
+    Französische Alternativen werden zusätzlich direkt
+    aus den Vokabelobjekten gelesen.
+
+    Unterstützte Eigenschaften:
+    - acceptedAnswers
+    - alternatives
+    - synonyms
+    - acceptedTranslations
+    - translationAlternatives
+
+    So muss der Wortschatz nicht doppelt gepflegt werden.
+  */
+
+  const frenchSynonymData = {};
+  const frenchTranslationData = {};
+
   /* =========================================
-     4. CONTROLLED VERB FORMS
+     4. CONTROLLED ENGLISH VERB FORMS
   ========================================= */
 
   const irregularVerbs = {
@@ -346,9 +392,7 @@
     feel: ["feel", "feels", "felt", "feeling"],
     teach: ["teach", "teaches", "taught", "teaching"],
     shine: ["shine", "shines", "shone", "shining"],
-    bring: ["bring", "brings", "brought", "bringing"],
     buy: ["buy", "buys", "bought", "buying"],
-    think: ["think", "thinks", "thought", "thinking"],
     fight: ["fight", "fights", "fought", "fighting"],
     stand: ["stand", "stands", "stood", "standing"],
     sit: ["sit", "sits", "sat", "sitting"],
@@ -367,7 +411,6 @@
     grow: ["grow", "grows", "grew", "grown", "growing"],
     hear: ["hear", "hears", "heard", "hearing"],
     hide: ["hide", "hides", "hid", "hidden", "hiding"],
-    hold: ["hold", "holds", "held", "holding"],
     pay: ["pay", "pays", "paid", "paying"],
     sell: ["sell", "sells", "sold", "selling"],
     swim: ["swim", "swims", "swam", "swum", "swimming"],
@@ -497,7 +540,11 @@
       SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE
     );
 
-    url.searchParams.set("select", "word,answer,language,mode,status");
+    url.searchParams.set(
+      "select",
+      "word,answer,language,mode,status"
+    );
+
     url.searchParams.set("status", "eq.approved");
     url.searchParams.set("limit", "1000");
 
@@ -507,7 +554,9 @@
         headers: supabaseHeaders()
       });
 
-      if (!response.ok) throw new Error(await response.text());
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
 
       const rows = await response.json();
 
@@ -517,7 +566,8 @@
       rows.forEach(item => {
         if (!item.word || !item.answer) return;
 
-        const key = normalize(item.word);
+        const language = String(item.language || "en").toLowerCase();
+        const key = scopedKey(language, item.word);
         const answer = String(item.answer).trim();
 
         const target = item.mode === "reverse"
@@ -528,17 +578,28 @@
 
         if (!target) return;
 
-        if (!target.has(key)) target.set(key, []);
+        if (!target.has(key)) {
+          target.set(key, []);
+        }
+
         target.get(key).push(answer);
       });
 
       updateSuggestionPanel();
 
-      console.log("ZUNO AI: Approved suggestions loaded:", rows.length);
+      console.log(
+        "ZUNO AI: Approved suggestions loaded:",
+        rows.length
+      );
+
       return rows.length;
 
     } catch (error) {
-      console.warn("ZUNO AI: Shared suggestions unavailable:", error);
+      console.warn(
+        "ZUNO AI: Shared suggestions unavailable:",
+        error
+      );
+
       return 0;
     }
   }
@@ -547,36 +608,50 @@
      6. SYNONYM LOOKUP
   ========================================= */
 
-  function getSynonyms(word) {
+  function getSynonyms(word, language = "en") {
     const key = normalize(word);
+    const lang = String(language || "en").toLowerCase();
 
-    const modern = Object.entries(synonymData)
+    const data = lang === "fr"
+      ? frenchSynonymData
+      : synonymData;
+
+    const modern = Object.entries(data)
       .filter(([name]) => normalize(name) === key)
       .flatMap(([, values]) => values);
 
-    const shared = approvedSynonyms.get(key) || [];
+    const shared =
+      approvedSynonyms.get(scopedKey(lang, word)) || [];
 
     let legacy = [];
 
-    try {
-      if (typeof zunoAnswerAlternatives !== "undefined") {
-        const legacyMap = zunoAnswerAlternatives || {};
+    if (lang === "en") {
+      try {
+        if (typeof zunoAnswerAlternatives !== "undefined") {
+          const legacyMap = zunoAnswerAlternatives || {};
 
-        const matchingKey = Object.keys(legacyMap).find(
-          name => normalize(name) === key
-        );
+          const matchingKey = Object.keys(legacyMap).find(
+            name => normalize(name) === key
+          );
 
-        if (matchingKey) legacy = legacyMap[matchingKey];
-      }
-    } catch (_) {}
+          if (matchingKey) {
+            legacy = legacyMap[matchingKey];
+          }
+        }
+      } catch (_) {}
+    }
 
-    return [...new Set([...modern, ...shared, ...legacy])];
+    return [...new Set([
+      ...modern,
+      ...shared,
+      ...legacy
+    ])];
   }
 
   function acceptedEnglishAnswers(word) {
     const values = [
       ...getHeadwordForms(word),
-      ...getSynonyms(word).flatMap(getHeadwordForms)
+      ...getSynonyms(word, "en").flatMap(getHeadwordForms)
     ];
 
     return new Set(unique(values));
@@ -590,6 +665,7 @@
     if (!answer || !word || !word.word) return false;
 
     const submitted = normalize(answer);
+
     if (!submitted) return false;
 
     return acceptedEnglishAnswers(word.word).has(submitted);
@@ -616,23 +692,41 @@
   }
 
   function getTranslationAlternatives(word) {
+    const language = getLanguage(word);
     const key = normalize(word.word);
 
-    const modernKey = Object.keys(translationData).find(
+    const data = language === "fr"
+      ? frenchTranslationData
+      : translationData;
+
+    const modernKey = Object.keys(data).find(
       name => normalize(name) === key
     );
 
-    const modern = modernKey ? translationData[modernKey] : [];
+    const modern = modernKey ? data[modernKey] : [];
 
-    const shared = approvedTranslations.get(key) || [];
+    const shared =
+      approvedTranslations.get(
+        scopedKey(language, word.word)
+      ) || [];
 
-    return [...modern, ...shared];
+    const fromWord = getWordArray(word, [
+      "acceptedTranslations",
+      "translationAlternatives"
+    ]);
+
+    return [
+      ...modern,
+      ...shared,
+      ...fromWord
+    ];
   }
 
   function checkGermanTranslation(answer, word) {
     if (!answer || !word || !word.word) return false;
 
     const submitted = normalize(answer);
+
     if (!submitted) return false;
 
     const original = String(word.translation || "")
@@ -648,7 +742,37 @@
   }
 
   /* =========================================
-     9. LOCAL SUGGESTION STORAGE
+     9. FRENCH ANSWER CHECKING
+  ========================================= */
+
+  function getFrenchAcceptedAnswers(word) {
+    const values = [
+      word.word,
+      ...getSynonyms(word.word, "fr"),
+      ...getWordArray(word, [
+        "acceptedAnswers",
+        "alternatives",
+        "synonyms",
+        "frenchAlternatives",
+        "acceptedFrenchAnswers"
+      ])
+    ];
+
+    return new Set(unique(values));
+  }
+
+  function checkFrenchAnswer(answer, word) {
+    if (!answer || !word || !word.word) return false;
+
+    const submitted = normalize(answer);
+
+    if (!submitted) return false;
+
+    return getFrenchAcceptedAnswers(word).has(submitted);
+  }
+
+  /* =========================================
+     10. LOCAL SUGGESTION STORAGE
   ========================================= */
 
   function getPendingSuggestions() {
@@ -657,6 +781,7 @@
       const parsed = stored ? JSON.parse(stored) : [];
 
       return Array.isArray(parsed) ? parsed : [];
+
     } catch (error) {
       console.error("ZUNO AI suggestions:", error);
       return [];
@@ -664,14 +789,17 @@
   }
 
   function savePendingSuggestions(items) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(items)
+    );
   }
 
   function createWordKey(word) {
     return [
       normalize(word.word),
       normalize(word.translation),
-      word.language || "unknown",
+      getLanguage(word),
       word.unitKey || "",
       word.id || ""
     ].join("|");
@@ -688,6 +816,7 @@
       };
     }
 
+    const language = getLanguage(word);
     const suggestions = getPendingSuggestions();
     const wordKey = createWordKey(word);
 
@@ -701,27 +830,38 @@
       return {
         success: false,
         uploaded: false,
-        message: "Dieser Vorschlag wurde bereits auf diesem Gerät gespeichert."
+        message:
+          "Dieser Vorschlag wurde bereits auf diesem Gerät gespeichert."
       };
     }
 
     const suggestion = {
       id: "zuno-" + Date.now() + "-" +
         Math.random().toString(36).slice(2, 8),
+
       word: String(word.word),
       translation: String(word.translation || ""),
       answer: submitted,
-      language: word.language || "en",
+
+      language,
       mode,
       wordKey,
-      unitKey: word.unitKey == null ? null : String(word.unitKey),
-      wordId: word.id == null ? null : String(word.id),
+
+      unitKey: word.unitKey == null
+        ? null
+        : String(word.unitKey),
+
+      wordId: word.id == null
+        ? null
+        : String(word.id),
+
       createdAt: new Date().toISOString(),
       status: "pending",
       uploaded: false
     };
 
     suggestions.push(suggestion);
+
     savePendingSuggestions(suggestions);
     updateSuggestionPanel();
 
@@ -729,6 +869,7 @@
       await uploadSuggestion(suggestion);
 
       suggestion.uploaded = true;
+
       savePendingSuggestions(suggestions);
       updateSuggestionPanel();
 
@@ -752,7 +893,7 @@
   }
 
   /* =========================================
-     10. EXPORT AND CLEAR
+     11. EXPORT AND CLEAR
   ========================================= */
 
   function exportSuggestions() {
@@ -765,7 +906,7 @@
 
     const data = {
       app: "ZUNO",
-      exportVersion: 3,
+      exportVersion: 4,
       exportedAt: new Date().toISOString(),
       totalSuggestions: suggestions.length,
       suggestions
@@ -803,13 +944,14 @@
     )) return;
 
     localStorage.removeItem(STORAGE_KEY);
+
     updateSuggestionPanel();
 
     alert("Die lokalen Vorschläge wurden geleert.");
   }
 
   /* =========================================
-     11. SUGGESTION PANEL
+     12. SUGGESTION PANEL
   ========================================= */
 
   function escapeHTML(value) {
@@ -820,6 +962,20 @@
       '"': "&quot;",
       "'": "&#039;"
     })[character]);
+  }
+
+  function getSuggestionDescription(item) {
+    const language = String(item.language || "en").toLowerCase();
+
+    if (language === "fr") {
+      return item.mode === "reverse"
+        ? "Französische Antwort"
+        : "Deutsche Übersetzung";
+    }
+
+    return item.mode === "reverse"
+      ? "Englisches Synonym"
+      : "Deutsche Übersetzung";
   }
 
   function updateSuggestionPanel() {
@@ -834,7 +990,10 @@
     count.textContent = suggestions.length;
 
     if (syncStatus) {
-      const uploaded = suggestions.filter(item => item.uploaded).length;
+      const uploaded = suggestions.filter(
+        item => item.uploaded
+      ).length;
+
       const notUploaded = suggestions.length - uploaded;
 
       syncStatus.textContent = suggestions.length
@@ -845,6 +1004,7 @@
     if (!suggestions.length) {
       list.innerHTML =
         '<p style="color:#777;margin:0;">Noch keine Vorschläge gesammelt.</p>';
+
       return;
     }
 
@@ -862,11 +1022,16 @@
           <strong>${escapeHTML(item.word)}</strong>
           <span style="color:#777;"> → </span>
           <strong>${escapeHTML(item.answer)}</strong>
-          <div style="font-size:12px;color:#777;margin-top:4px;">
-            ${item.mode === "reverse"
-              ? "Englisches Synonym"
-              : "Deutsche Übersetzung"}
-            · ${item.uploaded ? "☁️ Online eingereicht" : "📱 Nur lokal"}
+
+          <div style="
+            font-size:12px;
+            color:#777;
+            margin-top:4px;
+          ">
+            ${escapeHTML(getSuggestionDescription(item))}
+            · ${item.uploaded
+              ? "☁️ Online eingereicht"
+              : "📱 Nur lokal"}
           </div>
         </div>
       `)
@@ -874,7 +1039,11 @@
 
     if (suggestions.length > 8) {
       list.innerHTML += `
-        <p style="font-size:12px;color:#777;margin-top:10px;">
+        <p style="
+          font-size:12px;
+          color:#777;
+          margin-top:10px;
+        ">
           Und ${suggestions.length - 8} weitere Vorschläge ...
         </p>
       `;
@@ -894,6 +1063,7 @@
     const panel = document.createElement("section");
 
     panel.id = "zunoSuggestionPanel";
+
     panel.style.cssText = `
       padding:16px 0 0;
     `;
@@ -997,15 +1167,20 @@
   }
 
   /* =========================================
-     12. CHALLENGE BUTTON
+     13. CHALLENGE BUTTON
   ========================================= */
 
   function addChallengeButton(answer, word, mode) {
     const feedback = document.getElementById("feedbackArea");
 
-    if (!feedback || document.getElementById("zunoChallengeButton")) {
+    if (
+      !feedback ||
+      document.getElementById("zunoChallengeButton")
+    ) {
       return;
     }
+
+    const language = getLanguage(word);
 
     const button = document.createElement("button");
 
@@ -1026,9 +1201,17 @@
     `;
 
     button.addEventListener("click", async () => {
-      const description = mode === "reverse"
-        ? "als englisches Synonym"
-        : "als deutsche Übersetzung";
+      let description;
+
+      if (language === "fr") {
+        description = mode === "reverse"
+          ? "als französische Antwort"
+          : "als deutsche Übersetzung";
+      } else {
+        description = mode === "reverse"
+          ? "als englisches Synonym"
+          : "als deutsche Übersetzung";
+      }
 
       if (!confirm(
         'Soll "' + answer + '" für "' + word.word + '" ' +
@@ -1039,7 +1222,11 @@
       button.disabled = true;
       button.textContent = "⏳ Wird gespeichert ...";
 
-      const result = await addSuggestion(answer, word, mode);
+      const result = await addSuggestion(
+        answer,
+        word,
+        mode
+      );
 
       if (!result.success) {
         button.disabled = false;
@@ -1052,8 +1239,13 @@
         ? "✓ An ZUNO gesendet"
         : "✓ Lokal gespeichert";
 
-      button.style.background = result.uploaded ? "#eaf7e8" : "#fff4df";
-      button.style.color = result.uploaded ? "#397c38" : "#94651c";
+      button.style.background = result.uploaded
+        ? "#eaf7e8"
+        : "#fff4df";
+
+      button.style.color = result.uploaded
+        ? "#397c38"
+        : "#94651c";
 
       alert(result.message);
     });
@@ -1062,7 +1254,31 @@
   }
 
   /* =========================================
-     13. CONNECT ANSWER CHECKER
+     14. SAFE STATE ACCESS
+  ========================================= */
+
+  function getCurrentMode() {
+    try {
+      return typeof state !== "undefined"
+        ? state.currentMode
+        : "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function getCurrentState() {
+    try {
+      return typeof state !== "undefined"
+        ? state
+        : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /* =========================================
+     15. CONNECT ANSWER CHECKER
   ========================================= */
 
   const previousChecker = window.answerMatches;
@@ -1070,17 +1286,23 @@
   window.answerMatches = function(answer, word) {
     if (!word) return false;
 
-    const mode =
-      typeof state !== "undefined"
-        ? state.currentMode
-        : "";
+    const mode = getCurrentMode();
+    const language = getLanguage(word);
 
-    if (word.language === "en" && mode === "reverse") {
-      return checkEnglishAnswer(answer, word);
+    if (mode === "reverse") {
+      if (language === "en") {
+        return checkEnglishAnswer(answer, word);
+      }
+
+      if (language === "fr") {
+        return checkFrenchAnswer(answer, word);
+      }
     }
 
-    if (word.language === "en" && mode === "input") {
-      return checkGermanTranslation(answer, word);
+    if (mode === "input") {
+      if (language === "en" || language === "fr") {
+        return checkGermanTranslation(answer, word);
+      }
     }
 
     if (typeof previousChecker === "function") {
@@ -1091,30 +1313,44 @@
   };
 
   /* =========================================
-     14. CONNECT FEEDBACK
+     16. CONNECT FEEDBACK
   ========================================= */
 
   const previousCheckAnswer = window.checkAnswer;
 
   if (typeof previousCheckAnswer === "function") {
     window.checkAnswer = function(answer, word) {
-      const wasAnswered =
-        typeof state !== "undefined" && state.answered;
+      const currentState = getCurrentState();
 
-      const mode = state.currentMode;
-      const wrongBefore = Number(state.wrong) || 0;
+      const wasAnswered = currentState
+        ? currentState.answered
+        : false;
 
-      const result = previousCheckAnswer.apply(this, arguments);
+      const mode = currentState
+        ? currentState.currentMode
+        : "";
+
+      const wrongBefore = currentState
+        ? Number(currentState.wrong) || 0
+        : 0;
+
+      const result = previousCheckAnswer.apply(
+        this,
+        arguments
+      );
+
+      const updatedState = getCurrentState();
 
       const becameWrong =
+        updatedState &&
         !wasAnswered &&
-        state.answered &&
-        (Number(state.wrong) || 0) > wrongBefore;
+        updatedState.answered &&
+        (Number(updatedState.wrong) || 0) > wrongBefore;
 
       if (
         becameWrong &&
         word &&
-        word.language === "en" &&
+        ["en", "fr"].includes(getLanguage(word)) &&
         (mode === "input" || mode === "reverse") &&
         String(answer ?? "").trim()
       ) {
@@ -1126,31 +1362,40 @@
   }
 
   /* =========================================
-     15. PUBLIC INTERFACE
+     17. PUBLIC INTERFACE
   ========================================= */
 
   window.ZUNOAI = {
-    version: "3.0",
+    version: "4.0",
+
     normalize,
+
     checkEnglishAnswer,
+    checkFrenchAnswer,
     checkGermanTranslation,
+
     getSynonyms,
     getPendingSuggestions,
     addSuggestion,
+
     exportSuggestions,
     clearSuggestions,
     updateSuggestionPanel,
     fetchApprovedSuggestions,
+
     acceptedEnglishAnswers,
-    getTranslationAlternatives
+    getFrenchAcceptedAnswers,
+    getTranslationAlternatives,
+
+    getLanguage
   };
 
   /* =========================================
-     16. INITIALIZE
+     18. INITIALIZE
   ========================================= */
 
   createSuggestionPanel();
   fetchApprovedSuggestions();
 
-  console.log("ZUNO AI v3.0 loaded.");
+  console.log("ZUNO AI v4.0 loaded.");
 })();
