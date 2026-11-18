@@ -98,7 +98,7 @@
       "https://raw.githubusercontent.com/KiU10/ZUNO/3ade70981b096db00dd74d30e5eaf067d50263bc/index.html";
 
     const moduleBase = "./";
-    const version = "?v=13";
+    const version = "?v=14";
     const status = document.getElementById("status");
 
     async function fetchText(url) {
@@ -486,15 +486,15 @@
 
       page = page.replace(oldPageList, newPageList);
 
-      /* ALLGEMEINE SPRACHAUSWAHL AUSBLENDEN */
-      const languageSettingsPattern =
-        /        <label for="generalLanguage"[\s\S]*?<\/select>\s*/;
+      /* FIX: LABEL ENTFERNEN, SELECT BEIBEHALTEN */
+      const languageLabelPattern =
+        /        <label for="generalLanguage"[^>]*>[\s\S]*?<\/label>\s*/;
 
-      if (!languageSettingsPattern.test(page)) {
-        throw new Error("Die Sprachauswahl in den allgemeinen Einstellungen wurde nicht gefunden.");
+      if (!languageLabelPattern.test(page)) {
+        throw new Error("Das Sprachlabel in den allgemeinen Einstellungen wurde nicht gefunden.");
       }
 
-      page = page.replace(languageSettingsPattern, "");
+      page = page.replace(languageLabelPattern, "");
 
       /* NEUE STYLES */
       const styles = `
@@ -510,6 +510,9 @@
           }
 
           body { padding-left: 250px; }
+
+          /* Select bleibt für startGeneral() erhalten */
+          #generalLanguage { display: none !important; }
 
           #zunoSidebar {
             position: fixed;
